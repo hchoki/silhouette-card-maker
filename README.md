@@ -25,3 +25,22 @@ python create_pdf.py
 ```
 
 Get your PDF at `game/output/card_game.pdf`.
+
+***
+
+The `create_pdf.py` has the following options.
+
+```
+Usage: create_pdf.py [OPTIONS]
+
+Options:
+  --front_dir_path TEXT  The path to the directory containing the card front
+                         images.  [default: game/front]
+  --back_img_path TEXT   The path to the card back image.  [default:
+                         game/back/back.jpg]
+  --pdf_path TEXT        The desired path to the output PDF.  [default:
+                         game/output/card_game.pdf]
+  --front_registration   Enable the front pages of the PDF to have
+                         registration marks.
+  --help                 Show this message and exit.
+```

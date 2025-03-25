@@ -1,22 +1,10 @@
+from enum import Enum
 import json
 import os
 from pathlib import Path
 
 from natsort import natsorted
 from PIL import Image, ImageDraw, ImageFont
-
-# -------------------------------------
-
-# User editable parameters
-
-# Acceptable values are:
-# 'STANDARD'
-# 'BRIDGE'
-# 'POKER'
-# 'POKER_HALF'
-selected_template_type = 'STANDARD'
-
-# -------------------------------------
 
 # Specify directory locations
 asset_directory = 'assets'
@@ -27,13 +15,18 @@ blank_path = os.path.join(asset_directory, blank_filename)
 registration_filename = 'registration_marks.jpg'
 registration_path = os.path.join(asset_directory, registration_filename)
 
-
-
-
 # TODO: support other sizes
 # Dimensions of the print sheet
 print_width = 3300
 print_height = 2550
+
+cut_border_thickness = 5
+
+class TemplateType(Enum):
+    STANDARD = "STANDARD"
+    BRIDGE = "BRIDGE"
+    POKER = "POKER"
+    POKER_HALF = "POKER_HALF"
 
 def image_paste_with_border(image: Image, page: Image, box: tuple[int, int, int, int], thickness: int):
     origin_x, origin_y, origin_width, origin_height = box
@@ -41,7 +34,7 @@ def image_paste_with_border(image: Image, page: Image, box: tuple[int, int, int,
         im_resize = image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         page.paste(im_resize, (origin_x - i, origin_y - i))
 
-def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_front_registration: bool = False):
+def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, selected_template_type: TemplateType, enable_front_registration: bool = False):
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
         raise Exception(f'Front image directory path "{f_path}" is invalid')
@@ -74,6 +67,8 @@ def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_fron
 
             # Create a copy of the registration marks to paste the back images onto
             back_page = reg_im.copy()
+            if enable_front_registration:
+                back_page = blank_im.copy()
 
             # Load the card back image
             with Image.open(back_path) as back_im:
@@ -88,12 +83,16 @@ def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_fron
                     # Calculate the location of the new card based on what number the card is
                     new_origin_x = selected_template['x_pos'][i % num_cards % num_cols]
                     new_origin_y = selected_template['y_pos'][(i % num_cards) // num_cols]
+                    
+                    border_thickness = cut_border_thickness
+                    if enable_front_registration:
+                        border_thickness = selected_template['border_thickness']
 
                     image_paste_with_border(
                         back_im_corr,
-                    back_page,
-                    (new_origin_x, new_origin_y, selected_template['width'], selected_template['height']),
-                    selected_template['border_thickness']
+                        back_page,
+                        (new_origin_x, new_origin_y, selected_template['width'], selected_template['height']),
+                        border_thickness
                     )
 
                 # Add template version number to the back
@@ -122,7 +121,6 @@ def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_fron
             n = 0
             for name in files:
                 if name.endswith(".md"):
-                    print(f"skipping {name}")
                     continue
 
                 print(f"image {n + 1}: {name}")
@@ -147,12 +145,16 @@ def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_fron
                     # Calculate the location of the new card based on what number the card is
                     new_origin_x = selected_template['x_pos'][n % num_cards % num_cols]
                     new_origin_y = selected_template['y_pos'][(n % num_cards) // num_cols]
+                    
+                    border_thickness = selected_template['border_thickness']
+                    if enable_front_registration:
+                        border_thickness = cut_border_thickness
 
                     image_paste_with_border(
                         front_im_corr,
                         front_page,
                         (new_origin_x, new_origin_y, selected_template['width'], selected_template['height']),
-                        selected_template['border_thickness']
+                        border_thickness
                     )
 
                 n += 1
