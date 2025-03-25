@@ -1,6 +1,8 @@
 import json
-from natsort import natsorted
 import os
+from pathlib import Path
+
+from natsort import natsorted
 from PIL import Image, ImageDraw, ImageFont
 
 # -------------------------------------
@@ -40,6 +42,13 @@ def image_paste_with_border(image: Image, page: Image, box: tuple[int, int, int,
         page.paste(im_resize, (origin_x - i, origin_y - i))
 
 def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, enable_front_registration: bool = False):
+    f_path = Path(front_dir_path)
+    if not f_path.exists() or not f_path.is_dir():
+        raise Exception(f'Front image directory path "{f_path}" is invalid')
+    
+    b_path = Path(back_path)
+    if not b_path.exists() or not b_path.is_file():
+        raise Exception(f'Back image path "{front_dir_path}" is invalid')
 
     # Load the JSON with all the card sizing information
     json_filename = 'card_size_config.json'
