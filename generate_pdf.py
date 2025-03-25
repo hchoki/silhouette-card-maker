@@ -9,10 +9,10 @@ from PIL import Image, ImageDraw, ImageFont
 # Specify directory locations
 asset_directory = 'assets'
 
-blank_filename = 'blank_page.jpg'
+blank_filename = 'letter_blank.jpg'
 blank_path = os.path.join(asset_directory, blank_filename)
 
-registration_filename = 'registration_marks.jpg'
+registration_filename = 'letter_registration.jpg'
 registration_path = os.path.join(asset_directory, registration_filename)
 
 # TODO: support other sizes
