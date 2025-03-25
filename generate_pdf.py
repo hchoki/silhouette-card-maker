@@ -23,10 +23,10 @@ print_height = 2550
 cut_border_thickness = 5
 
 class TemplateType(Enum):
-    STANDARD = "STANDARD"
-    BRIDGE = "BRIDGE"
-    POKER = "POKER"
-    POKER_HALF = "POKER_HALF"
+    STANDARD = "standard"
+    BRIDGE = "bridge"
+    POKER = "poker"
+    POKER_HALF = "poker_half"
 
 def image_paste_with_border(image: Image, page: Image, box: tuple[int, int, int, int], thickness: int):
     origin_x, origin_y, origin_width, origin_height = box

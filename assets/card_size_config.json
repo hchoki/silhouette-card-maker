@@ -1,5 +1,5 @@
 {
-    "STANDARD": {
+    "standard": {
         "width": 742,
         "height": 1034,
         "x_pos": [
@@ -15,7 +15,7 @@
         "template": "template_letter_standard_v1",
         "border_thickness": 10
     },
-    "BRIDGE": {
+    "bridge": {
         "width": 673,
         "height": 1048,
         "x_pos": [
@@ -31,7 +31,7 @@
         "template": "template_letter_bridge_v1",
         "border_thickness": 17
     },
-    "POKER": {
+    "poker": {
         "width": 748,
         "height": 1048,
         "x_pos": [
@@ -47,7 +47,7 @@
         "template": "template_letter_poker_v1",
         "border_thickness": 9
     },
-    "POKER_HALF": {
+    "poker_half": {
         "width": 523,
         "height": 733,
         "x_pos": [
