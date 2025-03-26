@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 Put your front images in `game/front`.
 
-Put your back image in `game/back`, name it `back.jpg`.
+Put your back image in `game/back`.
 
 Run the script.
 ```shell
@@ -36,14 +36,13 @@ Usage: create_pdf.py [OPTIONS]
 Options:
   --front_dir_path TEXT           The path to the directory containing the
                                   card front images.  [default: game/front]
-  --back_img_path TEXT            The path to the card back image.  [default:
-                                  game/back/back.jpg]
+  --back_dir_path TEXT            The path to the directory containing one or
+                                  no back image.  [default: game/back]
   --pdf_path TEXT                 The desired path to the output PDF.
                                   [default: game/output/card_game.pdf]
   --template_type [standard|bridge|poker|poker_half]
-                                  The desired path to the output PDF.
-                                  [default: standard]
-  --front_registration            Enable the front pages of the PDF to have
-                                  registration marks.
+                                  The desired card size.  [default: standard]
+  --front_registration            Enable the front pages to have Print & Play
+                                  (registration marks).
   --help                          Show this message and exit.
 ```
