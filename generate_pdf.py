@@ -16,8 +16,7 @@ blank_path = os.path.join(asset_directory, blank_filename)
 registration_filename = 'letter_registration.jpg'
 registration_path = os.path.join(asset_directory, registration_filename)
 
-# TODO: support other sizes
-# Dimensions of the print sheet
+# Dimensions of the resized letter-sized sheet
 print_width = 3300
 print_height = 2550
 
