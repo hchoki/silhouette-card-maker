@@ -5,7 +5,11 @@ from pathlib import Path
 from typing import List
 
 from natsort import natsorted
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
+
+# print_mtg = True
+# mtg_x_offset = 9
+# mtg_y_offset = 12
 
 # Specify directory locations
 asset_directory = 'assets'
@@ -212,3 +216,20 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, pdf_path: str, selecte
             # Save the pages array as a PDF
             pages[0].save(pdf_path, format = 'PDF', save_all = True, append_images = pages[1:])
             print(f'generated PDF: {pdf_path}')
+
+def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> List[Image.Image]:
+    offset_images = []
+
+    add_offset = False
+    for image in images:
+        if add_offset:
+            # if print_mtg:
+            #     offset_images.append(ImageChops.offset(pil_image, x_offset + mtg_x_offset, y_offset + mtg_y_offset))
+            # else:
+                offset_images.append(ImageChops.offset(image, x_offset, y_offset))
+        else:
+            offset_images.append(image)
+
+        add_offset = not add_offset
+
+    return offset_images

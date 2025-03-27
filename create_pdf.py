@@ -1,7 +1,7 @@
 import os
 
 import click
-from generate_pdf import TemplateType, generate_pdf
+from utilities import TemplateType, generate_pdf
 
 front_directory = os.path.join('game', 'front')
 back_directory = os.path.join('game', 'back')

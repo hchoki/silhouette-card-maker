@@ -3,7 +3,7 @@ import os
 import click
 import pypdfium2 as pdfium
 
-from offset_images import offset_images
+from utilities import offset_images
 
 # Dimensions of the resized letter-sized sheet
 print_width = 3300
@@ -25,14 +25,15 @@ def offset_pdf(pdf_path: str, output_pdf_path: str, x_offset, y_offset):
         raw_images.append(page.render(scale = 300/72).to_pil().resize((print_width, print_height)))
         
     # Offset images
-    final_images = offset_images(raw_images, int(x_offset), int(y_offset))
+    final_images = offset_images(raw_images, x_offset, y_offset)
     
     # The default for output_pdf_path is the original path but with _offset.py appended to the end.
     if output_pdf_path is None:
         output_pdf_path = f'{pdf_path.removesuffix(".py")}_offset.py'
     
-    pdf_path = os.path.join(f"{pdf_path}_adjusted.pdf")
-    final_images[0].save(pdf_path, save_all=True, append_images=final_images[1:])
+    output_pdf_path = os.path.join(f"{pdf_path}_offset.pdf")
+    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:])
+    print(f'offset PDF: {output_pdf_path}')
 
 if __name__ == '__main__':
     offset_pdf()
