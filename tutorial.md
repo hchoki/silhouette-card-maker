@@ -123,6 +123,7 @@ The following is a table of working settings. Do not use these settings blindly.
 
 | Machine | Blade          | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
 | ------- | -------------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
+| Cameo 5 | Autoblade      | 65 lb          | 3 mil      | 30       | 30    | 3      | 7     |
 | Cameo 5 | Autoblade      | 110 lb         | 3 mil      | 33       | 20    | 3      | 7     |
 | Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
 | Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil      | 33       | 6     | 3      | 19    |
