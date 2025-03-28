@@ -121,11 +121,11 @@ I recommend creating a simple cutting template with Silhouette Studio. Set the b
 
 The following is a table of working settings. Do not use these settings blindly. Test conservatively and work up to the listed values. If you do not, you risk breaking your machine or cutting through your mat.
 
-| Machine | Blade     | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
-| ------- | --------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
-| Cameo 5 | Autoblade | 110 lb         | 3 mil      | 33       | 20    | 3      | 7     |
-| Cameo 5 | Autoblade | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
-| Cameo 3 | ???       | 110 lb         | 3 mil      | 33       | 10    | 3      | 15    |
+| Machine | Blade          | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
+| ------- | -------------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
+| Cameo 5 | Autoblade      | 110 lb         | 3 mil      | 33       | 20    | 3      | 7     |
+| Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
+| Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil      | 33       | 6     | 3      | 19    |
 
 ## Steps
 
