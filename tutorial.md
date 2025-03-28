@@ -99,23 +99,47 @@ Silhouette Studio is the software used to create cutting designs and control the
 
 As mentioned before, an important aspect of this process is Print & Cut. You need to enable it in a cutting template in order to reap the benefits. When you enable Print & Cut, Silhouette Studio will do two things, it'll add registration marks to your cutting template, and when you print, it'll have the machine scan for registration marks before cutting. The registration marks are what the cutting machine uses to determine the orientation of your paper and make the proper adjustments when cutting. However, the templates in this tutorial already have Print & Cut enabled so you will not need to change anything.
 
-## Steps
-
-### Prerequisites
+## Prerequisites
 
 Install Silhouette Studio.
 
-### Create the sheets
+### Printer alignment
+
+If you plan on having card backs or if you are planning on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
+
+Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here]().
+
+### Cutting settings
+
+Silhouette Studio provides a number of cutting settings, including blade pressure, cutting speed, passes, and blade depth.
+
+Before starting the tutorial, determine the cutting settings that works best for you and the materials you want to cut.
+
+Unfortunately, there are no short cuts for this. You will need to do some experimentation on your own.
+
+I recommend creating a simple cutting template with Silhouette Studio. Set the blade pressure, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and have the machine cut. Try different combinations of settings and repeat as necessary.
+
+The following is a table of working settings. Do not use these settings blindly. Test conservatively and work up to the provided values. If you do not, you risk breaking your machine or cutting through mat.
+
+| Machine | Blade     | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
+| ------- | --------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
+| Cameo 5 | Autoblade | 110 lb         | 3 mil      | 33       | 20    | 3      | 7     |
+| Cameo 5 | Autoblade | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
+| Cameo 3 | ???       | 110 lb         | 3 mil      | 33       | 10    | 3      | 15    |
+
+## Steps
+
+### Create the PDF
 
 First, collect all the card front images and put them into a directory. Then, put a back image and put them into another directory.
 
-My friend Jon Lenchner, who designed the game Zero sumZ, has offered to use his game as an example for this tutorial. Zero sumZ is a abstract set collection game and you can find the game assets, including the front images, the back image, and instructions here.
+My friend Jon Lenchner, who designed the game Zero sumZ, has offered to use his game as an example for this tutorial. Zero sumZ is a abstract set collection game and you can find the game assets, including the front images, the back image, and instructions [here]().
 
 Now, we will use the scripts in order to create a single, printable PDF
 
 There are two ways to use the scripts in this tutorial. There is a GUI and there is a CLI.
 
-### Laminate the sheets
+### Print and laminate the sheets
 
 ### Attach the laminated sheet to the cutting mat
 
