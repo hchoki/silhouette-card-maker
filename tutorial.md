@@ -119,7 +119,7 @@ Unfortunately, there are no short cuts for this. You will need to do some experi
 
 I recommend creating a simple cutting template with Silhouette Studio. Set the blade pressure, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and start the cutting job. Try different combinations of settings and repeat as necessary.
 
-The following is a table of working settings. Do not use these settings blindly. Test conservatively and work up to the listed values. If you do not, you risk breaking your machine or cutting through your mat.
+The following is a table of working settings from various testers. Do not use these settings blindly. Test conservatively and work up to the listed values. If not, you risk breaking your machine or cutting through your mat.
 
 | Machine | Blade          | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
 | ------- | -------------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
