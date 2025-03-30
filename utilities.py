@@ -1,4 +1,5 @@
 from enum import Enum
+import itertools
 import json
 import os
 from pathlib import Path
@@ -6,10 +7,6 @@ from typing import List
 
 from natsort import natsorted
 from PIL import Image, ImageChops, ImageDraw, ImageFont
-
-# print_mtg = True
-# mtg_x_offset = 9
-# mtg_y_offset = 12
 
 # Specify directory locations
 asset_directory = 'assets'
@@ -45,13 +42,42 @@ def get_back_path(back_dir_path) -> str | None:
     else:
         raise Exception(f'Back image directory path "{back_dir_path}" contains more than one image')
 
-def image_paste_with_border(image: Image, page: Image, box: tuple[int, int, int, int], thickness: int):
+def draw_card_with_border(card_image: Image, page_image: Image, box: tuple[int, int, int, int], thickness: int):
     origin_x, origin_y, origin_width, origin_height = box
+
+    # Draw the card multiple times with different dimensions to create print bleed
     for i in reversed(range(thickness)):
-        im_resize = image.resize((origin_width + (2 * i), origin_height + (2 * i)))
-        page.paste(im_resize, (origin_x - i, origin_y - i))
+        card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
+        page_image.paste(card_image_resize, (origin_x - i, origin_y - i))
+
+def draw_card_layout(card_images: List[Image.Image], page_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, border_thickness: int, flip: bool):
+    num_cards = num_rows * num_cols
+
+    # Fill all the spaces with the card back
+    for i, card_image in enumerate(card_images):
+
+        # Calculate the location of the new card based on what number the card is
+        new_origin_x = x_pos[i % num_cards % num_cols]
+        new_origin_y = y_pos[(i % num_cards) // num_cols]
+
+        if flip:
+            new_origin_y = y_pos[num_rows - ((i % num_cards) // num_cols) - 1]
+
+            # Rotate the back image to account for orientation
+            card_image = card_image.rotate(180)
+
+        draw_card_with_border(
+            card_image,
+            page_image,
+            (new_origin_x, new_origin_y, width, height),
+            border_thickness
+        )
 
 def get_back_page(back_path: str, blank_im: Image.Image, reg_im: Image.Image, selected_template, enable_front_registration: bool, add_back_page: bool) -> Image.Image:
+    border_thickness = cut_border_thickness
+    if enable_front_registration:
+        border_thickness = selected_template['border_thickness']
+
     # Create a copy of the registration marks to paste the back images onto
     back_page = reg_im.copy()
     if enable_front_registration:
@@ -60,32 +86,22 @@ def get_back_page(back_path: str, blank_im: Image.Image, reg_im: Image.Image, se
     if add_back_page:
         # Load the card back image
         with Image.open(back_path) as back_im:
-            # Resize the back image to the specified dimensions
-            back_im_corr = back_im.resize((selected_template['width'], selected_template['height']))
-
-            # Rotate the back image to account for orientation
-            back_im_corr = back_im_corr.rotate(180)
-
             num_rows = len(selected_template['y_pos'])
             num_cols = len(selected_template['x_pos'])
             num_cards = num_rows * num_cols
 
-            # Fill all the spaces with the card back
-            for i in range(num_cards):
-                # Calculate the location of the new card based on what number the card is
-                new_origin_x = selected_template['x_pos'][i % num_cards % num_cols]
-                new_origin_y = selected_template['y_pos'][(i % num_cards) // num_cols]
-
-                border_thickness = cut_border_thickness
-                if enable_front_registration:
-                    border_thickness = selected_template['border_thickness']
-
-                image_paste_with_border(
-                    back_im_corr,
-                    back_page,
-                    (new_origin_x, new_origin_y, selected_template['width'], selected_template['height']),
-                    border_thickness
-                )
+            draw_card_layout(
+                [back_im] * num_cards,
+                back_page,
+                num_rows,
+                num_cols,
+                selected_template['x_pos'],
+                selected_template['y_pos'],
+                selected_template['width'],
+                selected_template['height'],
+                border_thickness,
+                True
+            )
 
     return back_page
 
@@ -153,65 +169,59 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, pdf_path: str, selecte
     # Load a blank page
     with Image.open(blank_path) as blank_im:
 
-        # Load an image with the registration marks for the Cameo 5
+        # Load an image with the registration marks
         with Image.open(registration_path) as reg_im:
 
             back_page = get_back_page(back_path, blank_im, reg_im, selected_template, enable_front_registration, add_back_page)
 
-            # Create a copy of the blank template to paste the images onto
-            front_page = get_front_page(blank_im, reg_im, enable_front_registration)
-
             # Create the array that will store the filled templates
             pages = []
+
+            border_thickness = selected_template['border_thickness']
+            if enable_front_registration:
+                border_thickness = cut_border_thickness
 
             # Create the front pages using the images in game/front directory
             for path, subdirs, files in os.walk(front_dir_path):
 
+                # Remove the .md file
+                files = [file for file in files if not file.endswith(".md")]
+
                 # Sort with natural sort so it's easier to understand the whole PDF
                 files[:] = natsorted(files)
 
-                # Iterate through all the files in the game/front directory
-                n = 0
-                for name in files:
-                    if name.endswith(".md"):
-                        continue
+                # Batch the files based on num_cards
+                it = iter(files)
+                while True:
+                    file_group = list(itertools.islice(it, num_cards))
+                    if not file_group:
+                        break
 
-                    print(f"image {n + 1}: {name}")
+                    # Fetch card art
+                    card_images = []
+                    for file in file_group:
+                        print(f'image: {file}')
 
-                    # If the template is full, add to pages and restart
-                    if n and not (n % num_cards):
+                        image_path = os.path.join(path, file)
+                        card_images.append(Image.open(image_path))
 
-                        add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
+                    # Create a copy of the blank template to paste the images onto
+                    front_page = get_front_page(blank_im, reg_im, enable_front_registration)
 
-                        # Create a blank copy for the next page
-                        front_page = get_front_page(blank_im, reg_im, enable_front_registration)
+                    draw_card_layout(
+                        card_images,
+                        front_page,
+                        num_rows,
+                        num_cols,
+                        selected_template['x_pos'],
+                        selected_template['y_pos'],
+                        selected_template['width'],
+                        selected_template['height'],
+                        border_thickness,
+                        False
+                    )
 
-                    # Load the image to process it
-                    front_path = os.path.join(path, name)
-                    with Image.open(front_path) as front_im:
-
-                        # Resize the front images to the specified dimension
-                        front_im_corr = front_im.resize((selected_template['width'], selected_template['height']))
-
-                        # Calculate the location of the new card based on what number the card is
-                        new_origin_x = selected_template['x_pos'][n % num_cards % num_cols]
-                        new_origin_y = selected_template['y_pos'][(n % num_cards) // num_cols]
-
-                        border_thickness = selected_template['border_thickness']
-                        if enable_front_registration:
-                            border_thickness = cut_border_thickness
-
-                        image_paste_with_border(
-                            front_im_corr,
-                            front_page,
-                            (new_origin_x, new_origin_y, selected_template['width'], selected_template['height']),
-                            border_thickness
-                        )
-
-                    n += 1
-
-            # Export the final front page template (filled or not) with a back page
-            add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
+                    add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
 
             # Save the pages array as a PDF
             pages[0].save(pdf_path, format = 'PDF', save_all = True, append_images = pages[1:])
@@ -223,10 +233,7 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> Li
     add_offset = False
     for image in images:
         if add_offset:
-            # if print_mtg:
-            #     offset_images.append(ImageChops.offset(pil_image, x_offset + mtg_x_offset, y_offset + mtg_y_offset))
-            # else:
-                offset_images.append(ImageChops.offset(image, x_offset, y_offset))
+            offset_images.append(ImageChops.offset(image, x_offset, y_offset))
         else:
             offset_images.append(image)
 
