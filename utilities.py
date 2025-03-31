@@ -29,7 +29,7 @@ class TemplateType(Enum):
     POKER = "poker"
     POKER_HALF = "poker_half"
 
-def get_back_path(back_dir_path) -> str | None:
+def get_back_image_path(back_dir_path) -> str | None:
     # List all files in the directory that do not end with .md
     # The directory should contain EMPTY.md
     files = [f for f in os.listdir(back_dir_path) if (os.path.isfile(os.path.join(back_dir_path, f)) and not f.endswith(".md"))]
@@ -129,22 +129,34 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if add_back_page:
         pages.append(back_page)
 
-# def generate_pdf(front_dir_path: str, back_path: str, pdf_path: str, selected_template_type: TemplateType, enable_front_registration: bool = False):
-def generate_pdf(front_dir_path: str, back_dir_path: str, pdf_path: str, selected_template_type: TemplateType, enable_front_registration: bool = False):
+def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path: str, pdf_path: str, selected_template_type: TemplateType, enable_front_registration: bool = False):
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
-        raise Exception(f'Front image directory path "{f_path}" is invalid')
+        raise Exception(f'front image directory path "{f_path}" is invalid')
 
     b_path = Path(back_dir_path)
     if not b_path.exists() or not b_path.is_dir():
         raise Exception(f'back image directory path "{b_path}" is invalid')
 
+    d_path = Path(double_sided_dir_path)
+    if not d_path.exists() or not d_path.is_dir():
+        raise Exception(f'double-sided image directory path "{d_path}" is invalid')
+
+    front_image_filenames = [f for f in os.listdir(front_dir_path) if os.path.isfile(os.path.join(front_dir_path, f)) and not f.endswith(".md")]
+    ds_image_filenames = [f for f in os.listdir(double_sided_dir_path) if os.path.isfile(os.path.join(double_sided_dir_path, f)) and not f.endswith(".md")]
+
+    # Check if double-sided back images has matching front images
+    front_set = set(front_image_filenames)
+    ds_set = set(ds_image_filenames)
+    if not ds_set.issubset(front_set):
+        raise Exception(f'double-sided back images "{ds_set - front_set}" do not have matching front images.')
+
     # Get the back image, if it exists
-    back_path = get_back_path(back_dir_path)
+    back_image_path = get_back_image_path(back_dir_path)
 
     # If there's no back image, then do not add back pages to the PDF
     add_back_page = True
-    if back_path is None:
+    if back_image_path is None:
         add_back_page = False
 
         # If there are no back pages, then by default, use front registration
@@ -172,56 +184,115 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, pdf_path: str, selecte
         # Load an image with the registration marks
         with Image.open(registration_path) as reg_im:
 
-            back_page = get_back_page(back_path, blank_im, reg_im, selected_template, enable_front_registration, add_back_page)
+            back_page = get_back_page(back_image_path, blank_im, reg_im, selected_template, enable_front_registration, add_back_page)
 
             # Create the array that will store the filled templates
             pages = []
 
-            border_thickness = selected_template['border_thickness']
+            front_border_thickness = selected_template['border_thickness']
+            back_border_thickness = cut_border_thickness
             if enable_front_registration:
-                border_thickness = cut_border_thickness
+                front_border_thickness = cut_border_thickness
+                back_border_thickness = selected_template['border_thickness']
 
-            # Create the front pages using the images in game/front directory
-            for path, subdirs, files in os.walk(front_dir_path):
+            # # Create the front pages using the images in game/front directory
+            # for path, subdirs, files in os.walk(front_dir_path):
 
-                # Remove the .md file
-                files = [file for file in files if not file.endswith(".md")]
+            #     # Remove the .md file
+            #     files = [file for file in files if not file.endswith(".md")]
 
-                # Sort with natural sort so it's easier to understand the whole PDF
-                files[:] = natsorted(files)
+            #     # Sort with natural sort so it's easier to understand the whole PDF
+            #     files[:] = natsorted(files)
 
-                # Batch the files based on num_cards
-                it = iter(files)
-                while True:
-                    file_group = list(itertools.islice(it, num_cards))
-                    if not file_group:
-                        break
 
-                    # Fetch card art
-                    card_images = []
-                    for file in file_group:
-                        print(f'image: {file}')
+            # Create single-sided card layout
+            num_image = 1
+            it = iter(natsorted(list(front_set - ds_set)))
+            while True:
+                file_group = list(itertools.islice(it, num_cards))
+                if not file_group:
+                    break
 
-                        image_path = os.path.join(path, file)
-                        card_images.append(Image.open(image_path))
+                # Fetch card art
+                front_images = []
+                for file in file_group:
+                    print(f'image {num_image}: {file}')
+                    num_image = num_image + 1
 
-                    # Create a copy of the blank template to paste the images onto
-                    front_page = get_front_page(blank_im, reg_im, enable_front_registration)
+                    image_path = os.path.join(front_dir_path, file)
+                    front_images.append(Image.open(image_path))
 
-                    draw_card_layout(
-                        card_images,
-                        front_page,
-                        num_rows,
-                        num_cols,
-                        selected_template['x_pos'],
-                        selected_template['y_pos'],
-                        selected_template['width'],
-                        selected_template['height'],
-                        border_thickness,
-                        False
-                    )
+                # Create a copy of the blank template to paste the images onto
+                front_page = get_front_page(blank_im, reg_im, enable_front_registration)
 
-                    add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
+                draw_card_layout(
+                    front_images,
+                    front_page,
+                    num_rows,
+                    num_cols,
+                    selected_template['x_pos'],
+                    selected_template['y_pos'],
+                    selected_template['width'],
+                    selected_template['height'],
+                    front_border_thickness,
+                    False
+                )
+
+                add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
+
+            # Create double-sided card layout
+            it = iter(natsorted(list(ds_set)))
+            while True:
+                file_group = list(itertools.islice(it, num_cards))
+                if not file_group:
+                    break
+
+                # Fetch card art
+                front_images = []
+                back_images = []
+                for file in file_group:
+                    print(f'image {num_image} (double-sided): {file}')
+                    num_image = num_image + 1
+
+                    image_path = os.path.join(front_dir_path, file)
+                    front_images.append(Image.open(image_path))
+
+                    image_path = os.path.join(double_sided_dir_path, file)
+                    back_images.append(Image.open(image_path))
+
+                front_page = blank_im.copy()
+                back_page = reg_im.copy()
+                if enable_front_registration:
+                    front_page = reg_im.copy()
+                    back_page = blank_im.copy()
+
+                draw_card_layout(
+                    front_images,
+                    front_page,
+                    num_rows,
+                    num_cols,
+                    selected_template['x_pos'],
+                    selected_template['y_pos'],
+                    selected_template['width'],
+                    selected_template['height'],
+                    front_border_thickness,
+                    False
+                )
+
+                draw_card_layout(
+                    back_images,
+                    back_page,
+                    num_rows,
+                    num_cols,
+                    selected_template['x_pos'],
+                    selected_template['y_pos'],
+                    selected_template['width'],
+                    selected_template['height'],
+                    back_border_thickness,
+                    True
+                )
+
+                add_front_back_pages(front_page, back_page, pages, selected_template, add_back_page)
 
             # Save the pages array as a PDF
             pages[0].save(pdf_path, format = 'PDF', save_all = True, append_images = pages[1:])

@@ -7,5 +7,7 @@ game/back/*
 !game/back/EMPTY.md
 game/front/*
 !game/front/EMPTY.md
+game/double_sided/*
+!game/double_sided/EMPTY.md
 game/output/*
 !game/output/EMPTY.md

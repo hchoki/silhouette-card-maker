@@ -144,6 +144,8 @@ There are two ways to use the scripts in this tutorial. There is a GUI and there
 
 Print out the PDF and laminate the sheets.
 
+Because cardstock is thicker than normal printer paper, you may need to set your laminator at a higher setting in order to get good lamination. If not, you may have cloudy lamination and delamination issues.
+
 ### Cut the sheet
 
 As mentioned previously, there are a number of different cutting templates. Open the appropriate one in Silhouette Studio and configure the cutting settings.
