@@ -73,41 +73,56 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
             border_thickness
         )
 
-def get_base_images(blank_im: Image.Image, reg_im: Image.Image, enable_front_registration: bool) -> Tuple[Image.Image, Image.Image]:
-    if enable_front_registration:
+def get_base_images(blank_im: Image.Image, reg_im: Image.Image, front_registration: bool) -> Tuple[Image.Image, Image.Image]:
+    if front_registration:
         return (reg_im.copy(), blank_im.copy())
     else:
         return (blank_im.copy(), reg_im.copy())
 
-def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], selected_template, add_back_page: bool):
+def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], selected_template, only_fronts: bool):
     # Add template version number to the back
     draw = ImageDraw.Draw(front_page)
     font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40)
 
     # "Raw" specified location
     num_sheet = len(pages) + 1
-    if add_back_page:
+    if only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
     draw.text((print_width - 800, print_height - 80), f'sheet: {num_sheet}, template: {selected_template["template"]}', fill = (0, 0, 0), font = font)
 
     # Add a back page for every front page template
     pages.append(front_page)
-    if add_back_page:
+    if not only_fronts:
         pages.append(back_page)
 
-def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path: str, pdf_path: str, selected_template_type: TemplateType, enable_front_registration: bool = False):
+def generate_pdf(
+    front_dir_path: str,
+    back_dir_path: str,
+    double_sided_dir_path: str,
+    pdf_path: str,
+    selected_template_type: TemplateType,
+    front_registration: bool = False,
+    only_fronts: bool = False,
+):
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
-        raise Exception(f'front image directory path "{f_path}" is invalid')
+        raise Exception(f'Front image directory path "{f_path}" is invalid.')
 
     b_path = Path(back_dir_path)
     if not b_path.exists() or not b_path.is_dir():
-        raise Exception(f'back image directory path "{b_path}" is invalid')
+        raise Exception(f'Back image directory path "{b_path}" is invalid.')
 
     d_path = Path(double_sided_dir_path)
     if not d_path.exists() or not d_path.is_dir():
-        raise Exception(f'double-sided image directory path "{d_path}" is invalid')
+        raise Exception(f'Double-sided image directory path "{d_path}" is invalid.')
+    
+    # Get the back image, if it exists
+    use_default_back_page = False
+    back_card_image_path = get_back_card_image_path(back_dir_path)
+    if back_card_image_path is None:
+        use_default_back_page = True
+        print(f'No back image provided in back image directory "{back_dir_path}". Using default instead.')
 
     front_image_filenames = [f for f in os.listdir(front_dir_path) if os.path.isfile(os.path.join(front_dir_path, f)) and not f.endswith(".md")]
     ds_image_filenames = [f for f in os.listdir(double_sided_dir_path) if os.path.isfile(os.path.join(double_sided_dir_path, f)) and not f.endswith(".md")]
@@ -116,18 +131,13 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
     front_set = set(front_image_filenames)
     ds_set = set(ds_image_filenames)
     if not ds_set.issubset(front_set):
-        raise Exception(f'double-sided back images "{ds_set - front_set}" do not have matching front images.')
+        raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image direcoty "{front_dir_path}".')
 
-    # Get the back image, if it exists
-    back_card_image_path = get_back_card_image_path(back_dir_path)
+    if only_fronts:
+        front_registration = True
 
-    # If there's no back image, then do not add back pages to the PDF
-    add_back_page = True
-    if back_card_image_path is None:
-        add_back_page = False
-
-        # If there are no back pages, then by default, use front registration
-        enable_front_registration = True
+        if len(ds_set) > 0:
+            raise Exception(f'Cannot use "--only_fronts" with double-sided cards. Remove cards from double-side image directory "{double_sided_dir_path}".')
 
     # Load the JSON with all the card sizing information
     json_filename = 'card_size_config.json'
@@ -156,13 +166,13 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
 
             front_border_thickness = selected_template['border_thickness']
             back_border_thickness = cut_border_thickness
-            if enable_front_registration:
+            if front_registration:
                 front_border_thickness = cut_border_thickness
                 back_border_thickness = selected_template['border_thickness']
 
             # Create reusable back page for single-sided cards
-            _, single_sided_back_page = get_base_images(blank_im, reg_im, enable_front_registration)
-            if add_back_page:
+            _, single_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
+            if not use_default_back_page:
 
                 # Load the card back image
                 with Image.open(back_card_image_path) as back_im:
@@ -201,7 +211,7 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
                     image_path = os.path.join(front_dir_path, file)
                     front_card_images.append(Image.open(image_path))
 
-                single_sided_front_page, _ = get_base_images(blank_im, reg_im, enable_front_registration)
+                single_sided_front_page, _ = get_base_images(blank_im, reg_im, front_registration)
 
                 # Create front layout for single-sided cards
                 draw_card_layout(
@@ -217,7 +227,7 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
                     False
                 )
 
-                add_front_back_pages(single_sided_front_page, single_sided_back_page, pages, selected_template, add_back_page)
+                add_front_back_pages(single_sided_front_page, single_sided_back_page, pages, selected_template, only_fronts)
 
             # Create double-sided card layout
             it = iter(natsorted(list(ds_set)))
@@ -239,7 +249,7 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
                     image_path = os.path.join(double_sided_dir_path, file)
                     back_card_images.append(Image.open(image_path))
 
-                double_sided_front_page, double_sided_back_page = get_base_images(blank_im, reg_im, enable_front_registration)
+                double_sided_front_page, double_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
 
                 # Create front layout for double-sided cards
                 draw_card_layout(
@@ -270,7 +280,7 @@ def generate_pdf(front_dir_path: str, back_dir_path: str, double_sided_dir_path:
                 )
 
                 # Add the front and back layouts
-                add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, selected_template, True)
+                add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, selected_template, False)
 
             # Save the pages array as a PDF
             pages[0].save(pdf_path, format = 'PDF', save_all = True, append_images = pages[1:])

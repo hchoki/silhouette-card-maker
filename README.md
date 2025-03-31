@@ -32,22 +32,31 @@ python create_pdf.py
 
 Get your PDF at `game/output/game.pdf`.
 
-***
+### Double-sided cards
+
+To create double sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
+
+### CLI options
 
 ```
 Usage: create_pdf.py [OPTIONS]
 
 Options:
   --front_dir_path TEXT           The path to the directory containing the
-                                  card front images.  [default: game/front]
+                                  card fronts.  [default: game/front]
   --back_dir_path TEXT            The path to the directory containing one or
-                                  no back image.  [default: game/back]
-  --pdf_path TEXT                 The desired path to the output PDF.
+                                  no card backs.  [default: game/back]
+  --double_sided_dir_path TEXT    The path to the directory containing card
+                                  backs for double-sided cards.  [default:
+                                  game/double_sided]
+  --output_pdf_path TEXT          The desired path to the output PDF.
                                   [default: game/output/game.pdf]
   --template_type [standard|bridge|poker|poker_half]
                                   The desired card size.  [default: standard]
   --front_registration            Enable the front pages to have Print & Play
                                   (registration marks).
+  --only_fronts                   Only use the card fronts, exclude the card
+                                  backs.
   --help                          Show this message and exit.
 ```
 
@@ -79,7 +88,7 @@ The back page is the same grid of squares, except each square has a slight offse
 | (-2,  2) | (-1,  2) | ( 0,  2) | ( 1,  2) | ( 2,  2) |
 ```
 
-To figure out the required offset, print out `calibration.pdf` with the card stock you plan to use. 
+To figure out the required offset, print out `calibration.pdf` with the card stock you plan to use.
 
 Shine a strong light on the front so you can see the shadows on the back. Determine the square such that the front square and the back square are aligned with each other. This square will provide your offset. Now, you can use `offset_pdf.py` to apply the appropriate offset to your PDF.
 
@@ -92,7 +101,7 @@ python offset_pdf.py game.pdf --x_offset -5 --y_offset 10
 
 Get your offset PDF at `game/output/game_offset.pdf`.
 
-***
+### CLI options
 
 ```
 Usage: offset_pdf.py [OPTIONS] PDF_PATH
