@@ -138,27 +138,27 @@ My friend Jon Lenchner, who designed the game Zero sumZ, has offered to use his 
 
 Now, we will use the scripts in order to create a single, printable PDF
 
-There are two ways to use the scripts in this tutorial. There is a GUI and there is a CLI.
-
 ### Prepare the sheets
 
 Print out the PDF and laminate the sheets.
 
 Because cardstock is thicker than normal printer paper, you may need to set your laminator at a higher setting in order to get good lamination. If not, you may have cloudy lamination and delamination issues.
 
-### Cut the sheet
+### Cut the sheets
 
 As mentioned previously, there are a number of different cutting templates. Open the appropriate one in Silhouette Studio and configure the cutting settings.
 
-Put the laminated sheets on the cutting mat, insert the mat into the machine, and start the cutting job.
+Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
-The machine should begin the Print & Cut process, scanning the registration marks, and then begin cutting out the cards.
+Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
+
+Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
 ### Finish the cards
 
-Eject the cutting mat and pull off the cards and excess.
+Click the media eject button on the machine to remove the mat. Pull off the cards and excess.
 
-Because the cutting process occasionally delaminates the cards, put the cards through the laminator a second time.
+Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
 
 Now you're ready to play with your cards!
 
