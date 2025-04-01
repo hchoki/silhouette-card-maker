@@ -1,10 +1,10 @@
 # Custom Cards with a Cutting Machine
 
-Making your own custom cards is fun and rewarding!
+Making your own custom card games is fun and rewarding!
 
-You can give cards to your friends and family. You can replace lost or damaged cards. You can play with your favorite artwork and designs.
+You can play with your favorite artwork and designs. You can give cards to your friends and family. You can replace lost or damaged cards. 
 
-In this tutorial, I'll show you how to make custom cards with a cutting machine.
+In this tutorial, I'll show you how to make custom games with a cutting machine.
 
 Why use a cutting machine though?
 
@@ -85,7 +85,7 @@ You'll definitely want to pick up extra cutting mats however. Cutting mats are s
 
 ## Primer on Cutting Machines
 
-Not everyone knows how a cutting machine works, but it's also the core of the process. It's important to give some background on how a cutting machine works so you'll be better prepared to operate one.
+The cutting machine is core to this process so it's important to give some background on how they work so you'll be better prepared to operate one.
 
 ### Silhouette Cameo 5
 
@@ -103,9 +103,9 @@ As mentioned before, an important aspect of this process is Print & Cut. You nee
 
 ### Printer alignment
 
-If you plan on having card backs or if you are planning on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
+If you plan on having card backs and/or if you plan on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
 
-Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here]().
+Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here](README.md#offset_pdfpy).
 
 ### Cutting settings
 
