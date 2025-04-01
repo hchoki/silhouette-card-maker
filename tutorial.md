@@ -101,8 +101,6 @@ As mentioned before, an important aspect of this process is Print & Cut. You nee
 
 ## Prerequisites
 
-Install Silhouette Studio.
-
 ### Printer alignment
 
 If you plan on having card backs or if you are planning on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
@@ -128,7 +126,7 @@ The following is a table of working settings from various testers. Do not use th
 | Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
 | Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil      | 33       | 5     | 5      | 19    |
 
-## Steps
+## Instructions
 
 ### Set up environment
 
@@ -223,6 +221,12 @@ Not all printers can handle card stock, and even if it can handle card stock, it
 
 Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Play.
 
+### Can I make double-sided cards?
+
+Yes. The `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here](README.md#double-sided-cards).
+
+Long story short, put the fronts in `game/front` and the backs in `game/double_sided`. The names of the files must match for each pair. Then, simply run `create_pdf.py` as usual.
+
 ### My cards are delaminating. What should I do?
 
 Are you using a laser printer? The laser toner sticks to the lamination, which prevents the lamination from sticking to the paper. Laser printing can work with this process, but you'll have to be gentler with the cards while cutting and while playing.
@@ -244,5 +248,11 @@ If none of the previous tips worked, the issue may be your choice of paper, lami
 ### My machine isn't cutting in the right place! What should I do?
 
 Make sure you're using the right cutting template. Each sheet should be labeled with the cutting template it's associated with, for example "letter_bridge_v1".
+
+### My cards are offset. What should I do?
+
+If either the fronts or the backs are offset, then there's most likely an issue with your printer alignment. Refer to your printer's instruction manual and try to recalibrate it. If there's no way to change the printer's settings, try using [offset.py](README.md#offset_pdfpy) to compensate for the offset.
+
+If both the fronts and backs are offset, then there may be an issue with registraion. Ensure that you are printing with the right scale and cutting with the right cutting template, and ensure that there's nothing that can interfere with the registration process.
 
 ## Special thanks

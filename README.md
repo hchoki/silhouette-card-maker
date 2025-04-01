@@ -1,5 +1,18 @@
 # silhouette-card-maker-testing
 
+Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine?
+
+You can do it all with the press of a button and a cutting machine! And you can find everything you need to get started here!
+
+If this is your first time here, please read the [tutorial](tutorial.md) to learn more about this process.
+
+## Contents
+
+* [tutorial.md](tutorial.md), an in-depth tutorial that documents the methodology
+* [create_pdf.py](#create_pdfpy), a script for laying out your cards in a printable PDF
+* [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
+* [cutting_templates/](cutting_templates/), a directory containing all the cutting templates
+* [examples/](examples/), a directory containing sample games and their assets
 
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in `cutting_templates/`.
@@ -62,7 +75,7 @@ Options:
 
 ## offset_pdf.py
 
-It's pivatol to ensure that your the fronts and backs are aligned. However, it's not always possible to calibrate a printer.
+It's pivotal to ensure that your the fronts and backs are aligned. However, it's not always possible to calibrate a printer.
 
 `offset_pdf.py` is a CLI tool that adds an offset to every other page in a PDF, i.e. all the back pages. This offset can compensate for the natural offset from your printer.
 
