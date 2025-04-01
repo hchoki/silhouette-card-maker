@@ -62,7 +62,7 @@ Options:
 
 ## offset_pdf.py
 
-To create double sided cards, it's pivotal to have good front and back printing alignment. However, it's not always possible to calibrate a printer.
+It's pivatol to ensure that your the fronts and backs are aligned. However, it's not always possible to calibrate a printer.
 
 `offset_pdf.py` is a CLI tool that adds an offset to every other page in a PDF, i.e. all the back pages. This offset can compensate for the natural offset from your printer.
 

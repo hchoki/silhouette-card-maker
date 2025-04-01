@@ -130,13 +130,48 @@ The following is a table of working settings from various testers. Do not use th
 
 ## Steps
 
+### Set up environment
+
+[Install Silhouette Studio](https://www.silhouetteamerica.com/silhouette-studio).
+
+[Install Python](https://www.python.org/downloads/).
+
+[Install Git](https://github.com/git-guides/install-git).
+
+Clone this repo.
+
+```shell
+git clone git@github.com:Alan-Cha/silhouette-card-maker-testing.git
+```
+
+Create a Python virtual environment.
+```shell
+python -m venv venv
+```
+
+Activate the Python virtual environment.
+```shell
+. venv/bin/activate
+```
+
+Download Python packages.
+```shell
+pip install -r requirements.txt
+```
+
 ### Create the PDF
 
-First, collect all the card front images and put them into a directory. Then, put a back image and put them into another directory.
+First, collect all the card front images and put them into `game/front`. Then, put a card back image into `game/back`.
 
-My friend Jon Lenchner, who designed the game Zero sumZ, has offered to use his game as an example for this tutorial. Zero sumZ is a abstract set collection game and you can find the game assets, including the front images, the back image, and instructions [here]().
+My friend Jon Lenchner, who designed the game Zero sumZ, has offered his game as an example for this tutorial. Zero sumZ is a abstract set collection game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/).
 
-Now, we will use the scripts in order to create a single, printable PDF
+Generate the PDF with the following:
+
+```shell
+python create_pdf.py
+```
+
+You can find the PDF in `game/output/game.pdf`.
 
 ### Prepare the sheets
 
