@@ -142,6 +142,11 @@ Clone this repo.
 git clone git@github.com:Alan-Cha/silhouette-card-maker-testing.git
 ```
 
+Open the repo.
+```shell
+cd silhouette-card-maker-testing
+```
+
 Create a Python virtual environment.
 ```shell
 python -m venv venv
