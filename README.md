@@ -104,11 +104,12 @@ Get your offset PDF at `game/output/game_offset.pdf`.
 ### CLI options
 
 ```
-Usage: offset_pdf.py [OPTIONS] PDF_PATH
+Usage: offset_pdf.py [OPTIONS]
 
 Options:
-  --output_pdf_path TEXT  The desired path of the output PDF.
-  --x_offset INTEGER      The desired offset in the x-axis.  [default: 0]
-  --y_offset INTEGER      The desired offset in the y-axis.  [default: 0]
+  --pdf_path TEXT         The path of the input PDF.
+  --output_pdf_path TEXT  The desired path of the offset PDF.
+  -x, --x_offset INTEGER  The desired offset in the x-axis.
+  -y, --y_offset INTEGER  The desired offset in the y-axis.
   --help                  Show this message and exit.
 ```
