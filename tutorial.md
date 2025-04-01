@@ -35,7 +35,7 @@ Let's run the numbers.
 Each sheet produces 8 cards and each sheet is composed of:
 * a sheet of card stock, $10 for 150 sheets
 * a lamination pouch, $20 for 200 pouches
-* printer ink, $1 double sided color printing
+* printer ink, $1 double-sided color printing
 
 ($10/150 sheets + $20/200 pouches) / 8 cards = $0.02 per card without printing
 
@@ -75,7 +75,7 @@ The card stock I use is 110 lb but some home printers cannot handle it. For that
 Optional
 * Hobby knife
 * Extra cutter blades (AutoBlade)
-* Extra cutter mats 
+* Extra cutter mats
 
 You might want a hobby knife because sometimes, you'll the cutting machine will leave you a straggler card where it's not completely detached. You can use the hobby knife to finish the cut.
 
@@ -178,10 +178,36 @@ If I had to say anything, I would say this combination is only marginally thicke
 
 ### Do you have printer recommendations?
 
-No, but I can give you give you some ideas on what you should look for. 
+No, but I can give you give you some ideas on what you should look for.
 
-You should first determine what kind of custom cards you'd like to make. Do you want to make double sided laminated cardstock cards like mine? Perhaps single sided is suitable for your situation? Perhaps you'd like to cut out regular printer paper or sticker paper and use an alternative way of making custom cards.
+First, I do not recommend getting a laser printer. The laser toner affects the lamination, causing it to easily delaminate. It can work, but you may have issues with delamination during cutting and while removing cards from the cutting mat.
 
-Not all printers can handle card stock, and even if it can handle card stock, it may not be able to handle thicker card stock like 110 lb. Additionally, if you plan on making double sided cards, getting a printer that can do double sided printing would be ideal. If you have a single sided printer, you can feed the printed pages back into printer to achieve double sided printing, but you could have issues with alignment.
+Secondly, determine what kind of custom cards you'd like to make. Do you want to make double-sided laminated cardstock cards like mine? Perhaps single sided is suitable for your situation? Perhaps you'd like to cut out regular printer paper or sticker paper and use an alternative way of making custom cards.
+
+Not all printers can handle card stock, and even if it can handle card stock, it may not be able to handle thicker card stock like 110 lb. Additionally, if you plan on making double-sided cards, getting a printer that can do duplex printing would be ideal. If you have a simplex printer, you can feed the printed pages back into printer to achieve double-sided printing, but you could have issues with alignment.
+
+Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Play.
+
+### My cards are delaminating. What should I do?
+
+Are you using a laser printer? The laser toner sticks to the lamination, which prevents the lamination from sticking to the paper. Laser printing can work with this process, but you'll have to be gentler with the cards while cutting and while playing.
+
+Try laminating a second time or laminating at a higher setting before cutting. Because card stock is thicker than printer paper, you need to use more heat to get proper lamination. Additionally, this will help to clear up any cloudiness in your lamination, making your cards look better in the end.
+
+### The registration is failing! What should I do?
+
+Ensure that there is nothing blocking the registration sensor.
+
+Ensure that the sheets are generated with the right template and printed with 100% scale.
+
+Ensure the sheet is placed correctly on the mat and the mat is placed correctly in the machine. Otherwise, the machine can struggle to scan the registration marks. The top left corner of the paper, not the lamination, should align with the top left corner of the grid on the mat. The left edge of the mat should align with the notch on the machine.
+
+The registration process is the following: first the scan the black square in the top left, then the L in the bottom left, and finally the L in the top right. In my own experience, the registration can occasionally fail as the machine is scanning the bottom left L. This occurs when the machine accidentally scans the bottom left card as it's searching for the bottom left L. If you have this issue, a workaround is to cover the bottom left card with a Post-It note during registration and removing it before cutting.
+
+If none of the previous tips worked, the issue may be your choice of paper, lamination, and printing. If you are using a low quality printer and the registration marks are not dark enough, the registration can fail.
+
+### My machine isn't cutting in the right place! What should I do?
+
+Make sure you're using the right cutting template. Each sheet should be labeled with the cutting template it's associated with, for example "letter_bridge_v1".
 
 ## Special thanks
