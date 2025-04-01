@@ -67,4 +67,4 @@ with Image.open(registration_path) as reg_im:
 
     card_list = [front_image, back_image]
     pdf_path = os.path.join(asset_directory, "calibration.pdf")
-    card_list[0].save(pdf_path, save_all=True, append_images=card_list[1:])
+    card_list[0].save(pdf_path, save_all=True, append_images=card_list[1:], resolution=300)

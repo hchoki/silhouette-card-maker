@@ -283,7 +283,7 @@ def generate_pdf(
                 add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, selected_template, False)
 
             # Save the pages array as a PDF
-            pages[0].save(pdf_path, format = 'PDF', save_all = True, append_images = pages[1:])
+            pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
             print(f'generated PDF: {pdf_path}')
 
 def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> List[Image.Image]:
