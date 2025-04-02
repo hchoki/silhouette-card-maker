@@ -1,8 +1,8 @@
-# silhouette-card-maker-testing
+# Custom Card Games with the Cameo Cutting Machine
 
 Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine?
 
-You can do it all with the press of a button and a cutting machine! And you can find everything you need to get started here!
+You can do it all with the press of a button and a cutting machine! And I can show you how!
 
 If this is your first time here, please read the [tutorial](tutorial.md) to learn more about this process.
 
@@ -13,6 +13,24 @@ If this is your first time here, please read the [tutorial](tutorial.md) to lear
 * [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
 * [cutting_templates/](cutting_templates/), a directory containing all the cutting templates
 * [examples/](examples/), a directory containing sample games and their assets
+
+## Cutting Templates
+
+This project supports the following card and paper sizes, with more in the future:
+
+| Paper size | `standard` | `poker` | `poker_half` | `bridge` |
+| ---------- | ---------- | ------- | ------------ | -------- |
+| Letter     | ✅        | ✅      | ✅          | ✅       | 
+| A4         | ✅        | ✅      | ✅          | ✅       |
+
+Card size measurements:
+
+| Card size    | Inches       | Millimeters      | 
+| ------------ | ------------ | ---------------- |
+| `standard`   | 2.48 x 3.454 | 62.99 x 87.73    |
+| `poker`      | 2.5 x 3.5    | 63.5 x 88.9      |
+| `poker_half` | 1.75 x 2.45  | 44.45 x 62.23    |
+| `bridge`     | 2.25 x 3.5   | 57.15 x 88.9     |
 
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in `cutting_templates/`.
