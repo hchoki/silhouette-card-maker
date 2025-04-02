@@ -56,15 +56,15 @@ def get_back_card_image_path(back_dir_path) -> str | None:
     else:
         raise Exception(f'Back image directory path "{back_dir_path}" contains more than one image. Files include "{files}".')
 
-def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, int, int, int], thickness: int):
+def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: int):
     origin_x, origin_y, origin_width, origin_height = box
 
     # Draw the card multiple times with different dimensions to create print bleed
-    for i in reversed(range(thickness)):
+    for i in reversed(range(print_bleed)):
         card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, border_thickness: int, flip: bool):
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
@@ -84,7 +84,7 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
             card_image,
             base_image,
             (new_origin_x, new_origin_y, width, height),
-            border_thickness
+            print_bleed
         )
 
 def get_base_images(blank_im: Image.Image, reg_im: Image.Image, front_registration: bool) -> Tuple[Image.Image, Image.Image]:
@@ -193,7 +193,7 @@ def generate_pdf(
                 # Create the array that will store the filled templates
                 pages = []
 
-                max_border_thickness = calculate_max_border_thickness(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
+                max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
 
                 # Create reusable back page for single-sided cards
                 _, single_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
@@ -210,7 +210,7 @@ def generate_pdf(
                             card_layout.y_pos,
                             card_layout.width,
                             card_layout.height,
-                            max_border_thickness,
+                            max_print_bleed,
                             flip=True
                         )
 
@@ -243,7 +243,7 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        max_border_thickness,
+                        max_print_bleed,
                         flip=False
                     )
 
@@ -281,7 +281,7 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        max_border_thickness,
+                        max_print_bleed,
                         flip=False
                     )
 
@@ -295,7 +295,7 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        max_border_thickness,
+                        max_print_bleed,
                         flip=True
                     )
 
@@ -320,7 +320,7 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> Li
 
     return offset_images
 
-def calculate_max_border_thickness(x_pos: List[int], y_pos: List[int], width: int, height: int) -> int:
+def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int) -> int:
     if len(x_pos) == 1 & len(y_pos) == 1:
         return 0
 
