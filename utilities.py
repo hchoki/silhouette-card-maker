@@ -198,11 +198,6 @@ def generate_pdf(
                 pages = []
 
                 max_border_thickness = calculate_max_border_thickness(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
-                front_border_thickness = max_border_thickness
-                back_border_thickness = min_border_thickness
-                if front_registration:
-                    front_border_thickness = min_border_thickness
-                    back_border_thickness = max_border_thickness
 
                 # Create reusable back page for single-sided cards
                 _, single_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
@@ -219,8 +214,8 @@ def generate_pdf(
                             card_layout.y_pos,
                             card_layout.width,
                             card_layout.height,
-                            back_border_thickness,
-                            True
+                            max_border_thickness,
+                            flip=True
                         )
 
                 # Create single-sided card layout
@@ -237,8 +232,8 @@ def generate_pdf(
                         print(f'image {num_image}: {file}')
                         num_image = num_image + 1
 
-                        image_path = os.path.join(front_dir_path, file)
-                        front_card_images.append(Image.open(image_path))
+                        front_image_path = os.path.join(front_dir_path, file)
+                        front_card_images.append(Image.open(front_image_path))
 
                     single_sided_front_page, _ = get_base_images(blank_im, reg_im, front_registration)
 
@@ -252,8 +247,8 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        front_border_thickness,
-                        False
+                        max_border_thickness,
+                        flip=False
                     )
 
                     add_front_back_pages(single_sided_front_page, single_sided_back_page, pages, paper_layout.width, paper_layout.height, card_layout.template, only_fronts)
@@ -272,11 +267,11 @@ def generate_pdf(
                         print(f'image {num_image} (double-sided): {file}')
                         num_image = num_image + 1
 
-                        image_path = os.path.join(front_dir_path, file)
-                        front_card_images.append(Image.open(image_path))
+                        front_image_path = os.path.join(front_dir_path, file)
+                        front_card_images.append(Image.open(front_image_path))
 
-                        image_path = os.path.join(double_sided_dir_path, file)
-                        back_card_images.append(Image.open(image_path))
+                        back_image_path = os.path.join(double_sided_dir_path, file)
+                        back_card_images.append(Image.open(back_image_path))
 
                     double_sided_front_page, double_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
 
@@ -290,8 +285,8 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        front_border_thickness,
-                        False
+                        max_border_thickness,
+                        flip=False
                     )
 
                     # Create back layout for double-sided cards
@@ -304,8 +299,8 @@ def generate_pdf(
                         card_layout.y_pos,
                         card_layout.width,
                         card_layout.height,
-                        back_border_thickness,
-                        True
+                        max_border_thickness,
+                        flip=True
                     )
 
                     # Add the front and back layouts
