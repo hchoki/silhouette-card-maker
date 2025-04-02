@@ -214,6 +214,12 @@ It depends on the weight of your card stock and the thickness of your lamination
 
 If I had to say anything, I would say this combination is only marginally thicker than mass produced card but if you plan on using card sleeves and playing with a mix of both, I would say it's almost indistinguishable.
 
+### Can I make double-sided cards?
+
+Yes. The `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here](README.md#double-sided-cards).
+
+Long story short, put the fronts in `game/front` and the backs in `game/double_sided`. The names of the files must match for each pair. Then, simply run `create_pdf.py` as usual.
+
 ### Do you have printer recommendations?
 
 No, but I can give you give you some ideas on what you should look for.
@@ -226,19 +232,19 @@ Not all printers can handle card stock, and even if it can handle card stock, it
 
 Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Play.
 
-### Can I make double-sided cards?
-
-Yes. The `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here](README.md#double-sided-cards).
-
-Long story short, put the fronts in `game/front` and the backs in `game/double_sided`. The names of the files must match for each pair. Then, simply run `create_pdf.py` as usual.
-
-### My cards are delaminating. What should I do?
+### My are my card delaminating?
 
 Are you using a laser printer? The laser toner sticks to the lamination, which prevents the lamination from sticking to the paper. Laser printing can work with this process, but you'll have to be gentler with the cards while cutting and while playing.
 
 Try laminating a second time or laminating at a higher setting before cutting. Because card stock is thicker than printer paper, you need to use more heat to get proper lamination. Additionally, this will help to clear up any cloudiness in your lamination, making your cards look better in the end.
 
-### The registration is failing! What should I do?
+### Why are my cards wavy?
+
+Set your laminator to a lower setting. It's adding too much heat, causing the lamination to contract more than needed.
+
+Alternatively, immediately put the laminated sheets under a heavy book to let them cool down flat.
+
+### Why is the registration failing?
 
 Ensure that there is nothing blocking the registration sensor.
 
@@ -250,11 +256,11 @@ The registration process is the following: first the scan the black square in th
 
 If none of the previous tips worked, the issue may be your choice of paper, lamination, and printing. If you are using a low quality printer and the registration marks are not dark enough, the registration can fail.
 
-### My machine isn't cutting in the right place! What should I do?
+### Why is my machine cutting in the wrong place?
 
 Make sure you're using the right cutting template. Each sheet should be labeled with the cutting template it's associated with, for example "letter_bridge_v1".
 
-### My cards are offset. What should I do?
+### Why are my cards offset?
 
 If either the fronts or the backs are offset, then there's most likely an issue with your printer alignment. Refer to your printer's instruction manual and try to recalibrate it. If there's no way to change the printer's settings, try using [offset.py](README.md#offset_pdfpy) to compensate for the offset.
 
