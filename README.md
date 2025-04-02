@@ -33,9 +33,9 @@ Card size measurements:
 | `poker_half` | 1.75 x 2.45  | 44.45 x 62.23 |
 | `bridge`     | 2.25 x 3.5   | 57.15 x 88.9  |
 
-\* Magic the Gathering, Pokémon, Lorcana, One Piece, Digimon, Star Wars: Unlimited, and Flesh and Blood use this size.
+\* including: Magic the Gathering, Pokémon, Lorcana, One Piece, Digimon, Star Wars: Unlimited, and Flesh and Blood.
 
-** Yu-Gi-Oh! uses this size.
+** including: Yu-Gi-Oh!.
 
 You can find all the cutting templates for Silhouette Studio in `cutting_templates/`.
 

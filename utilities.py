@@ -178,6 +178,10 @@ def generate_pdf(
             raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
         card_layout = paper_layout.card_layouts[card_size_enum]
 
+        num_rows = len(card_layout.y_pos)
+        num_cols = len(card_layout.x_pos)
+        num_cards = num_rows * num_cols
+
         blank_filename = f'{paper_size}_blank.jpg'
         blank_path = os.path.join(asset_directory, blank_filename)
 
@@ -206,10 +210,6 @@ def generate_pdf(
 
                     # Load the card back image
                     with Image.open(back_card_image_path) as back_im:
-                        num_rows = len(card_layout.y_pos)
-                        num_cols = len(card_layout.x_pos)
-                        num_cards = num_rows * num_cols
-
                         draw_card_layout(
                             [back_im] * num_cards,
                             single_sided_back_page,
