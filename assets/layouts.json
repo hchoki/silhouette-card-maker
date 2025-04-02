@@ -14,10 +14,25 @@
                         2417
                     ],
                     "y_pos": [
-                        234,
-                        1283
+                        232,
+                        1282
                     ],
-                    "template": "letter_standard_v2"
+                    "template": "letter_standard_v3"
+                },
+                "japanese": {
+                    "width": 694,
+                    "height": 1015,
+                    "x_pos": [
+                        165,
+                        924,
+                        1682,
+                        2441
+                    ],
+                    "y_pos": [
+                        243,
+                        1293
+                    ],
+                    "template": "letter_japanese_v1"
                 },
                 "bridge": {
                     "width": 673,
@@ -76,16 +91,31 @@
                     "width": 742,
                     "height": 1034,
                     "x_pos": [
-                        245,
-                        1004,
-                        1764,
-                        2521
+                        229,
+                        988,
+                        1748,
+                        2505
                     ],
                     "y_pos": [
-                        199,
-                        1248
+                        182,
+                        1231
                     ],
-                    "template": "a4_standard_v1"
+                    "template": "a4_standard_v2"
+                },
+                "japanese": {
+                    "width": 694,
+                    "height": 1015,
+                    "x_pos": [
+                        269,
+                        1028,
+                        1786,
+                        2545
+                    ],
+                    "y_pos": [
+                        208,
+                        1258
+                    ],
+                    "template": "a4_japanese_v1"
                 },
                 "bridge": {
                     "width": 673,

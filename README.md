@@ -1,6 +1,6 @@
 # Custom Card Games with the Cameo Cutting Machine
 
-Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine?
+Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine? How about making your own proxies to playtest your favorite TCG?
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
@@ -18,19 +18,26 @@ If this is your first time here, please read the [tutorial](tutorial.md) to lear
 
 This project supports the following card and paper sizes, with more in the future:
 
-| Paper size | `standard` | `poker` | `poker_half` | `bridge` |
-| ---------- | ---------- | ------- | ------------ | -------- |
-| Letter     | ✅        | ✅      | ✅          | ✅       | 
-| A4         | ✅        | ✅      | ✅          | ✅       |
+| Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` |
+| ---------- | ----------- | ------------ | ------- | ------------ | -------- | 
+| Letter     | ✅         | ✅           | ✅      | ✅          | ✅       |
+| A4         | ✅         | ✅           | ✅      | ✅          | ✅       |
 
 Card size measurements:
 
-| Card size    | Inches       | Millimeters      | 
-| ------------ | ------------ | ---------------- |
-| `standard`   | 2.48 x 3.454 | 62.99 x 87.73    |
-| `poker`      | 2.5 x 3.5    | 63.5 x 88.9      |
-| `poker_half` | 1.75 x 2.45  | 44.45 x 62.23    |
-| `bridge`     | 2.25 x 3.5   | 57.15 x 88.9     |
+| Card size    | Inches       | Millimeters   |
+| ------------ | ------------ | ------------- |
+| `standard`*  | 2.48 x 3.46  | 63 x 88       |
+| `japanese`** | 2.32 x 3.39  | 59 x 86       |
+| `poker`      | 2.5 x 3.5    | 63.5 x 88.9   |
+| `poker_half` | 1.75 x 2.45  | 44.45 x 62.23 |
+| `bridge`     | 2.25 x 3.5   | 57.15 x 88.9  |
+
+\* Magic the Gathering, Pokémon, Lorcana, One Piece, Digimon, Star Wars: Unlimited, and Flesh and Blood use this size.
+
+** Yu-Gi-Oh! uses this size.
+
+You can find all the cutting templates for Silhouette Studio in `cutting_templates/`.
 
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in `cutting_templates/`.

@@ -23,9 +23,10 @@ min_border_thickness = 5
 
 class CardSize(str, Enum):
     STANDARD = "standard"
-    BRIDGE = "bridge"
+    JAPANESE = "japanese"
     POKER = "poker"
     POKER_HALF = "poker_half"
+    BRIDGE = "bridge"
 
 class PaperSize(str, Enum):
     LETTER = "letter"
