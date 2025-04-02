@@ -17,10 +17,6 @@ asset_directory = 'assets'
 layouts_filename = 'layouts.json'
 layouts_path = os.path.join(asset_directory, layouts_filename)
 
-# A minimal amount of border thickness
-# To minimize waste and registration errors on the scanning side
-min_border_thickness = 5
-
 class CardSize(str, Enum):
     STANDARD = "standard"
     JAPANESE = "japanese"
