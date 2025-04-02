@@ -9,10 +9,6 @@ import pypdfium2 as pdfium
 
 from utilities import offset_images
 
-# Dimensions of the resized letter-sized sheet
-print_width = 3300
-print_height = 2550
-
 output_directory = os.path.join('game', 'output')
 default_output_pdf_path = os.path.join(output_directory, 'game.pdf')
 
@@ -57,7 +53,7 @@ def offset_pdf(pdf_path = None, output_pdf_path = None, x_offset = None, y_offse
     for page_number in range(len(pdf)):
         print(f"page {page_number + 1}")
         page = pdf.get_page(page_number)
-        raw_images.append(page.render(scale=300/72).to_pil().resize((print_width, print_height)))
+        raw_images.append(page.render(scale=300/72).to_pil())
         
     # Offset images
     final_images = offset_images(raw_images, new_x_offset, new_y_offset)

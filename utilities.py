@@ -16,16 +16,6 @@ asset_directory = 'assets'
 layouts_filename = 'layouts.json'
 layouts_path = os.path.join(asset_directory, layouts_filename)
 
-blank_filename = 'letter_blank.jpg'
-blank_path = os.path.join(asset_directory, blank_filename)
-
-registration_filename = 'letter_registration.jpg'
-registration_path = os.path.join(asset_directory, registration_filename)
-
-# Dimensions of the resized letter-sized sheet
-print_width = 3300
-print_height = 2550
-
 # A minimal amount of border thickness
 # To minimize waste and registration errors on the scanning side
 min_border_thickness = 5
@@ -106,7 +96,7 @@ def get_base_images(blank_im: Image.Image, reg_im: Image.Image, front_registrati
     else:
         return (blank_im.copy(), reg_im.copy())
 
-def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], card_layout: CardLayout, only_fronts: bool):
+def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, template: str, only_fronts: bool):
     # Add template version number to the back
     draw = ImageDraw.Draw(front_page)
     font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40)
@@ -116,7 +106,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if not only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
-    draw.text((print_width - 800, print_height - 80), f'sheet: {num_sheet}, template: {card_layout.template}', fill = (0, 0, 0), font = font)
+    draw.text((page_width - 800, page_height - 80), f'sheet: {num_sheet}, template: {template}', fill = (0, 0, 0), font = font)
 
     # Add a back page for every front page template
     pages.append(front_page)
@@ -192,6 +182,12 @@ def generate_pdf(
         num_cols = len(card_layout.x_pos)
         num_cards = num_rows * num_cols
 
+        blank_filename = f'{paper_size}_blank.jpg'
+        blank_path = os.path.join(asset_directory, blank_filename)
+
+        registration_filename =  f'{paper_size}_registration.jpg'
+        registration_path = os.path.join(asset_directory, registration_filename)
+
         # Load a blank page
         with Image.open(blank_path) as blank_im:
 
@@ -263,7 +259,7 @@ def generate_pdf(
                         False
                     )
 
-                    add_front_back_pages(single_sided_front_page, single_sided_back_page, pages, card_layout, only_fronts)
+                    add_front_back_pages(single_sided_front_page, single_sided_back_page, pages, paper_layout.width, paper_layout.height, card_layout.template, only_fronts)
 
                 # Create double-sided card layout
                 it = iter(natsorted(list(ds_set)))
@@ -316,7 +312,7 @@ def generate_pdf(
                     )
 
                     # Add the front and back layouts
-                    add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, card_layout, False)
+                    add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, paper_layout.width, paper_layout.height, card_layout.template, False)
 
                 # Save the pages array as a PDF
                 pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)

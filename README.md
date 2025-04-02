@@ -55,21 +55,29 @@ To create double sided cards, put front images in `game/front` and back images i
 Usage: create_pdf.py [OPTIONS]
 
 Options:
-  --front_dir_path TEXT           The path to the directory containing the
-                                  card fronts.  [default: game/front]
-  --back_dir_path TEXT            The path to the directory containing one or
-                                  no card backs.  [default: game/back]
-  --double_sided_dir_path TEXT    The path to the directory containing card
-                                  backs for double-sided cards.  [default:
-                                  game/double_sided]
-  --output_pdf_path TEXT          The desired path to the output PDF.
-                                  [default: game/output/game.pdf]
+  --front_dir_path TEXT           The path to the directory
+                                  containing the card fronts.
+                                  [default: game/front]
+  --back_dir_path TEXT            The path to the directory
+                                  containing one or no card
+                                  backs.  [default: game/back]
+  --double_sided_dir_path TEXT    The path to the directory
+                                  containing card backs for
+                                  double-sided cards.
+                                  [default: game/double_sided]
+  --output_pdf_path TEXT          The desired path to the
+                                  output PDF.  [default:
+                                  game/output/game.pdf]
   --card_size [standard|bridge|poker|poker_half]
-                                  The desired card size.  [default: standard]
-  --front_registration            Enable the front pages to have Print & Play
+                                  The desired card size.
+                                  [default: standard]
+  --paper_size [letter|a4]        The desired paper size.
+                                  [default: letter]
+  --front_registration            Enable the front pages to
+                                  have Print & Play
                                   (registration marks).
-  --only_fronts                   Only use the card fronts, exclude the card
-                                  backs.
+  --only_fronts                   Only use the card fronts,
+                                  exclude the card backs.
   --help                          Show this message and exit.
 ```
 

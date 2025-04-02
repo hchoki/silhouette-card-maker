@@ -73,9 +73,26 @@
             }
         },
         "a4": {
-            "width": 123,
-            "height": 123,
-            "card_layouts": {}
+            "width": 3509,
+            "height": 2481,
+            "card_layouts": {
+                "standard": {
+                    "width": 742,
+                    "height": 1034,
+                    "x_pos": [
+                        245,
+                        1004,
+                        1764,
+                        2521
+                    ],
+                    "y_pos": [
+                        199,
+                        1248
+                    ],
+                    "template": "a4_standard_v1",
+                    "border_thickness": 10
+                }
+            }
         }
     }
 }

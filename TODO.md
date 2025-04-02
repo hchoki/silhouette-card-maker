@@ -4,3 +4,4 @@
 * Calculate the border_thickness
 * Add pictures to tutorial
 * Film video for tutorial
+* Add table detailing card sizes in README, inches and mm
