@@ -64,7 +64,7 @@ def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, 
         card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, extend_cornders: int, flip: bool):
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
@@ -81,13 +81,13 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
             card_image = card_image.rotate(180)
 
         card_image = card_image.resize((width, height))
-        card_image = card_image.crop((extend_cornders, extend_cornders, card_image.width - extend_cornders, card_image.height - extend_cornders))
+        card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
 
         draw_card_with_border(
             card_image,
             base_image,
-            (new_origin_x + extend_cornders, new_origin_y + extend_cornders, width - (2 * extend_cornders), height - (2 * extend_cornders)),
-            print_bleed + extend_cornders
+            (new_origin_x + extend_corners, new_origin_y + extend_corners, width - (2 * extend_corners), height - (2 * extend_corners)),
+            print_bleed + extend_corners
         )
 
 def get_base_images(blank_im: Image.Image, reg_im: Image.Image, front_registration: bool) -> Tuple[Image.Image, Image.Image]:
@@ -122,7 +122,7 @@ def generate_pdf(
     paper_size: PaperSize,
     front_registration: bool,
     only_fronts: bool,
-    extend_cornders: int
+    extend_corners: int
 ):
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
@@ -215,7 +215,7 @@ def generate_pdf(
                             card_layout.width,
                             card_layout.height,
                             max_print_bleed,
-                            extend_cornders,
+                            extend_corners,
                             flip=True
                         )
 
@@ -249,7 +249,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
-                        extend_cornders,
+                        extend_corners,
                         flip=False
                     )
 
@@ -288,7 +288,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
-                        extend_cornders,
+                        extend_corners,
                         flip=False
                     )
 
@@ -303,7 +303,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
-                        extend_cornders,
+                        extend_corners,
                         flip=True
                     )
 

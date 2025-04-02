@@ -74,6 +74,18 @@ Get your PDF at `game/output/game.pdf`.
 
 To create double sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
 
+### White corners
+
+If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs, artifacts from rounded corners, appear in your PDF. When these cards are cut, they may have a sliver of white on the corners.
+
+The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with 10.
+
+```shell
+python create_pdf.py --extend_corners 10
+```
+
+Additionally, if your card images have an unwanted border, you can use `--extend_corners` to fix this problem as well.
+
 ### CLI options
 
 ```
