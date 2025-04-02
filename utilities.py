@@ -86,7 +86,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
 
     # "Raw" specified location
     num_sheet = len(pages) + 1
-    if only_fronts:
+    if not only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
     draw.text((print_width - 800, print_height - 80), f'sheet: {num_sheet}, template: {selected_template["template"]}', fill = (0, 0, 0), font = font)
