@@ -64,7 +64,7 @@ Options:
                                   game/double_sided]
   --output_pdf_path TEXT          The desired path to the output PDF.
                                   [default: game/output/game.pdf]
-  --template_type [standard|bridge|poker|poker_half]
+  --card_size [standard|bridge|poker|poker_half]
                                   The desired card size.  [default: standard]
   --front_registration            Enable the front pages to have Print & Play
                                   (registration marks).
