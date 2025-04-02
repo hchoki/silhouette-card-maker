@@ -19,7 +19,7 @@ If this is your first time here, please read the [tutorial](tutorial.md) to lear
 This project supports the following card and paper sizes, with more in the future:
 
 | Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` |
-| ---------- | ----------- | ------------ | ------- | ------------ | -------- | 
+| ---------- | ----------- | ------------ | ------- | ------------ | -------- |
 | Letter     | ✅         | ✅           | ✅      | ✅          | ✅       |
 | A4         | ✅         | ✅           | ✅      | ✅          | ✅       |
 
@@ -82,20 +82,24 @@ Usage: create_pdf.py [OPTIONS]
 Options:
   --front_dir_path TEXT           The path to the directory containing the
                                   card fronts.  [default: game/front]
-  --back_dir_path TEXT            The path to the directory containing one or
-                                  no card backs.  [default: game/back]
+  --back_dir_path TEXT            The path to the directory containing one
+                                  or no card backs.  [default: game/back]
   --double_sided_dir_path TEXT    The path to the directory containing card
                                   backs for double-sided cards.  [default:
                                   game/double_sided]
   --output_pdf_path TEXT          The desired path to the output PDF.
                                   [default: game/output/game.pdf]
   --card_size [standard|japanese|poker|poker_half|bridge]
-                                  The desired card size.  [default: standard]
+                                  The desired card size.  [default:
+                                  standard]
   --paper_size [letter|a4]        The desired paper size.  [default: letter]
-  --front_registration            Enable the front pages to have Print & Play
-                                  (registration marks).
+  --front_registration            Enable the front pages to have Print &
+                                  Play (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
+  --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded
+                                  corners in card images.  [default: 0;
+                                  x>=0]
   --help                          Show this message and exit.
 ```
 
