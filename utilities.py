@@ -1,6 +1,7 @@
 from enum import Enum
 import itertools
 import json
+import math
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -36,7 +37,6 @@ class CardLayout(BaseModel):
     x_pos: List[int]
     y_pos: List[int]
     template: str
-    border_thickness: int
 
 class PaperLayout(BaseModel):
     width: int
@@ -177,11 +177,6 @@ def generate_pdf(
             raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
         card_layout = paper_layout.card_layouts[card_size_enum]
 
-        # Load data from the selected template type
-        num_rows = len(card_layout.y_pos)
-        num_cols = len(card_layout.x_pos)
-        num_cards = num_rows * num_cols
-
         blank_filename = f'{paper_size}_blank.jpg'
         blank_path = os.path.join(asset_directory, blank_filename)
 
@@ -197,11 +192,12 @@ def generate_pdf(
                 # Create the array that will store the filled templates
                 pages = []
 
-                front_border_thickness = card_layout.border_thickness
+                max_border_thickness = calculate_max_border_thickness(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
+                front_border_thickness = max_border_thickness
                 back_border_thickness = min_border_thickness
                 if front_registration:
                     front_border_thickness = min_border_thickness
-                    back_border_thickness = card_layout.border_thickness
+                    back_border_thickness = max_border_thickness
 
                 # Create reusable back page for single-sided cards
                 _, single_sided_back_page = get_base_images(blank_im, reg_im, front_registration)
@@ -331,3 +327,33 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> Li
         add_offset = not add_offset
 
     return offset_images
+
+def calculate_max_border_thickness(x_pos: List[int], y_pos: List[int], width: int, height: int) -> int:
+    if len(x_pos) == 1 & len(y_pos) == 1:
+        return 0
+
+    x_border_max = 100000
+    if len(x_pos) >= 2:
+        x_pos.sort()
+
+        x_pos_0 = x_pos[0]
+        x_pos_1 = x_pos[1]
+
+        x_border_max = math.ceil((x_pos_1 - x_pos_0 - width) / 2)
+
+        if x_border_max < 0:
+            x_border_max = 100000
+
+    y_border_max = 100000
+    if len(y_pos) >= 2:
+        y_pos.sort()
+
+        y_pos_0 = y_pos[0]
+        y_pos_1 = y_pos[1]
+
+        y_border_max = math.ceil((y_pos_1 - y_pos_0 - height) / 2)
+
+        if y_border_max < 0:
+            y_border_max = 100000
+
+    return min(x_border_max, y_border_max) + 1
