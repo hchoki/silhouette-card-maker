@@ -1,6 +1,6 @@
 # Custom Cards with a Cameo Cutting Machine
 
-!TODO: YouTube video
+<!-- !TODO: YouTube video -->
 
 Making your own custom card games is fun and rewarding!
 
@@ -8,7 +8,7 @@ You can play with your favorite artwork! You can create your own designs! You ca
 
 In this tutorial, I'll show you how to make cards with a cutting machine, specifically the Silhouette Cameo 5.
 
-!TODO: Cameo 5 picture
+<!-- !TODO: Cameo 5 picture -->
 
 Why use a cutting machine though?
 
@@ -18,7 +18,7 @@ Join me in the 21st century where we have technology to solve our problems!
 
 With the press of a button, a cutting machine can do all the hard work for you. Before cutting, it scans the page to calibrate itself, so each card comes out exactly the same, with rounded corners, perfectly sized, perfectly centered, the platonic ideal of a playing card.
 
-!TODO: Picture of a lot of cards with Cameo 5
+<!-- !TODO: Picture of a lot of cards with Cameo 5 -->
 
 Sounds like a dream? Keep reading!
 
@@ -30,7 +30,7 @@ However, maybe you already have a workflow you like! This tutorial still has val
 
 If you do any kind of manual cutting in your existing workflow, you can replace it with a cutting machine. For example, a common way to make custom cards is to slide a paper cutout in front of a sleeved, dummy card. Another way is to cut out a sticker to apply to a sacrificial card. Any of these methods can be improved by using a cutting machine.
 
-!TODO: Picture of alternative ways making cards
+<!-- !TODO: Picture of alternative ways making cards -->
 
 The goal here is not necessarily to convince you to follow my process, but rather to empower you so you can use a cutting machine to make cards with whatever method you want.
 
@@ -106,23 +106,23 @@ The Cameo is core to this process so it's important to give some background so y
 
 The Cameo 5 is an electronically operated cutting machine. It's similar to a laser cutter or a CNC machine. A computer controls the movement of the toolhead, which contains a small blade similar to a hobby knife, and the toolhead will cut the material. You can control various cutting parameters including the speed of the blade and the pressure of the blade, and you can cut various materials including paper, card stock, sticker paper, cardboard, vinyl, foam, fabric, and even leather. You can also purchase special add-on tools for foiling, embossing, and other purposes.
 
-!TODO: diagram of Cameo 5
+<!-- !TODO: diagram of Cameo 5 -->
 
 Additionally, the Cameo 5 supports Print & Cut. Print & Cut means the machine scans your printed page and automatically adjusts itself so that it's able to cut precisely and consistently every time. You do not have to worry about aligning the sheets as the machine will make adjustments as needed. As long as the sheet is generally in the right area, the machine can compensate for placement and tilt. This is pivotal for card games because you want the backs of every card to be indistinguishable. More on Print & Cut later.
 
 You only need to use a few buttons to operate a Cameo 5. First, there is the power button, which is on the right side of the machine. Second, there are the media load and media eject buttons on the control panel. The buttons are used load and eject the cutting mat that carries your sheet.
 
-!TODO: diagram of Cameo 5 control panel
+<!-- !TODO: diagram of Cameo 5 control panel -->
 
 ### Silhouette Studio
 
 Silhouette Studio is the software used to create cutting designs and control the Cameo 5. It is easy to use and has simple visual UI. You can create a cutting template by drawing shapes on then screen and when you are ready, the machine will cut those shapes out. You can do fancier things like import an image (with a transparent background) and the software can cut out its outline, which is great for stickers and collages. However, I've included cutting templates in this tutorial so you won't need to make your own unless you're interested in making cards in a special size or shape.
 
-!TODO: screenshot of Silhouette Studio
+<!-- !TODO: screenshot of Silhouette Studio -->
 
 As mentioned before, an important aspect of this process is Print & Cut. You need to enable it in a cutting template in order to reap the benefits. When you enable Print & Cut, Silhouette Studio will do two things, it'll add registration marks to your cutting template, and when you print, it'll have the machine scan for registration marks before cutting. The registration marks are what the cutting machine uses to determine the orientation of your paper and make the proper adjustments when cutting. However, the templates in this tutorial already have Print & Cut enabled so you will not need to change anything.
 
-!TODO: screenshot of Silhouette Studio with Print & Cut
+<!-- !TODO: screenshot of Silhouette Studio with Print & Cut -->
 
 ## Prerequisites
 
@@ -136,7 +136,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 
 Silhouette Studio provides a number of cutting settings, including blade pressure, cutting speed, passes, and blade depth.
 
-!TODO: screenshot of Silhouette Studio cutting settings
+<!-- !TODO: screenshot of Silhouette Studio cutting settings -->
 
 Before starting the tutorial, determine the cutting settings that works best for you and the materials you want to cut.
 
@@ -144,7 +144,7 @@ Unfortunately, there are no short cuts for this. You will need to do some experi
 
 I recommend creating a simple cutting template with Silhouette Studio. Set the blade pressure, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and start the cutting job. Try different combinations of settings and repeat as necessary.
 
-!TODO: screenshot of a simple cutting template
+<!-- !TODO: screenshot of a simple cutting template -->
 
 The following is a table of working settings from various testers. Do not use these settings blindly. Test conservatively and work up to the listed values. If not, you risk breaking your machine or cutting through your mat.
 
@@ -218,11 +218,11 @@ As mentioned previously, there are a number of different cutting templates. Open
 
 Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
-!TODO: show how to place a sheet
+<!-- !TODO: show how to place a sheet -->
 
 Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
 
-!TODO: show the notch on the machine
+<!-- !TODO: show the notch on the machine -->
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
