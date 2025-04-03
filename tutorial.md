@@ -61,7 +61,7 @@ And if you're already a card-making aficionado, perhaps you wouldn't save much m
 
 ## Bill of Materials
 
-*Disclosure: There are affiliate links below, meaning I may receive a small commission if you make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
+*Disclosure: There are affiliate links below, meaning I may receive a small commission if you click through and make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
 
 Equipment
 * [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5) (coupon code: `DIYBOARDGAMES`)
@@ -233,8 +233,6 @@ Click the media eject button on the machine to remove the mat. Pull off the card
 Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
 
 Now you're ready to play with your cards!
-
-## Contributing
 
 ## FAQ
 
