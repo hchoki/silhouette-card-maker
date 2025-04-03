@@ -1,32 +1,38 @@
-# Custom Cards with a Cutting Machine
+# Custom Cards with a Cameo Cutting Machine
+
+!TODO: YouTube video
 
 Making your own custom card games is fun and rewarding!
 
-You can play with your favorite artwork and designs. You can give cards to your friends and family. You can replace lost or damaged cards. 
+You can play with your favorite artwork! You can create your own designs! You can easily replace lost or damaged cards!
 
-In this tutorial, I'll show you how to make custom games with a cutting machine.
+In this tutorial, I'll show you how to make cards with a cutting machine, specifically the Silhouette Cameo 5.
+
+!TODO: Cameo 5 picture
 
 Why use a cutting machine though?
 
-The alternative is to use a craft knife, a rotary cutter, or a paper guillotine and to do it all by hand. You can try your best but you're only human. Your cuts won't be exactly the same every time. Some cards will be too tall, too fat, slightly twisted, off center, or some combination of the above. Plus, you're body will be sore after the whole ordeal.
+The alternative is to use a craft knife, a rotary cutter, or a paper guillotine and to do it all by hand. You can try your best but you're only human... Your cuts won't be exactly the same. Some cards will be too tall, too fat, slightly twisted, off center, or some combination of the above. Plus, you're body will be sore after the whole ordeal.
 
 Join me in the 21st century where we have technology to solve our problems!
 
-With the press of a button, a cutting machine will cut cards right before your eyes. Before it starts, it scans the page to calibrate itself, so each card comes out exactly the same, with rounded corners, perfectly sized, perfectly centered, the platonic ideal of a playing card.
+With the press of a button, a cutting machine can do all the hard work for you. Before cutting, it scans the page to calibrate itself, so each card comes out exactly the same, with rounded corners, perfectly sized, perfectly centered, the platonic ideal of a playing card.
+
+!TODO: Picture of a lot of cards with Cameo 5
 
 Sounds like a dream? Keep reading!
 
 ## Disclaimer
 
-In this tutorial, I'll show you the way I like to make cards, which is two-sided laminated card stock. I think it's great because they're durable, shuffle great, are dry erase, and need no sleeves.
+In this tutorial, I'll show you how I make cards with laminated card stock. I think they are great because they are durable, shuffle smoothly, are dry erase, and require no sleeves.
 
 However, maybe you already have a workflow you like! This tutorial still has value for you.
 
-If you do any kind of manual cutting in your workflow, you can replace it with a cutting machine. For example, a common way to make custom cards is to slide a paper cutout in front of a sleeved, dummy card. Another way is to cut out a sticker to apply to a sacrificial card.
+If you do any kind of manual cutting in your existing workflow, you can replace it with a cutting machine. For example, a common way to make custom cards is to slide a paper cutout in front of a sleeved, dummy card. Another way is to cut out a sticker to apply to a sacrificial card. Any of these methods can be improved by using a cutting machine.
 
-Any of these methods can be improved by using a cutting machine.
+!TODO: Picture of alternative ways making cards
 
-The goal here is, not necessarily convince you to follow my process, but show you how to use a cutting machine so you're empowered to use whatever method you want to make custom cards.
+The goal here is not necessarily to convince you to follow my process, but rather to empower you so you can use a cutting machine to make cards with whatever method you want.
 
 ## Costs
 
@@ -53,51 +59,70 @@ However, if you were considering ordering custom cards but decided to make them 
 
 And if you're already a card-making aficionado, perhaps you wouldn't save much monetarily but if you're doing the work manually, you'd save time and wear on your body if you used a cutting machine. Perhaps, that's worth it in and of itself.
 
-## Tools
+## Bill of Materials
+
+*Disclosure: There are affiliate links below, meaning I may receive a small commission if you make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
 
 Equipment
-* Cutting machine
-* Thermal laminator
-* Printer
+* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5) (coupon code: `DIYBOARDGAMES`)
+* [Thermal laminator](https://amzn.to/3E82k57)
+* Inkjet printer
+* [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
 * Computer
 
-I recommend using the Silhouette Cameo 5 because it's the cutting machine I use. There are many other cutting machines that could potentially get the job done but because the scripts and templates provided in this tutorial are for Silhouette suite of software and devices, I recommend getting this machine.
+I recommend the Cameo 5 because it's the cutting machine I use. However, if the cost is too high, you can consider purchasing the previous generation, the 4. The [4 Plus](https://www.silhouetteamerica.com/cameo-plus) is still available on the official website and it is significantly cheaper than the 5. If you make a purchase through the official website, consider using the coupon code `DIYBOARDGAMES` for a discount.
 
-However, if the upfront cost is too high, you can also consider purchasing a Cameo 4, which is the previous generation. At the moment, the Cameo 4 is discontinued but the Cameo 4 Plus is still available and is significantly cheaper than the Cameo 5. The Cameo 4 shares many of the same features as the Cameo 5, including Print & Cut, which is the most important feature for making custom cards.
+I recommend this laminator for a number of reason. First, it's not particularly expensive compared to other laminators. Second, most laminators support only one or two hot settings (3 and 5 mil). This laminator is the only reasonably priced laminator I've found with 4 hot settings: 3, 4, 5, and 6 mil. Because laminators are built for laminating printer paper and not card stock, it's helpful to have these additional settings to ensure lamination quality. Lastly, this laminator is wide, which makes it easy to feed sheets and finish cards.
+
+I do not have a recommendation for printers. However, if you plan on purchasing a printer, consider purchasing an inkjet printer instead of a laser printer. The laser toner affects the lamination, causing it to easily detach. It's possible to use a laser printer but you'll have to be gentle. Also consider purchasing a duplex printer. It's possible to use a simplex printer but you may not have good front and back alignment. Lastly, I would recommend splurging more here. First, you want to enjoy the cards, so if you're using a subpar printer, you may eventually regret it. Second, subpar printing can adversely affect the Cameo's scanning process.
+
+There's nothing special about this printer cable but it's cheap and it's also a two pack! The Cameo 5 does not come with a cable because it supports Bluetooth. However, the Bluetooth connection is spotty so I recommend interfacing directly with a cable.
 
 Materials
 * Printer ink
-* Card stock (60 lb)
-* Thermal lamination sheets (3 mil)
+* [Card stock (110 lb)](https://amzn.to/3RuU4PA)
+* [Thermal lamination pouches (3 mil)](https://amzn.to/3E5yE8M)
 
-The card stock I use is 110 lb but some home printers cannot handle it. For that reason, I am recommending 60 lb card stock but feel free to experiment.
+The card stock I use is 110 lb but it may be too thick for some printers. Please refer to your printer's manual. If 110 lb is too thick, 60 lb also works well. I've also heard amazing things about double-sided glossy photo card stock, but it only works with dye-based inkjet printers, so I will not recommend it. Regardless, any decent card stock will work.
+
+Similarly, any decent lamination pouches will work. I've also heard good things about matte lamination pouches but they are not as common and also more expensive.
 
 Optional
-* Hobby knife
-* Extra cutter blades (AutoBlade)
-* Extra cutter mats
+* [Extra cutting mats](https://www.silhouetteamerica.com/cut-mat-12-3t-c) (coupon code: `DIYBOARDGAMES`)
+* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2) (coupon code: `DIYBOARDGAMES`)
+* [Hobby knife with cutting mat](https://amzn.to/41UT2CF)
 
-You might want a hobby knife because sometimes, you'll the cutting machine will leave you a straggler card where it's not completely detached. You can use the hobby knife to finish the cut.
+You'll want to pick up extra cutting mats. Cutting mats are sticky and they hold the sheet as its being cut. Over time, they'll lose their stickiness and must be replaced. Additionally, it's nice to have extra mats so you can prep one as another one is being cut. Each mat should last for a few hundred cards or a few dozen sheets as long as you take care of them.
 
-For the purposes of cutting cards, your cutter blades should last a long time. However, if you're new to using these machines, you could accidentally break the blade due to improper configuration or set up. Consider buying an extra one as a back up. For the Cameo 5, buy the standard AutoBlade.
+The Cameo 5 can cut a lot of materials including tough materials like corrugated paper, chipboard, and wood. However, if you're only cutting cards, your blade should last a long time. At the same time, if you're new to these machines, you could accidentally break the blade due to improper set up. Consider buying an extra as a back up.
 
-You'll definitely want to pick up extra cutting mats however. Cutting mats are sticky so they hold the paper as its being cut. Over time, they'll lose their stickiness. You'll want to have replacements ready but each cutting mat should last you a few hundred cards.
+A hobby knife and a (non-sticky) cutting mat can come in handy. Occasionally, the Cameo will leave you a straggler card where it's not completely detached. You can use the hobby knife to finish the cut.
 
-## Primer on Cutting Machines
+## Primer on Cameo Cutting Machines
 
-The cutting machine is core to this process so it's important to give some background on how they work so you'll be better prepared to operate one.
+The Cameo is core to this process so it's important to give some background so you'll be better prepared to operate one.
 
 ### Silhouette Cameo 5
 
 The Cameo 5 is an electronically operated cutting machine. It's similar to a laser cutter or a CNC machine. A computer controls the movement of the toolhead, which contains a small blade similar to a hobby knife, and the toolhead will cut the material. You can control various cutting parameters including the speed of the blade and the pressure of the blade, and you can cut various materials including paper, card stock, sticker paper, cardboard, vinyl, foam, fabric, and even leather. You can also purchase special add-on tools for foiling, embossing, and other purposes.
 
-Additionally, the Cameo 5 supports Print & Cut. Print & Cut means the machine scans your printed page and automatically adjusts itself so that it's able to cut precisely and consistently every time. You do not have to worry about aligning the paper for cutting as the machine will make adjustments as needed. As long as the paper is generally in the right area, the machine can compensate for placement and tilt. This is pivotal for card games because you want the backs of every card to be indistinguishable. More on Print & Cut later.
+!TODO: diagram of Cameo 5
+
+Additionally, the Cameo 5 supports Print & Cut. Print & Cut means the machine scans your printed page and automatically adjusts itself so that it's able to cut precisely and consistently every time. You do not have to worry about aligning the sheets as the machine will make adjustments as needed. As long as the sheet is generally in the right area, the machine can compensate for placement and tilt. This is pivotal for card games because you want the backs of every card to be indistinguishable. More on Print & Cut later.
+
+You only need to use a few buttons to operate a Cameo 5. First, there is the power button, which is on the right side of the machine. Second, there are the media load and media eject buttons on the control panel. The buttons are used load and eject the cutting mat that carries your sheet.
+
+!TODO: diagram of Cameo 5 control panel
 
 ### Silhouette Studio
 
 Silhouette Studio is the software used to create cutting designs and control the Cameo 5. It is easy to use and has simple visual UI. You can create a cutting template by drawing shapes on then screen and when you are ready, the machine will cut those shapes out. You can do fancier things like import an image (with a transparent background) and the software can cut out its outline, which is great for stickers and collages. However, I've included cutting templates in this tutorial so you won't need to make your own unless you're interested in making cards in a special size or shape.
 
+!TODO: screenshot of Silhouette Studio
+
 As mentioned before, an important aspect of this process is Print & Cut. You need to enable it in a cutting template in order to reap the benefits. When you enable Print & Cut, Silhouette Studio will do two things, it'll add registration marks to your cutting template, and when you print, it'll have the machine scan for registration marks before cutting. The registration marks are what the cutting machine uses to determine the orientation of your paper and make the proper adjustments when cutting. However, the templates in this tutorial already have Print & Cut enabled so you will not need to change anything.
+
+!TODO: screenshot of Silhouette Studio with Print & Cut
 
 ## Prerequisites
 
@@ -111,20 +136,25 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 
 Silhouette Studio provides a number of cutting settings, including blade pressure, cutting speed, passes, and blade depth.
 
+!TODO: screenshot of Silhouette Studio cutting settings
+
 Before starting the tutorial, determine the cutting settings that works best for you and the materials you want to cut.
 
 Unfortunately, there are no short cuts for this. You will need to do some experimentation on your own.
 
 I recommend creating a simple cutting template with Silhouette Studio. Set the blade pressure, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and start the cutting job. Try different combinations of settings and repeat as necessary.
 
+!TODO: screenshot of a simple cutting template
+
 The following is a table of working settings from various testers. Do not use these settings blindly. Test conservatively and work up to the listed values. If not, you risk breaking your machine or cutting through your mat.
 
-| Machine | Blade          | Card stock     | Lamination | Pressure | Speed | Passes | Depth |
-| ------- | -------------- | -------------- | ---------- | -------- | ----- | ------ | ----- |
-| Cameo 5 | Autoblade      | 65 lb          | 3 mil      | 30       | 30    | 3      | 7     |
-| Cameo 5 | Autoblade      | 110 lb         | 3 mil      | 33       | 20    | 3      | 7     |
-| Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil      | 33       | 30    | 4      | 10    |
-| Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil      | 33       | 5     | 5      | 19    |
+| Machine | Blade          | Card stock     | Lamination  | Pressure | Speed | Passes | Depth |
+| ------- | -------------- | -------------- | ----------- | -------- | ----- | ------ | ----- |
+| Cameo 5 | Autoblade      | 65 lb          | 3 mil       | 30       | 30    | 3      | 7     |
+| Cameo 5 | Autoblade      | 110 lb         | 3 mil       | 33       | 20    | 3      | 7     |
+| Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil       | 33       | 30    | 4      | 10    |
+| Cameo 5 | Autoblade      | 220 gsm        | 150 microns | 30       | 26    | 4      | 8     |
+| Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil       | 33       | 5     | 5      | 19    |
 
 ## Instructions
 
@@ -188,7 +218,11 @@ As mentioned previously, there are a number of different cutting templates. Open
 
 Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
+!TODO: show how to place a sheet
+
 Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
+
+!TODO: show the notch on the machine
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
@@ -232,7 +266,7 @@ Not all printers can handle card stock, and even if it can handle card stock, it
 
 Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Play.
 
-### My are my card delaminating?
+### Why are my card delaminating?
 
 Are you using a laser printer? The laser toner sticks to the lamination, which prevents the lamination from sticking to the paper. Laser printing can work with this process, but you'll have to be gentler with the cards while cutting and while playing.
 
