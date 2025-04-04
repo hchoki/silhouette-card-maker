@@ -37,10 +37,10 @@ Card size measurements:
 
 ** including: Yu-Gi-Oh!.
 
-You can find all the cutting templates for Silhouette Studio in `cutting_templates/`.
+You can find all the cutting templates for Silhouette Studio in [`cutting_templates/`](cutting_templates/).
 
 ## create_pdf.py
-`create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in `cutting_templates/`.
+`create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
 
 ### Basic Instructions:
 

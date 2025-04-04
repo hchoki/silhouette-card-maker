@@ -45,7 +45,7 @@ class Layouts(BaseModel):
 
 def get_back_card_image_path(back_dir_path) -> str | None:
     # List all files in the directory that do not end with .md
-    # The directory should contain EMPTY.md
+    # The directory may contain markdown files
     files = [f for f in os.listdir(back_dir_path) if (os.path.isfile(os.path.join(back_dir_path, f)) and not f.endswith(".md"))]
 
     # Check if there is exactly one file

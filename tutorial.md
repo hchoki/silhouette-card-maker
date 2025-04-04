@@ -64,17 +64,17 @@ And if you're already a card-making aficionado, perhaps you wouldn't save much m
 *Disclosure: There are affiliate links below, meaning I may receive a small commission if you click through and make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
 
 Equipment
-* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5) (coupon code: `DIYBOARDGAMES`)
+* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (Silhouette store coupon code: `DIYBOARDGAMES`)
 * [Thermal laminator](https://amzn.to/3E82k57)
 * Inkjet printer
 * [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
 * Computer
 
-I recommend the Cameo 5 because it's the cutting machine I use. However, if the cost is too high, you can consider purchasing the previous generation, the 4. The [4 Plus](https://www.silhouetteamerica.com/cameo-plus) is still available on the official website and it is significantly cheaper than the 5. If you make a purchase through the official website, consider using the coupon code `DIYBOARDGAMES` for a discount.
+I recommend the Cameo 5 because it's the cutting machine I use. However, if the cost is too high, you can consider purchasing the previous generation, the 4. The [4 Plus]( https://www.silhouetteamerica.com/cameo-plus?affiliate_code=uKx6VtFWmI&referring_service=link) is still available on the official website and is significantly cheaper than the 5. Another affordable choice is the [Portrait 4]( https://www.silhouetteamerica.com/portrait-4?affiliate_code=uKx6VtFWmI&referring_service=link), but I think the versatility of the 4's dual tool carriage and wide cutting area outweighs the slightly cheaper price of the Portrait 4.
 
-I recommend this laminator for a number of reason. First, it's not particularly expensive compared to other laminators. Second, most laminators support only one or two hot settings (3 and 5 mil). This laminator is the only reasonably priced laminator I've found with 4 hot settings: 3, 4, 5, and 6 mil. Because laminators are built for laminating printer paper and not card stock, it's helpful to have these additional settings to ensure lamination quality. Lastly, this laminator is wide, which makes it easy to feed sheets and finish cards.
+I recommend this laminator for a number of reason. First, it's not particularly expensive compared to others. Second, most laminators support only one or two hot settings (3 and 5 mil). This is the only reasonably priced laminator I've found with 4 hot settings: 3, 4, 5, and 6 mil. Because laminators are built for printer paper and not card stock, it's helpful to have these additional settings to ensure lamination quality. Lastly, this laminator is wide, which makes it easy to feed sheets and finish cards.
 
-I do not have a recommendation for printers. However, if you plan on purchasing a printer, consider purchasing an inkjet printer instead of a laser printer. The laser toner affects the lamination, causing it to easily detach. It's possible to use a laser printer but you'll have to be gentle. Also consider purchasing a duplex printer. It's possible to use a simplex printer but you may not have good front and back alignment. Lastly, I would recommend splurging more here. First, you want to enjoy the cards, so if you're using a subpar printer, you may eventually regret it. Second, subpar printing can adversely affect the Cameo's scanning process.
+I do not have a recommendation for printers. However, if you plan on purchasing a printer, consider purchasing an inkjet printer instead of a laser printer. The laser toner affects the lamination, causing it to easily detach. It's possible to use a laser printer but you'll have to be gentle. Also consider purchasing a duplex printer. It's possible to use a simplex printer but you may not have good front and back alignment. Lastly, I think this is a good place to splurge on. First, you want to enjoy the cards, so if you're using a subpar printer, you may eventually regret it. Second, poor print quality can affect the Cameo's registration.
 
 There's nothing special about this printer cable but it's cheap and it's also a two pack! The Cameo 5 does not come with a cable because it supports Bluetooth. However, the Bluetooth connection is spotty so I recommend interfacing directly with a cable.
 
@@ -88,8 +88,8 @@ The card stock I use is 110 lb but it may be too thick for some printers. Please
 Similarly, any decent lamination pouches will work. I've also heard good things about matte lamination pouches but they are not as common and also more expensive.
 
 Optional
-* [Extra cutting mats](https://www.silhouetteamerica.com/cut-mat-12-3t-c) (coupon code: `DIYBOARDGAMES`)
-* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2) (coupon code: `DIYBOARDGAMES`)
+* [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link)
+* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2?affiliate_code=uKx6VtFWmI&referring_service=link)
 * [Hobby knife with cutting mat](https://amzn.to/41UT2CF)
 
 You'll want to pick up extra cutting mats. Cutting mats are sticky and they hold the sheet as its being cut. Over time, they'll lose their stickiness and must be replaced. Additionally, it's nice to have extra mats so you can prep one as another one is being cut. Each mat should last for a few hundred cards or a few dozen sheets as long as you take care of them.
