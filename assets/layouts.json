@@ -6,7 +6,7 @@
             "card_layouts": {
                 "standard": {
                     "width": 742,
-                    "height": 1034,
+                    "height": 1036,
                     "x_pos": [
                         141,
                         900,
@@ -36,7 +36,7 @@
                 },
                 "bridge": {
                     "width": 673,
-                    "height": 1048,
+                    "height": 1049,
                     "x_pos": [
                         256,
                         961,
@@ -51,7 +51,7 @@
                 },
                 "poker": {
                     "width": 748,
-                    "height": 1048,
+                    "height": 1049,
                     "x_pos": [
                         132,
                         895,
@@ -89,7 +89,7 @@
             "card_layouts": {
                 "standard": {
                     "width": 742,
-                    "height": 1034,
+                    "height": 1036,
                     "x_pos": [
                         245,
                         1004,
@@ -119,22 +119,22 @@
                 },
                 "bridge": {
                     "width": 673,
-                    "height": 1048,
+                    "height": 1049,
                     "x_pos": [
-                        344,
-                        1049,
-                        1754,
-                        2459
+                        359,
+                        1064,
+                        1769,
+                        2475
                     ],
                     "y_pos": [
-                        165,
-                        1239
+                        179,
+                        1252
                     ],
                     "template": "a4_bridge_v1"
                 },
                 "poker": {
                     "width": 748,
-                    "height": 1048,
+                    "height": 1049,
                     "x_pos": [
                         236,
                         999,
@@ -151,16 +151,16 @@
                     "width": 523,
                     "height": 733,
                     "x_pos": [
-                        369,
-                        931,
+                        368,
+                        930,
                         1492,
                         2054,
                         2616
                     ],
                     "y_pos": [
                         120,
-                        886,
-                        1652
+                        873,
+                        1626
                     ],
                     "template": "a4_pokerhalf_v1"
                 }
