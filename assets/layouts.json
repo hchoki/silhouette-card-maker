@@ -65,7 +65,7 @@
                     "template": "letter_poker_v2"
                 },
                 "poker_half": {
-                    "width": 523,
+                    "width": 524,
                     "height": 733,
                     "x_pos": [
                         265,
@@ -148,7 +148,7 @@
                     "template": "a4_poker_v1"
                 },
                 "poker_half": {
-                    "width": 523,
+                    "width": 524,
                     "height": 733,
                     "x_pos": [
                         368,
