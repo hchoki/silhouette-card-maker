@@ -198,7 +198,8 @@ pip install -r requirements.txt
 
 First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
-My friend, Jon Lenchner, has offered his game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/). Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
+> [!NOTE]
+> My friend, Jon Lenchner, has offered his game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/). Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
 
 Generate the PDF with the following:
 
@@ -208,28 +209,22 @@ python create_pdf.py
 
 You can find the PDF in `game/output/game.pdf`.
 
-<br>
-
 > [!TIP]
 > `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
-
-<br>
-
-> [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
-
-[!TIP]
-`create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
 
 ### Prepare the sheets
 
 Print out the PDF and laminate the sheets.
 
-Because cardstock is thicker than normal printer paper, you may need to set your laminator at a higher setting in order to get good lamination. If not, you may have cloudy lamination and delamination issues.
+> [!TIP]
+> Because cardstock is thicker than normal printer paper, you may need to set your laminator at a higher setting in order to get good lamination. If not, you may have cloudy lamination and delamination issues.
 
 ### Cut the sheets
 
-As mentioned previously, there are a number of different cutting templates. Open the appropriate one in Silhouette Studio and configure the cutting settings.
+Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](cutting_templates/) directory.
+
+> [!NOTE]
+> The cutting template you should use depends on your PDF generation options.
 
 Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
@@ -241,9 +236,16 @@ Insert the mat into the machine. The left edge of the mat should be aligned with
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
+> [!TIP]
+> If you experience trouble here, try these solutions.
+> * [Why is the registration failing?](#why-is-the-registration-failing)
+> * [Why didn't my machine cut all the way through?](#why-didnt-my-machine-cut-all-the-way-through)
+> * [Why is my machine cutting in the wrong place?](#why-is-my-machine-cutting-in-the-wrong-place)
+> * [Why did my cards come out diagonally?](#why-did-my-cards-come-out-diagonally)
+
 ### Finish the cards
 
-Click the media eject button on the machine to remove the mat. Pull off the cards and excess.
+Click the media eject button on the machine to remove the mat. Peel off the cards and excess.
 
 Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
 
@@ -309,9 +311,19 @@ In my own experience, the registration can occasionally fail as the machine is s
 
 If none of the previous tips worked, the issue may be your choice of paper, lamination, or printing.
 
+### Why didn't my machine cut all the way through?
+
+Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see [here](#cutting-settings). 
+
+If you configured you cutting settings, then try adjusting your settings by adding more pressure or more passes. If you are still having issues, try using a new blade and/or mat.
+
 ### Why is my machine cutting in the wrong place?
 
 Make sure you're using the right cutting template. Each sheet should be labeled with the cutting template it's associated with, for example "letter_bridge_v1".
+
+### Why did my cards come out diagonally?
+
+As mentioned in [Why is the registration failing?](#why-is-the-registration-failing), your machine may occasionally scan the bottom left card as it's searching for the bottom left L during registration. When this happens, the machine may either stop and complain, or continue and start cutting cards diagonally. To fix this, try being more careful when you place the sheet and the mat, or employ the Post-It note trick.
 
 ### Why are my cards offset?
 
