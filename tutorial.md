@@ -215,6 +215,12 @@ You can find the PDF in `game/output/game.pdf`.
 
 <br>
 
+> [!TIP]
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
+
+[!TIP]
+`create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
+
 ### Prepare the sheets
 
 Print out the PDF and laminate the sheets.
