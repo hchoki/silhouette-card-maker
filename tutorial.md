@@ -72,7 +72,7 @@ Equipment
 * [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
 * Computer
 
-I recommend the Cameo 5 because it's the cutting machine I use. However, if the cost is too high, you can consider purchasing the previous generation, the 4. The [4 Plus]( https://www.silhouetteamerica.com/cameo-plus?affiliate_code=uKx6VtFWmI&referring_service=link) is still available on the official website and is significantly cheaper than the 5. Another affordable choice is the [Portrait 4]( https://www.silhouetteamerica.com/portrait-4?affiliate_code=uKx6VtFWmI&referring_service=link), but I think the versatility of the 4's dual tool carriage and wide cutting area outweighs the slightly cheaper price of the Portrait 4.
+I recommend the Cameo 5 because it's the cutting machine I use. However, if the cost is too high, you can consider purchasing the previous generation, the 4. The [4 Plus]( https://www.silhouetteamerica.com/cameo-plus?affiliate_code=uKx6VtFWmI&referring_service=link) is still available on the official website and is significantly cheaper than the 5. Another affordable choice is the [Portrait 4]( https://www.silhouetteamerica.com/portrait-4?affiliate_code=uKx6VtFWmI&referring_service=link), but I think the versatility of the 4's dual tool carriage and wide cutting area outweighs the slightly cheaper price of the Portrait 4. Please note that these other machines may use different cutting blades and cutting mats. 
 
 I recommend this laminator for a number of reason. First, it's not particularly expensive compared to others. Second, most laminators support only one or two hot settings (3 and 5 mil). This is the only reasonably priced laminator I've found with 4 hot settings: 3, 4, 5, and 6 mil. Because laminators are built for printer paper and not card stock, it's helpful to have these additional settings to ensure lamination quality. Lastly, this laminator is wide, which makes it easy to feed sheets and finish cards.
 
@@ -196,9 +196,9 @@ pip install -r requirements.txt
 
 ### Create the PDF
 
-First, collect all the card front images and put them into `game/front`. Then, put a card back image into `game/back`.
+First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
-My friend Jon Lenchner, who designed the game Zero sumZ, has offered his game as an example for this tutorial. Zero sumZ is a abstract set collection game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/).
+My friend, Jon Lenchner, has offered his game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/). Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
 
 Generate the PDF with the following:
 
@@ -207,6 +207,13 @@ python create_pdf.py
 ```
 
 You can find the PDF in `game/output/game.pdf`.
+
+<br>
+
+> [!TIP]
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
+
+<br>
 
 ### Prepare the sheets
 
