@@ -199,7 +199,8 @@ pip install -r requirements.txt
 First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
 > [!NOTE]
-> My friend, Jon Lenchner, has offered his game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets, including the front images, the back image, and instructions [here](examples/ZERO%20SUMZ/). Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
+> My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](examples/ZERO%20SUMZ/).
+> Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
 
 Generate the PDF with the following:
 
@@ -209,8 +210,8 @@ python create_pdf.py
 
 You can find the PDF in `game/output/game.pdf`.
 
-> [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
+<!-- > [!TIP]
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options). -->
 
 ### Prepare the sheets
 
@@ -223,8 +224,8 @@ Print out the PDF and laminate the sheets.
 
 Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](cutting_templates/) directory.
 
-> [!NOTE]
-> The cutting template you should use depends on your PDF generation options.
+<!-- > [!NOTE]
+> The cutting template you should use depends on your PDF generation options. -->
 
 Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
@@ -236,12 +237,12 @@ Insert the mat into the machine. The left edge of the mat should be aligned with
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
-> [!TIP]
+<!-- > [!TIP]
 > If you experience trouble here, try these solutions.
 > * [Why is the registration failing?](#why-is-the-registration-failing)
 > * [Why didn't my machine cut all the way through?](#why-didnt-my-machine-cut-all-the-way-through)
 > * [Why is my machine cutting in the wrong place?](#why-is-my-machine-cutting-in-the-wrong-place)
-> * [Why did my cards come out diagonally?](#why-did-my-cards-come-out-diagonally)
+> * [Why did my cards come out diagonally?](#why-did-my-cards-come-out-diagonally) -->
 
 ### Finish the cards
 
@@ -252,6 +253,10 @@ Because the cutting process may cause the card edges to delaminate, put the card
 ![Relaminating the cards.](images/relamination.jpg)
 
 Now you're ready to play with your cards!
+
+## Next Steps
+
+
 
 ## FAQ
 
