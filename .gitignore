@@ -13,3 +13,5 @@ game/output/*
 !game/output/EMPTY.md
 
 data
+
+images/*.xcf

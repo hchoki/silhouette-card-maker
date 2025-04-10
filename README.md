@@ -1,10 +1,14 @@
 # Custom Card Games with the Cameo Cutting Machine
 
+![](images/display.jpg)
+
 Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine? How about making your own proxies to playtest your favorite TCG?
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, please read the [tutorial](tutorial.md) to learn more about this process.
+If this is your first time here, check out the [tutorial](tutorial.md)!
+
+We also have a [Discord server](https://discord.gg/jhsKmAgbXc)!
 
 ## Contents
 
@@ -70,13 +74,13 @@ python create_pdf.py
 
 Get your PDF at `game/output/game.pdf`.
 
-### Double-sided cards
+### Double-Sided Cards
 
-To create double sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
+To create double-sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
 
-### White corners
+### White Corners
 
-If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs, artifacts from rounded corners, appear in your PDF. When these cards are cut, they may have a sliver of white on the corners.
+If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.
 
 The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with 10.
 
@@ -84,9 +88,7 @@ The `--extend_corners` option can ameliorate this issue. You may need to experim
 python create_pdf.py --extend_corners 10
 ```
 
-Additionally, if your card images have an unwanted border, you can use `--extend_corners` to fix this problem as well.
-
-### CLI options
+### CLI Options
 
 ```
 Usage: create_pdf.py [OPTIONS]
@@ -156,7 +158,7 @@ python offset_pdf.py game.pdf --x_offset -5 --y_offset 10
 
 Get your offset PDF at `game/output/game_offset.pdf`.
 
-### CLI options
+### CLI Options
 
 ```
 Usage: offset_pdf.py [OPTIONS]

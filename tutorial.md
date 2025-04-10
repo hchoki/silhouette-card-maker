@@ -2,6 +2,8 @@
 
 <!-- !TODO: YouTube video -->
 
+![](images/display.jpg)
+
 Making your own custom card games is fun and rewarding!
 
 You can play with your favorite artwork! You can create your own designs! You can easily replace lost or damaged cards!
@@ -110,7 +112,7 @@ The Cameo 5 is an electronically operated cutting machine. It's similar to a las
 
 Additionally, the Cameo 5 supports Print & Cut. Print & Cut means the machine scans your printed page and automatically adjusts itself so that it's able to cut precisely and consistently every time. You do not have to worry about aligning the sheets as the machine will make adjustments as needed. As long as the sheet is generally in the right area, the machine can compensate for placement and tilt. This is pivotal for card games because you want the backs of every card to be indistinguishable. More on Print & Cut later.
 
-You only need to use a few buttons to operate a Cameo 5. First, there is the power button, which is on the right side of the machine. Second, there are the media load and media eject buttons on the control panel. The buttons are used load and eject the cutting mat that carries your sheet.
+You only need to use a few buttons to operate a Cameo 5. First, there is the power button, which is on the right side of the machine. Second, there are the media load and media eject buttons on the bottom of the control panel. The buttons are used load and eject the cutting mat that carries your sheet. Lastly, there's a repeat cutting job button that appears on the top of the control panel.
 
 <!-- !TODO: diagram of Cameo 5 control panel -->
 
@@ -218,11 +220,11 @@ As mentioned previously, there are a number of different cutting templates. Open
 
 Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
 
-<!-- !TODO: show how to place a sheet -->
+![Sheet alignment](images/sheet_alignment.jpg)
 
 Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
 
-<!-- !TODO: show the notch on the machine -->
+![Mat alignment](images/mat_alignment.jpg)
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
@@ -231,6 +233,8 @@ Finally, start the cutting job. The machine should begin the Print & Cut process
 Click the media eject button on the machine to remove the mat. Pull off the cards and excess.
 
 Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
+
+![Relaminating the cards.](images/relamination.jpg)
 
 Now you're ready to play with your cards!
 
@@ -284,9 +288,13 @@ Ensure that the sheets are generated with the right template and printed with 10
 
 Ensure the sheet is placed correctly on the mat and the mat is placed correctly in the machine. Otherwise, the machine can struggle to scan the registration marks. The top left corner of the paper, not the lamination, should align with the top left corner of the grid on the mat. The left edge of the mat should align with the notch on the machine.
 
-The registration process is the following: first the scan the black square in the top left, then the L in the bottom left, and finally the L in the top right. In my own experience, the registration can occasionally fail as the machine is scanning the bottom left L. This occurs when the machine accidentally scans the bottom left card as it's searching for the bottom left L. If you have this issue, a workaround is to cover the bottom left card with a Post-It note during registration and removing it before cutting.
+Try playing around with the lighting. If the room is too bright or too dark, the machine may have issues. Try shining a light at the sensor to provide more lighting. Try closing the cover as well.
 
-If none of the previous tips worked, the issue may be your choice of paper, lamination, and printing. If you are using a low quality printer and the registration marks are not dark enough, the registration can fail.
+In my own experience, the registration can occasionally fail as the machine is scanning the bottom left L. This occurs when the machine unintentionally scans the bottom left card as it's searching for the bottom left L. If you have this issue, try covering the bottom left card with a Post-It note during registration and removing it before cutting.
+
+![Registration fix](images/registration_fix.jpg)
+
+If none of the previous tips worked, the issue may be your choice of paper, lamination, or printing.
 
 ### Why is my machine cutting in the wrong place?
 
