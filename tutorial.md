@@ -199,8 +199,7 @@ pip install -r requirements.txt
 First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
 > [!NOTE]
-> My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](examples/ZERO%20SUMZ/).
-> Please note that these game assets are intended for educational purposes and are not intended to be redistributed commercially.
+> My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](examples/ZERO%20SUMZ/). These game assets are for educational purposes only.
 
 Generate the PDF with the following:
 
