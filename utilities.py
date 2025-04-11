@@ -230,7 +230,7 @@ def generate_pdf(
                     # Fetch card art
                     front_card_images = []
                     for file in file_group:
-                        print(f'image {num_image}: {file}')
+                        print(f'Image {num_image}: {file}')
                         num_image = num_image + 1
 
                         front_image_path = os.path.join(front_dir_path, file)
@@ -266,7 +266,7 @@ def generate_pdf(
                     front_card_images = []
                     back_card_images = []
                     for file in file_group:
-                        print(f'image {num_image} (double-sided): {file}')
+                        print(f'Image {num_image} (double-sided): {file}')
                         num_image = num_image + 1
 
                         front_image_path = os.path.join(front_dir_path, file)
@@ -310,9 +310,13 @@ def generate_pdf(
                     # Add the front and back layouts
                     add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, paper_layout.width, paper_layout.height, card_layout.template, False)
 
+                if len(pages) == 0:
+                    print('No pages were generated')
+                    return
+
                 # Save the pages array as a PDF
                 pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
-                print(f'generated PDF: {pdf_path}')
+                print(f'Generated PDF: {pdf_path}')
 
 def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> List[Image.Image]:
     offset_images = []

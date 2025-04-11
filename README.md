@@ -6,17 +6,19 @@ Ever wanted to make your own custom card game but without the hassle of a craft 
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, check out the [tutorial](tutorial.md)!
+If this is your first time here, check out the [tutorial](tutorial.md)! We also have a [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
-We also have a [Discord server](https://discord.gg/jhsKmAgbXc)!
+## Purpose
+
+The purpose of this repo is to enable you to use a Silhouette cutting machine to create card games and proxies. Proxies are only intended to be used for casual play and playtesting. You may not use this repo to disguise fake cards to decieve people or to play in sanctioned tournaments. You are only permitted to sell cards made this way if you are the full privileged copyright holder.
 
 ## Contents
 
-* [tutorial.md](tutorial.md), an in-depth tutorial that documents the methodology
-* [create_pdf.py](#create_pdfpy), a script for laying out your cards in a printable PDF
+* [tutorial.md](tutorial.md), an in-depth tutorial
+* [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
+* [examples/](examples/), a directory containing sample games
+* [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
 * [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
-* [cutting_templates/](cutting_templates/), a directory containing all the cutting templates
-* [examples/](examples/), a directory containing sample games and their assets
 
 ## Cutting Templates
 
@@ -24,8 +26,8 @@ This project supports the following card and paper sizes, with more in the futur
 
 | Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` |
 | ---------- | ----------- | ------------ | ------- | ------------ | -------- |
-| Letter     | ✅         | ✅           | ✅      | ✅          | ✅       |
-| A4         | ✅         | ✅           | ✅      | ✅          | ✅       |
+| Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      |
+| A4         | ✅         | ✅           | ✅     |  ✅          | ✅      |
 
 Card size measurements:
 
@@ -82,7 +84,9 @@ To create double-sided cards, put front images in `game/front` and back images i
 
 If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.
 
-The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with 10.
+![Extend corners](images/extend_corners.jpg)
+
+The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with `10`
 
 ```shell
 python create_pdf.py --extend_corners 10
