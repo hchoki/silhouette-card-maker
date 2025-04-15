@@ -100,24 +100,24 @@ Usage: create_pdf.py [OPTIONS]
 Options:
   --front_dir_path TEXT           The path to the directory containing the
                                   card fronts.  [default: game/front]
-  --back_dir_path TEXT            The path to the directory containing one
-                                  or no card backs.  [default: game/back]
+  --back_dir_path TEXT            The path to the directory containing one or
+                                  no card backs.  [default: game/back]
   --double_sided_dir_path TEXT    The path to the directory containing card
                                   backs for double-sided cards.  [default:
                                   game/double_sided]
   --output_pdf_path TEXT          The desired path to the output PDF.
                                   [default: game/output/game.pdf]
   --card_size [standard|japanese|poker|poker_half|bridge]
-                                  The desired card size.  [default:
-                                  standard]
+                                  The desired card size.  [default: standard]
   --paper_size [letter|a4]        The desired paper size.  [default: letter]
-  --front_registration            Enable the front pages to have Print &
-                                  Play (registration marks).
+  --front_registration            Enable the front pages to have Print & Play
+                                  (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
-  --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded
-                                  corners in card images.  [default: 0;
-                                  x>=0]
+  --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded corners
+                                  in card images.  [default: 0; x>=0]
+  --load_offset                   Apply saved offsets. See `offset_pdf.py` for
+                                  more information.
   --help                          Show this message and exit.
 ```
 
@@ -157,10 +157,24 @@ If you have not already created and activated your virtual Python environment an
 
 Run the script.
 ```shell
-python offset_pdf.py game.pdf --x_offset -5 --y_offset 10
+python offset_pdf.py --x_offset -5 --y_offset 10
 ```
 
 Get your offset PDF at `game/output/game_offset.pdf`.
+
+### Save Offset
+
+You can save your x and y offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
+
+```shell
+python offset_pdf.py --x_offset -5 --y_offset 10 --save
+```
+
+Additionally, you can automatically apply a saved offset in [`create_pdf.py`](#create_pdfpy) by using the `--load_offset` option.
+
+```shell
+python create_pdf.py --load_offset
+```
 
 ### CLI Options
 
@@ -172,5 +186,6 @@ Options:
   --output_pdf_path TEXT  The desired path of the offset PDF.
   -x, --x_offset INTEGER  The desired offset in the x-axis.
   -y, --y_offset INTEGER  The desired offset in the y-axis.
+  -s, --save              Save the x and y offset values.
   --help                  Show this message and exit.
 ```

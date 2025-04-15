@@ -122,7 +122,8 @@ def generate_pdf(
     paper_size: PaperSize,
     front_registration: bool,
     only_fronts: bool,
-    extend_corners: int
+    extend_corners: int,
+    load_offset: bool
 ):
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
@@ -195,7 +196,7 @@ def generate_pdf(
             with Image.open(registration_path) as reg_im:
 
                 # Create the array that will store the filled templates
-                pages = []
+                pages: List[Image.Image] = []
 
                 max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
 
@@ -314,9 +315,48 @@ def generate_pdf(
                     print('No pages were generated')
                     return
 
+                # Load saved offset if available
+                if load_offset:
+                    saved_offset = load_saved_offset()
+
+                    if saved_offset is None:
+                        print('Offset cannot be applied')
+                    else:
+                        print(f'Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}')
+                        pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset)
+
                 # Save the pages array as a PDF
                 pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
                 print(f'Generated PDF: {pdf_path}')
+
+class OffsetData(BaseModel):
+    x_offset: int
+    y_offset: int
+
+def save_offset(x_offset, y_offset) -> None:
+    # Create the directory if it doesn't exist
+    os.makedirs('data', exist_ok=True)
+
+    # Save the offset data to a JSON file
+    with open('data/offset_data.json', 'w') as offset_file:
+        offset_file.write(OffsetData(x_offset=x_offset, y_offset=y_offset).model_dump_json(indent=4))
+
+    print('Offset data saved!')
+
+def load_saved_offset() -> OffsetData:
+    if os.path.exists('data/offset_data.json'):
+        with open('data/offset_data.json', 'r') as offset_file:
+            try:
+                data = json.load(offset_file)
+                return OffsetData(**data)
+
+            except json.JSONDecodeError as e:
+                print(f'Cannot decode offset JSON: {e}')
+
+            except ValidationErr as e:
+                print(f'Cannot validate offset data: {e}.')
+
+    return None
 
 def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> List[Image.Image]:
     offset_images = []
