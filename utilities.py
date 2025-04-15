@@ -106,7 +106,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if not only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
-    draw.text((page_width - 800, page_height - 60), f'sheet: {num_sheet}, template: {template}', fill = (0, 0, 0), font = font)
+    draw.text((page_width - 800, page_height - 180), f'sheet: {num_sheet}, template: {template}', fill = (0, 0, 0), font = font)
 
     # Add a back page for every front page template
     pages.append(front_page)

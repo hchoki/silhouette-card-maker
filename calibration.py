@@ -18,11 +18,11 @@ with Image.open(registration_path) as reg_im:
     
     front_image = reg_im.copy()
     front_draw = ImageDraw.Draw(front_image)
-    front_draw.text((print_width - 800, print_height - 60), 'front', fill = (0, 0, 0), font = font)
+    front_draw.text((print_width - 800, print_height - 180), 'front', fill = (0, 0, 0), font = font)
 
     back_image = reg_im.copy()
     back_draw = ImageDraw.Draw(back_image)
-    back_draw.text((print_width - 800, print_height - 60), 'back', fill = (0, 0, 0), font = font)
+    back_draw.text((print_width - 800, print_height - 180), 'back', fill = (0, 0, 0), font = font)
 
     test_size = 25
     test_distance = 75
