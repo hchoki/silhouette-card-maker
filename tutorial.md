@@ -210,10 +210,10 @@ Activate the environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-> [!TIP] If you get a security error when activating in PowerShell, run:
+<!-- > [!TIP] If you get a security error when activating in PowerShell, run:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-> ```
+> ``` -->
 
 ---
 
