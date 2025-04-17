@@ -164,35 +164,65 @@ The following is a table of working settings from various testers. Do not use th
 
 [Install Silhouette Studio](https://www.silhouetteamerica.com/silhouette-studio).
 
-[Install Python](https://www.python.org/downloads/).
+Git clone this repo. If you don't know how, you can download the code [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip).
 
-[Install Git](https://github.com/git-guides/install-git).
+If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
-Clone this repo.
-
-```shell
-git clone git@github.com:Alan-Cha/silhouette-card-maker-testing.git
-```
-
-Open the repo.
+### Navigate to the code
 ```shell
 cd silhouette-card-maker-testing
 ```
 
-Create a Python virtual environment.
+---
+
+### Check if Python is installed
+```shell
+python --version
+```
+
+If you don't have Python, install it [here](https://www.python.org/downloads/). Be sure to check the box **"Add Python to PATH"** during installation.
+
+---
+
+### Upgrade pip (Python's package manager)
+```shell
+python -m pip install --upgrade pip
+```
+
+---
+
+### Create and activate a Python virtual environment
+
+Create the virtual environment:
 ```shell
 python -m venv venv
 ```
 
-Activate the Python virtual environment.
+Activate the environment:
+
+**Terminal (macOS/Linux):**
 ```shell
 . venv/bin/activate
 ```
 
-Download Python packages.
+**PowerShell (Windows):**
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+> [!TIP] If you get a security error when activating in PowerShell, run:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+> ```
+
+---
+
+### Install Python packages
 ```shell
 pip install -r requirements.txt
 ```
+
+---
 
 ### Create the PDF
 
@@ -212,12 +242,16 @@ You can find the PDF in `game/output/game.pdf`.
 <!-- > [!TIP]
 > `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options). -->
 
+---
+
 ### Prepare the sheets
 
 Print out the PDF and laminate the sheets.
 
 > [!TIP]
 > Because cardstock is thicker than normal printer paper, you may need to set your laminator at a higher setting in order to get good lamination. If not, you may have cloudy lamination and delamination issues.
+
+---
 
 ### Cut the sheets
 
@@ -242,6 +276,8 @@ Finally, start the cutting job. The machine should begin the Print & Cut process
 > * [Why didn't my machine cut all the way through?](#why-didnt-my-machine-cut-all-the-way-through)
 > * [Why is my machine cutting in the wrong place?](#why-is-my-machine-cutting-in-the-wrong-place)
 > * [Why did my cards come out diagonally?](#why-did-my-cards-come-out-diagonally) -->
+
+---
 
 ### Finish the cards
 
