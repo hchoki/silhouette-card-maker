@@ -223,12 +223,17 @@ Activate the environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-> [!TIP] If you get a security error when activating in PowerShell, run:
->
-> ```powershell
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-> ```
->
+You may see a security error the first time you try this in PowerShell. If you do, run the following:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+```
+
+Then try activating the environment again.
+
+[!NOTE]
+> You may see a security error the first time you try this in PowerShell. If you do, run the following:
+> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
 > Then try activating the environment again.
 
 ---
@@ -244,7 +249,7 @@ pip install -r requirements.txt
 
 First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
-> [!NOTE]
+[!NOTE]
 > My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](examples/ZERO%20SUMZ/). These game assets are for educational purposes only.
 
 Generate the PDF with the following:
