@@ -168,6 +168,8 @@ Git clone this repo. If you don't know how, you can download the code [here](htt
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
+---
+
 ### Navigate to the code
 
 If you cloned the repo, you know what to do.
@@ -223,18 +225,8 @@ Activate the environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-You may see a security error the first time you try this in PowerShell. If you do, run the following:
-
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-```
-
-Then try activating the environment again.
-
 > [!NOTE]
-> You may see a security error the first time you try this in PowerShell. If you do, run the following:
-> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
-> Then try activating the environment again.
+> You may see a security error the first time you try this in PowerShell. If you do, run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`. Then try activating the environment again.
 
 ---
 
@@ -391,5 +383,9 @@ As mentioned in [Why is the registration failing?](#why-is-the-registration-fail
 If either the fronts or the backs are offset, then there's most likely an issue with your printer alignment. Refer to your printer's instruction manual and try to recalibrate it. If there's no way to change the printer's settings, try using [offset.py](README.md#offset_pdfpy) to compensate for the offset.
 
 If both the fronts and backs are offset, then there may be an issue with registraion. Ensure that you are printing with the right scale and cutting with the right cutting template, and ensure that there's nothing that can interfere with the registration process.
+
+### Why are my cards the wrong size?
+
+Some printers secretly add an offset to your prints, even if they are set to 100% scale or actual size. You may need to do some manual calibration in order to have your cards print and be cut out at the right size.
 
 ## Special thanks
