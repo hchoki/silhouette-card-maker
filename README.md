@@ -114,6 +114,9 @@ Options:
                                   (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
+  --crop INTEGER                  Crop a percentage of the outer portion of
+                                  front and double-sided images, useful for
+                                  existing print bleed.
   --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded corners
                                   in card images.  [default: 0; x>=0]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for

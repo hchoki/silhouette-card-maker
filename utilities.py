@@ -64,7 +64,7 @@ def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, 
         card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, extend_corners: int, flip: bool):
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: int, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
@@ -79,6 +79,14 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
 
             # Rotate the back image to account for orientation
             card_image = card_image.rotate(180)
+
+        # Crop the outer portion of a card to remove preexisting print bleed
+        if crop > 0:
+            print(crop)
+            card_width, card_height = card_image.size
+            card_width_crop = math.floor(card_width / 2 * (crop/100))
+            card_height_crop = math.floor(card_height / 2 * (crop/100))
+            card_image = card_image.crop((card_width_crop, card_height_crop, card_width - card_width_crop, card_height - card_height_crop))
 
         card_image = card_image.resize((width, height))
         card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
@@ -122,6 +130,7 @@ def generate_pdf(
     paper_size: PaperSize,
     front_registration: bool,
     only_fronts: bool,
+    crop: int,
     extend_corners: int,
     load_offset: bool
 ):
@@ -216,6 +225,7 @@ def generate_pdf(
                             card_layout.width,
                             card_layout.height,
                             max_print_bleed,
+                            crop,
                             extend_corners,
                             flip=True
                         )
@@ -250,6 +260,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
+                        crop,
                         extend_corners,
                         flip=False
                     )
@@ -289,6 +300,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
+                        crop,
                         extend_corners,
                         flip=False
                     )
@@ -304,6 +316,7 @@ def generate_pdf(
                         card_layout.width,
                         card_layout.height,
                         max_print_bleed,
+                        crop,
                         extend_corners,
                         flip=True
                     )
