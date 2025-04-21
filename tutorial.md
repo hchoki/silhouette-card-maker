@@ -106,7 +106,7 @@ The Cameo is core to this process so it's important to give some background so y
 
 ### Silhouette Cameo 5
 
-The Cameo 5 is an electronically operated cutting machine. It's similar to a laser cutter or a CNC machine. A computer controls the movement of the toolhead, which contains a small blade similar to a hobby knife, and the toolhead will cut the material. You can control various cutting parameters including the speed of the blade and the pressure of the blade, and you can cut various materials including paper, card stock, sticker paper, cardboard, vinyl, foam, fabric, and even leather. You can also purchase special add-on tools for foiling, embossing, and other purposes.
+The Cameo 5 is an electronically operated cutting machine. It's similar to a laser cutter or a CNC machine. A computer controls the movement of the toolhead, which contains a small blade similar to a hobby knife, and the toolhead will cut the material. You can control various cutting parameters including the speed of the blade and the force of the blade, and you can cut various materials including paper, card stock, sticker paper, cardboard, vinyl, foam, fabric, and even leather. You can also purchase special add-on tools for foiling, embossing, and other purposes.
 
 <!-- !TODO: diagram of Cameo 5 -->
 
@@ -136,7 +136,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 
 ### Cutting settings
 
-Silhouette Studio provides a number of cutting settings, including blade pressure, cutting speed, passes, and blade depth.
+Silhouette Studio provides a number of cutting settings, including blade force, cutting speed, passes, and blade depth.
 
 <!-- !TODO: screenshot of Silhouette Studio cutting settings -->
 
@@ -144,19 +144,22 @@ Before starting the tutorial, determine the cutting settings that works best for
 
 Unfortunately, there are no short cuts for this. You will need to do some experimentation on your own.
 
-I recommend creating a simple cutting template with Silhouette Studio. Set the blade pressure, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and start the cutting job. Try different combinations of settings and repeat as necessary.
+I recommend creating a simple cutting template with Silhouette Studio. Set the blade force, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Prepare your cutting material, stick the material onto the cutting mat, insert the mat into the machine, and start the cutting job. Try different combinations of settings and repeat as necessary.
 
 <!-- !TODO: screenshot of a simple cutting template -->
 
 The following is a table of working settings from various testers. Do not use these settings blindly. Test conservatively and work up to the listed values. If not, you risk breaking your machine or cutting through your mat.
 
-| Machine | Blade          | Card stock     | Lamination  | Pressure | Speed | Passes | Depth |
-| ------- | -------------- | -------------- | ----------- | -------- | ----- | ------ | ----- |
-| Cameo 5 | Autoblade      | 65 lb          | 3 mil       | 30       | 30    | 3      | 7     |
-| Cameo 5 | Autoblade      | 110 lb         | 3 mil       | 33       | 20    | 3      | 7     |
-| Cameo 5 | Autoblade      | 110 lb/199 gsm | 3 mil       | 33       | 30    | 4      | 10    |
-| Cameo 5 | Autoblade      | 220 gsm        | 150 microns | 30       | 26    | 4      | 8     |
-| Cameo 3 | Deep-Cut Blade | 110 lb         | 3 mil       | 33       | 5     | 5      | 19    |
+| Machine      | Blade          | Card stock     | Lamination  | Force    | Speed | Passes | Depth |
+| ------------ | -------------- | -------------- | ----------- | -------- | ----- | ------ | ----- |
+| Cameo 5      | Autoblade      | 65 lb          | 3 mil       | 30       | 30    | 3      | 7     |
+| Cameo 5      | Autoblade      | 65 lbs/250 gsm | 3 mil       | 30       | 20    | 4      | 7     |
+| Cameo 5      | Autoblade      | 110 lb         | 3 mil       | 33       | 20    | 3      | 8     |
+| Cameo 5      | Autoblade      | 110 lb/199 gsm | 3 mil       | 33       | 30    | 4      | 10    |
+| Cameo 5      | Autoblade      | 220 gsm        | 150 microns | 30       | 26    | 4      | 8     |
+| Cameo 5      | Autoblade      | 250 gsm        | 120 microns | 40       | 10    | 8      | 10    |
+| Cameo 4 Plus | Autoblade      | 110 lb         | 3 mil       | 30       | 30    | 3      | 5     |
+| Cameo 3      | Deep-Cut Blade | 110 lb         | 3 mil       | 33       | 5     | 5      | 19    |
 
 ## Instructions
 
@@ -310,7 +313,7 @@ In regards to rerunning `create_pdf.py` in the future, you only need to do a few
 
 Lastly, we have a [Discord server](https://discord.gg/jhsKmAgbXc)! We'd love to see you there! You can find help if you're struggling with the tutorial, you can see pictures of other people's cards, and you talk to many different people who are all interested in creating board games and playing card games.
 
-In any case, thanks for reading and best of luck with your card cutting adventures!
+Thanks for reading and best of luck with your card cutting adventures!
 
 ## FAQ
 
@@ -374,7 +377,7 @@ If none of the previous tips worked, the issue may be your choice of paper, lami
 
 Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see [here](#cutting-settings). 
 
-If you configured you cutting settings, then try adjusting your settings by adding more pressure or more passes. If you are still having issues, try using a new blade and/or mat.
+If you configured you cutting settings, then try adjusting your settings by adding more force or more passes. If you are still having issues, try using a new blade and/or mat.
 
 ### Why is my machine cutting in the wrong place?
 
