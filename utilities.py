@@ -82,7 +82,6 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
 
         # Crop the outer portion of a card to remove preexisting print bleed
         if crop > 0:
-            print(crop)
             card_width, card_height = card_image.size
             card_width_crop = math.floor(card_width / 2 * (crop/100))
             card_height_crop = math.floor(card_height / 2 * (crop/100))
