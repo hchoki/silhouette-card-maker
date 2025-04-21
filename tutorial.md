@@ -304,7 +304,13 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
+As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_front` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here](README.md#cli-options) for more information.
 
+In regards to rerunning `create_pdf.py` in the future, you only need to do a few steps. Simply open Terminal or Powershell, navigate to the code, activate the virtual environment, and run `create_pdf.py`. You do not need to recreate the virtual environment or reinstall Python packages. However, this project will continue to grow and offer new features. If you want to get the latest updates, then you would have to get the latest code, create a new virtual environment, and reinstall Python packages.
+
+Lastly, we have a [Discord server](https://discord.gg/jhsKmAgbXc)! We'd love to see you there! You can find help if you're struggling with the tutorial, you can see pictures of other people's cards, and you talk to many different people who are all interested in creating board games and playing card games.
+
+In any case, thanks for reading and best of luck with your card cutting adventures!
 
 ## FAQ
 
