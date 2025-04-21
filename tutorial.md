@@ -164,13 +164,26 @@ The following is a table of working settings from various testers. Do not use th
 
 [Install Silhouette Studio](https://www.silhouetteamerica.com/silhouette-studio).
 
-Git clone this repo. If you don't know how, you can download the code [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip).
+Git clone this repo. If you don't know how, you can download the code [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip). Then unzip the code.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
 ### Navigate to the code
+
+If you cloned the repo, you know what to do.
+
+If you don't, then you need to determine the path to your unzipped code is.
+
+For example, if you unzipped it in your `Downloads` folder, then the following command will navigate you to the code.
+
+**Terminal (macOS/Linux):**
 ```shell
-cd silhouette-card-maker-testing
+cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
+```
+
+**PowerShell (Windows):**
+```powershell
+cd Downloads\silhouette-card-maker-testing-main\silhouette-card-maker-testing-main
 ```
 
 ---
@@ -210,10 +223,13 @@ Activate the environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-<!-- > [!TIP] If you get a security error when activating in PowerShell, run:
+> [!TIP] If you get a security error when activating in PowerShell, run:
+>
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-> ``` -->
+> ```
+>
+> Then try activating the environment again.
 
 ---
 
@@ -239,8 +255,8 @@ python create_pdf.py
 
 You can find the PDF in `game/output/game.pdf`.
 
-<!-- > [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options). -->
+> [!TIP]
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
 
 ---
 
