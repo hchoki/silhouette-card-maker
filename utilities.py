@@ -43,7 +43,28 @@ class PaperLayout(BaseModel):
 class Layouts(BaseModel):
     paper_layouts: Dict[PaperSize, PaperLayout]
 
+# Known junk files across OSes
+EXTRANEOUS_FILES = {
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+    "Icon\r",  # macOS oddball
+}
+
+def delete_hidden_files_in_directory(path: str):
+    if len(path) > 0:
+        for file in os.listdir(path):
+            full_path = os.path.join(path, file)
+            if os.path.isfile(full_path) and (file in EXTRANEOUS_FILES or file.startswith("._")):
+                try:
+                    os.remove(full_path)
+                    print(f"Removed hidden file: {full_path}")
+                except OSError as e:
+                    print(f"Could not remove {full_path}: {e}")
+
 def get_back_card_image_path(back_dir_path) -> str | None:
+    delete_hidden_files_in_directory(back_dir_path)
+
     # List all files in the directory that do not end with .md
     # The directory may contain markdown files
     files = [f for f in os.listdir(back_dir_path) if (os.path.isfile(os.path.join(back_dir_path, f)) and not f.endswith(".md"))]
@@ -64,7 +85,7 @@ def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, 
         card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: int, extend_corners: int, flip: bool):
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: float, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
@@ -129,7 +150,7 @@ def generate_pdf(
     paper_size: PaperSize,
     front_registration: bool,
     only_fronts: bool,
-    crop: int,
+    crop: float,
     extend_corners: int,
     load_offset: bool
 ):

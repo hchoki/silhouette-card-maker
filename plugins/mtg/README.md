@@ -81,10 +81,67 @@ Navigate to the root directory. This plugin is not meant to be run in `plugins\m
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-instructions) for more information.
 
-Put your decklist into a text file. In this example, the decklist format is `simple` and the filename is  `deck.txt`.
+Put your decklist into a text file. In this example, the decklist format is MTG Arena (`mtga`) and the filename is  `deck.txt`.
 
-Run the plugin.
+Run the script.
 
 ```shell
-python plugins/mtg/fetch.py deck.txt simple
+python plugins/mtg/fetch.py deck.txt mtga
+```
+
+Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
+
+## CLI Options
+
+```
+Usage: fetch.py [OPTIONS] DECK_PATH
+                {simple|mtga|mtgo|archidekt|deckstats|moxfield}
+
+Options:
+  -i, --ignore_set_and_collector_number
+                                  Ignore provided sets and collector numbers
+                                  when fetching cards.
+  --prefer_older_sets             Prefer fetching cards from older sets if
+                                  sets are not provided.
+  -s, --preferred_set TEXT        Specify preferred set(s) when fetching cards
+                                  if sets are not provided. Use this option
+                                  multiple times to specify multiple preferred
+                                  sets.
+  --prefer_showcase               Prefer fetching cards from showcase
+                                  treatment
+  --prefer_full_art               Prefer fetching cards with full art,
+                                  borderless, or extended art.
+  --help                          Show this message and exit.
+```
+
+### Examples
+
+Use a Moxfield decklist named `my_decklist.txt`.
+
+```shell
+python plugins/mtg/fetch.py my_decklist.txt moxfield
+```
+
+Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest normal versions of these cards (not showcase or full/borderless/extended art). 
+
+```shell
+python plugins/mtg/fetch.py my_decklist.txt moxfield -i
+```
+
+Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest full, borderless, or extended art for all cards when possible. 
+
+```shell
+python plugins/mtg/fetch.py my_decklist.txt moxfield -i --prefer_full_art
+```
+
+Use an MTG Online decklist named `old_school.txt` and ignore all the provided sets and collector numbers. Instead, get the latest oldest normal versions of these cards (not showcase or full/borderless/extended art). 
+
+```shell
+python plugins/mtg/fetch.py old_school.txt mtgo -i --prefer_older_sets
+```
+
+Use an Deckstats decklist named `eldraine_commander.txt`. Use the set and collector numbers when provided. If not, get art from the Eldraine (`ELD`) and Wilds of Eldraine (`WOE`) expansions when possible.
+
+```shell
+python plugins/mtg/fetch.py eldraine_commander.txt deckstats -s eld -s woe
 ```

@@ -12,7 +12,7 @@ def request_scryfall(
     query: str,
 ):
     r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
-    
+
     # Check for 2XX response code
     r.raise_for_status()
 
@@ -61,6 +61,25 @@ def fetch_card_art(
 def remove_nonalphanumeric(s: str) -> str:
     return re.sub(r'[^\w]', '', s)
 
+def partition_printings(printings, condition):
+    matches = []
+    non_matches = []
+    for card in printings:
+        (matches if condition(card) else non_matches).append(card)
+    return matches, non_matches
+
+
+def progressive_filtering(printings, filters):
+    pool = printings
+    leftovers = []
+
+    for condition in filters:
+        matched, not_matched = partition_printings(pool, condition)
+        leftovers = not_matched + leftovers
+        pool = matched or pool  # Only narrow if we have any matches
+
+    return pool + leftovers
+
 def fetch_card(
     index: int,
     quantity: int,
@@ -70,10 +89,12 @@ def fetch_card(
     ignore_set_and_collector_number: bool,
 
     name: str,
-    preferred_sets: Set[str],
-    enforce_preferred_sets: bool,
 
     prefer_older_sets: bool,
+    preferred_sets: Set[str],
+
+    prefer_showcase: bool,
+    prefer_full_art: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -102,44 +123,46 @@ def fetch_card(
         prints_search_json = request_scryfall(card_json['prints_search_uri']).json()
         card_printings = prints_search_json['data']
 
-        # Remove promo, digital, and full art printings
-        filtered_card_printings = list(filter(lambda card_print: card_print['lang'] == 'en' and card_print['nonfoil'] and not card_print['promo'] and not card_print['digital'] and not card_print['full_art'], card_printings))
-        if len(filtered_card_printings) == 0:
-            raise Exception(f'after cleaning, no acceptable printings for "{name}"')
-
-        # Flip the order of the list if older printings are preferred
+        # Optional reverse for older preferences
         if prefer_older_sets:
-            filtered_card_printings.reverse()
+            card_printings.reverse()
 
-        # If there are no preferred sets, then just select the first appropriate card printing
-        if len(preferred_sets) == 0:
-            card_print = filtered_card_printings[0]
-            fetch_card_art(index, quantity, clear_card_name, card_print["set"], card_print["collector_number"], card_json['layout'], front_img_dir, double_sided_dir)
+        # Define filters in order of preference
+        filters = [
+            lambda c: c['set'] in preferred_sets,
+            lambda c: not prefer_showcase ^ ('frame_effects' in c and 'showcase' in c['frame_effects']),
+            lambda c: not prefer_full_art ^ (c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
+        ]
 
-        else:
-            added_card = False
-            for card_print in filtered_card_printings:
-                if card_print['set'] in preferred_sets:
-                    added_card = True
-                    fetch_card_art(index, quantity, clear_card_name, card_print["set"], card_print["collector_number"], card_json['layout'], front_img_dir, double_sided_dir)
+        # Apply progressive filtering
+        filtered_printings = progressive_filtering(card_printings, filters)
 
-                    break
+        # Pick best match
+        if not filtered_printings:
+            raise Exception(f'No printings found for "{name}"')
 
-            # Check if a printing has been selected
-            if not added_card:
-                if enforce_preferred_sets:
-                    raise Exception(f'No printing for card "{name}" in the preferred sets {preferred_sets}.')
-                else:
-                    print(f'No printing for card "{name}" in the preferred sets {preferred_sets}, defaulting to random printing.')
-                    card_print = filtered_card_printings[0]
-                    fetch_card_art(index, quantity, clear_card_name, card_print["set"], card_print["collector_number"], card_json['layout'], front_img_dir, double_sided_dir)
+        best_print = filtered_printings[0]
+
+        # Fetch card art
+        fetch_card_art(
+            index,
+            quantity,
+            clear_card_name,
+            best_print["set"],
+            best_print["collector_number"],
+            card_json['layout'],
+            front_img_dir,
+            double_sided_dir
+        )
 
 def get_handle_card(
     ignore_set_and_collector_number: bool,
 
-    preferred_sets: Set[str],
-    enforce_preferred_sets: bool,
     prefer_older_sets: bool,
+    preferred_sets: Set[str],
+
+    prefer_showcase: bool,
+    prefer_full_art: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -154,10 +177,12 @@ def get_handle_card(
             ignore_set_and_collector_number,
 
             name,
-            preferred_sets,
-            enforce_preferred_sets,
 
             prefer_older_sets,
+            preferred_sets,
+
+            prefer_showcase,
+            prefer_full_art,
 
             front_img_dir,
             double_sided_dir

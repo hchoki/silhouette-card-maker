@@ -121,7 +121,7 @@ Options:
                                   (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
-  --crop INTEGER RANGE            Crop a percentage of the outer portion of
+  --crop FLOAT RANGE              Crop a percentage of the outer portion of
                                   front and double-sided images, useful for
                                   existing print bleed.  [0<=x<=100]
   --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded corners
@@ -129,6 +129,38 @@ Options:
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
   --help                          Show this message and exit.
+```
+
+### Examples
+
+Put the registration marks on the front side, instead of back side.
+
+```shell
+python create_pdf.py --front_registration
+```
+
+Put the registration marks on the front side and do not generate the back side. This combo is useful if you want to make stickers or save ink by making cards without backs.
+
+```shell
+python create_pdf.py --front_registration --only_fronts
+```
+
+Create poker-sized cards with A4 sized paper.
+
+```shell
+python create_pdf.py --card_size poker --paper_size a4
+```
+
+Crop the borders of the front and double-sided images. This option is useful if your images already have print bleed.
+
+```shell
+python create_pdf.py --crop 6.5
+```
+
+Remove the [white corners](#white-corners) from the PDF and load the saved offset from [`offset_pdf.py`](#offset_pdfpy).
+
+```shell
+python create_pdf.py --extend_corners 10 --load_offset
 ```
 
 ## offset_pdf.py
