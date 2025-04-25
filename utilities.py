@@ -63,8 +63,6 @@ def delete_hidden_files_in_directory(path: str):
                     print(f"Could not remove {full_path}: {e}")
 
 def get_back_card_image_path(back_dir_path) -> str | None:
-    delete_hidden_files_in_directory(back_dir_path)
-
     # List all files in the directory that do not end with .md
     # The directory may contain markdown files
     files = [f for f in os.listdir(back_dir_path) if (os.path.isfile(os.path.join(back_dir_path, f)) and not f.endswith(".md"))]
@@ -165,6 +163,10 @@ def generate_pdf(
     d_path = Path(double_sided_dir_path)
     if not d_path.exists() or not d_path.is_dir():
         raise Exception(f'Double-sided image directory path "{d_path}" is invalid.')
+
+    delete_hidden_files_in_directory(front_dir_path)
+    delete_hidden_files_in_directory(back_dir_path)
+    delete_hidden_files_in_directory(double_sided_dir_path)
 
     # Get the back image, if it exists
     use_default_back_page = False
