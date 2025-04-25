@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import List
+from typing import Set
 import pandas as pd
 import re
 import requests
@@ -67,10 +67,10 @@ def fetch_card(
 
     card_set: str,
     card_collector_number: str,
-    use_set_and_collector_number: bool,
+    ignore_set_and_collector_number: bool,
 
     name: str,
-    preferred_sets: List[str],
+    preferred_sets: Set[str],
     enforce_preferred_sets: bool,
 
     prefer_older_sets: bool,
@@ -78,7 +78,7 @@ def fetch_card(
     front_img_dir: str,
     double_sided_dir: str
 ):
-    if use_set_and_collector_number and card_set != "" and card_collector_number != "":
+    if not ignore_set_and_collector_number and card_set != "" and card_collector_number != "":
         card_info_query = f"https://api.scryfall.com/cards/{card_set}/{card_collector_number}"
 
         # Query for card info
@@ -128,16 +128,16 @@ def fetch_card(
             # Check if a printing has been selected
             if not added_card:
                 if enforce_preferred_sets:
-                    raise Exception(f'cannot find a print for "{name}" in the sets {preferred_sets}')
+                    raise Exception(f'No printing for card "{name}" in the preferred sets {preferred_sets}.')
                 else:
-                    print(f'no preferred printing for "{name}", defaulting to random printing')
+                    print(f'No printing for card "{name}" in the preferred sets {preferred_sets}, defaulting to random printing.')
                     card_print = filtered_card_printings[0]
                     fetch_card_art(index, quantity, clear_card_name, card_print["set"], card_print["collector_number"], card_json['layout'], front_img_dir, double_sided_dir)
 
 def get_handle_card(
-    use_set_and_collector_number: bool,
+    ignore_set_and_collector_number: bool,
 
-    preferred_sets: List[str],
+    preferred_sets: Set[str],
     enforce_preferred_sets: bool,
     prefer_older_sets: bool,
 
@@ -151,7 +151,7 @@ def get_handle_card(
 
             card_set,
             card_collector_number,
-            use_set_and_collector_number,
+            ignore_set_and_collector_number,
 
             name,
             preferred_sets,
@@ -163,31 +163,3 @@ def get_handle_card(
             double_sided_dir
         )
     return configured_fetch_card
-
-# def get_handle_card(
-#     use_set_and_collector_number: bool,
-
-#     preferred_sets: List[str],
-#     enforce_preferred_sets: bool,
-#     prefer_older_sets: bool,
-
-#     front_img_dir: str,
-#     double_sided_dir: str
-# ):
-#     return lambda index, name, card_set=None, card_collector_number=None, quantity=1: fetch_card(
-#         index,
-#         quantity,
-
-#         card_set,
-#         card_collector_number,
-#         use_set_and_collector_number,
-
-#         name,
-#         preferred_sets,
-#         enforce_preferred_sets,
-
-#         prefer_older_sets,
-
-#         front_img_dir,
-#         double_sided_dir
-#     )

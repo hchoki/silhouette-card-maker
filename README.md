@@ -17,6 +17,7 @@ The purpose of this repo is to enable you to use a Silhouette cutting machine to
 * [tutorial.md](tutorial.md), an in-depth tutorial
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
 * [examples/](examples/), a directory containing sample games
+* [plugins](plugins), a directory containing scripts for streamlining card image acquisition
 * [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
 * [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
 
@@ -75,6 +76,12 @@ python create_pdf.py
 ```
 
 Get your PDF at `game/output/game.pdf`.
+
+### Plugins
+
+Plugins streamline the process for acquiring card image for various games.
+
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here](plugins/mtg/README.md). 
 
 ### Double-Sided Cards
 
@@ -156,7 +163,7 @@ To figure out the required offset, print out `calibration.pdf` with the card sto
 
 Shine a strong light on the front so you can see the shadows on the back. Determine the square such that the front square and the back square are aligned with each other. This square will provide your offset. Now, you can use `offset_pdf.py` to apply the appropriate offset to your PDF.
 
-If you have not already created and activated your virtual Python environment and installed the dependencies, please do so.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-instructions) for more information.
 
 Run the script.
 ```shell
