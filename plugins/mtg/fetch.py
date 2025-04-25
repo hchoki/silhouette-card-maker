@@ -19,7 +19,7 @@ def cli(deck_dir_path, format):
         return
 
     with open(deck_dir_path, 'r') as deck_file:
-        parse_deck(deck_file.read(), format, get_handle_card(False, [], False, False, front_directory, double_sided_directory))
+        parse_deck(deck_file.read(), format, get_handle_card(True, [], False, False, front_directory, double_sided_directory))
 
 if __name__ == '__main__':
     cli()
