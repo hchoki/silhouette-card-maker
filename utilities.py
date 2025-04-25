@@ -159,7 +159,7 @@ def generate_pdf(
     front_set = set(front_image_filenames)
     ds_set = set(ds_image_filenames)
     if not ds_set.issubset(front_set):
-        raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image direcoty "{front_dir_path}".')
+        raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".')
 
     if only_fronts:
         front_registration = True
