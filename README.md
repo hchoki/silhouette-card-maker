@@ -57,8 +57,14 @@ python -m venv venv
 ```
 
 Activate the Python virtual environment.
+**Terminal (macOS/Linux):**
 ```shell
 . venv/bin/activate
+```
+
+**PowerShell (Windows):**
+```powershell
+.\venv\Scripts\Activate.ps1
 ```
 
 Download Python packages.

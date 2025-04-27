@@ -6,7 +6,9 @@ This plugin supports many different decklist formats such as, `simple`, `mtga`, 
 
 ## Basic instructions
 
-Navigate to the root directory. This plugin is not meant to be run in `plugins/mtg/`.
+Navigate to the [root directory](../../README.md). This plugin is not meant to be run in `plugins/mtg/`.
+
+If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-instructions) for more information.
 
@@ -32,11 +34,11 @@ Options:
                                   when fetching cards.
   --prefer_older_sets             Prefer fetching cards from older sets if
                                   sets are not provided.
-  -s, --preferred_set TEXT        Specify preferred set(s) when fetching cards
-                                  if sets are not provided. Use this option
-                                  multiple times to specify multiple preferred
-                                  sets.
-  --prefer_showcase               Prefer fetching cards from showcase
+  -s, --prefer_set TEXT           Prefer fetching cards from a particular
+                                  set(s) if sets are not provided. Use this
+                                  option multiple times to specify multiple
+                                  preferred sets.
+  --prefer_showcase               Prefer fetching cards with showcase
                                   treatment
   --prefer_full_art               Prefer fetching cards with full art,
                                   borderless, or extended art.
