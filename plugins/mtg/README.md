@@ -6,7 +6,7 @@ This plugin supports many different decklist formats such as, `simple`, `mtga`, 
 
 ## Basic instructions
 
-Navigate to the [root directory](../../README.md). This plugin is not meant to be run in `plugins/mtg/`.
+Navigate to the [root directory](../..). This plugin is not meant to be run in `plugins/mtg/`.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
