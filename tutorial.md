@@ -181,14 +181,8 @@ If you don't, then you need to determine the path to your unzipped code is.
 
 For example, if you unzipped it in your `Downloads` folder, then the following command will navigate you to the code.
 
-**Terminal (macOS/Linux):**
 ```shell
 cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
-```
-
-**PowerShell (Windows):**
-```powershell
-cd Downloads\silhouette-card-maker-testing-main\silhouette-card-maker-testing-main
 ```
 
 ---

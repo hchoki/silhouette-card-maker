@@ -1,9 +1,11 @@
 import re
 
 from enum import Enum
-from typing import Optional
+from typing import Callable, Tuple
 
-def parse_deck_helper(deck_text, is_card_line, extract_card_data, handle_card):
+card_data_tuple = Tuple[str, str, int, int]
+
+def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple], handle_card: Callable) -> None:
     error_lines = []
 
     index = 0
@@ -13,7 +15,7 @@ def parse_deck_helper(deck_text, is_card_line, extract_card_data, handle_card):
 
             name, set_code, collector_number, quantity = extract_card_data(line)
 
-            print(f'Index: {index}, quantity: {quantity}, name: {name}, set code: {set_code}, collector number: {collector_number}')
+            print(f'Index: {index}, quantity: {quantity}, set code: {set_code}, collector number: {collector_number}, name: {name}')
             try:
                 handle_card(index, name, set_code, collector_number, quantity)
             except Exception as e:
@@ -32,11 +34,11 @@ def parse_deck_helper(deck_text, is_card_line, extract_card_data, handle_card):
 # Blazemire Verge
 # Blightstep Pathway
 # Blood Crypt
-def parse_simple_list(deck_text, handle_card):
-    def is_simple_card_line(line):
-        return line.strip()
+def parse_simple_list(deck_text, handle_card) -> None:
+    def is_simple_card_line(line) -> bool:
+        return bool(line.strip())
 
-    def extract_simple_card_data(line):
+    def extract_simple_card_data(line) -> card_data_tuple:
         return (line.strip(), "", "", 1)
 
     parse_deck_helper(deck_text, is_simple_card_line, extract_simple_card_data, handle_card)
@@ -55,14 +57,14 @@ def parse_simple_list(deck_text, handle_card):
 
 # Sideboard
 # 1 Containment Priest
-def parse_mtga(deck_text, handle_card):
+def parse_mtga(deck_text, handle_card) -> None:
     pattern = re.compile(r'(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+)', re.IGNORECASE)
     fallback_pattern = re.compile(r'(\d+)x?\s+(.+)')
 
-    def is_mtga_card_line(line):
-        return pattern.match(line) or fallback_pattern.match(line)
+    def is_mtga_card_line(line) -> bool:
+        return bool(pattern.match(line) or fallback_pattern.match(line))
 
-    def extract_mtga_card_data(line):
+    def extract_mtga_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
             quantity = int(match.group(1))
@@ -92,13 +94,12 @@ def parse_mtga(deck_text, handle_card):
 # 1 Containment Priest
 # 3 Deafening Silence
 # 2 Disruptor Flute
-def parse_mtgo(deck_text, handle_card):
-
-    def is_mtgo_card_line(line):
+def parse_mtgo(deck_text, handle_card) -> None:
+    def is_mtgo_card_line(line) -> bool:
         line = line.strip()
-        return line and line[0].isdigit()
+        return bool(line and line[0].isdigit())
 
-    def extract_mtgo_card_data(line):
+    def extract_mtgo_card_data(line) -> card_data_tuple:
         parts = line.split(' ', 1)
         quantity = int(parts[0])
         name = parts[1].strip()
@@ -112,12 +113,12 @@ def parse_mtgo(deck_text, handle_card):
 # 1x Ashnod's Altar (ema) 218 *F* [Mana Advantage]
 # 1x Assassin's Trophy (sld) 139 [Targeted Disruption]
 # 2x Boseiju Reaches Skyward // Branch of Boseiju (neo) 177 [Ramp] ^Have,#37d67a^
-def parse_archidekt(deck_text, handle_card):
+def parse_archidekt(deck_text, handle_card) -> None:
     pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+).*')
-    def is_archidekt_card_line(line: str):
-        return pattern.match(line)
+    def is_archidekt_card_line(line: str) -> bool:
+        return bool(pattern.match(line))
     
-    def extract_archidekt_card_data(line: str):
+    def extract_archidekt_card_data(line: str) -> card_data_tuple:
         match = pattern.match(line)
         quantity = int(match.group(1))
         name = match.group(2).strip()
@@ -140,12 +141,12 @@ def parse_archidekt(deck_text, handle_card):
 
 # //Maybeboard
 # 1 [MID#159] Smoldering Egg // Ashmouth Dragon
-def parse_deckstats(deck_text, handle_card):
+def parse_deckstats(deck_text, handle_card) -> None:
     pattern = re.compile(r'^(\d+)\s+(?:\[(\w+)?#(\w+)\]\s+)?(.+)$')
-    def is_deckstats_card_line(line: str):
-        return pattern.match(line)
+    def is_deckstats_card_line(line: str) -> bool:
+        return bool(pattern.match(line))
 
-    def extract_deckstats_card_data(line: str):
+    def extract_deckstats_card_data(line: str) -> card_data_tuple:
         match = pattern.match(line)
         quantity = int(match.group(1))
         set_code = match.group(2) or ""
@@ -169,12 +170,12 @@ def parse_deckstats(deck_text, handle_card):
 # 1 Containment Priest (M21) 13
 # 1 Deafening Silence (MB2) 9
 # 1 Disruptor Flute (MH3) 209
-def parse_moxfield(deck_text, handle_card):
+def parse_moxfield(deck_text, handle_card) -> None:
     pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([\w\-]+)')
-    def is_moxfield_card_line(line: str):
-        return pattern.match(line)
+    def is_moxfield_card_line(line: str) -> bool:
+        return bool(pattern.match(line))
 
-    def extract_moxfield_card_data(line: str):
+    def extract_moxfield_card_data(line: str) -> card_data_tuple:
         match = pattern.match(line)
         quantity = int(match.group(1))
         name = match.group(2).strip()
@@ -193,8 +194,7 @@ class DeckFormat(str, Enum):
     DECKSTATS = "deckstats"
     MOXFIELD = "moxfield"
 
-def parse_deck(deck_text: str, format: DeckFormat, handle_card):
-    # format_type = detect_format(deck_text)
+def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
     if format == DeckFormat.SIMPLE:
         parse_simple_list(deck_text, handle_card)
     elif format == DeckFormat.MTGA:

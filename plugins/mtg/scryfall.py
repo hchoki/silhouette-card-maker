@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import Set
+from typing import List, Set, Tuple
 import pandas as pd
 import re
 import requests
@@ -10,7 +10,7 @@ double_sided_layouts = ['transform', 'modal_dfc']
 
 def request_scryfall(
     query: str,
-):
+) -> requests.Response:
     r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
     # Check for 2XX response code
@@ -32,7 +32,7 @@ def fetch_card_art(
 
     front_img_dir: str,
     double_sided_dir: str
-):
+) -> None:
     # Query for the front side
     card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version=large'
     card_art = request_scryfall(card_front_image_query).content
@@ -40,7 +40,7 @@ def fetch_card_art(
 
         # Save image based on quantity
         for counter in range(quantity):
-            image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter)}.jpg')
+            image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.jpg')
 
             with open(image_path, 'wb') as f:
                 f.write(card_art)
@@ -53,7 +53,7 @@ def fetch_card_art(
 
             # Save image based on quantity
             for counter in range(quantity):
-                image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter)}.jpg')
+                image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.jpg')
 
                 with open(image_path, 'wb') as f:
                     f.write(card_art)
@@ -61,7 +61,7 @@ def fetch_card_art(
 def remove_nonalphanumeric(s: str) -> str:
     return re.sub(r'[^\w]', '', s)
 
-def partition_printings(printings, condition):
+def partition_printings(printings: List, condition: List) -> Tuple[List, List]:
     matches = []
     non_matches = []
     for card in printings:
@@ -69,7 +69,7 @@ def partition_printings(printings, condition):
     return matches, non_matches
 
 
-def progressive_filtering(printings, filters):
+def progressive_filtering(printings: List, filters):
     pool = printings
     leftovers = []
 
@@ -129,6 +129,9 @@ def fetch_card(
 
         # Define filters in order of preference
         filters = [
+            lambda c: c['nonfoil'],
+            lambda c: not c['digital'],
+            lambda c: not c['promo'],
             lambda c: c['set'] in preferred_sets,
             lambda c: not prefer_showcase ^ ('frame_effects' in c and 'showcase' in c['frame_effects']),
             lambda c: not prefer_full_art ^ (c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))

@@ -6,16 +6,16 @@ This plugin supports many different decklist formats such as, `simple`, `mtga`, 
 
 ## Basic instructions
 
-Navigate to the root directory. This plugin is not meant to be run in `plugins\mtg\`.
+Navigate to the root directory. This plugin is not meant to be run in `plugins/mtg/`.
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-instructions) for more information.
 
-Put your decklist into a text file. In this example, the decklist format is MTG Arena (`mtga`) and the filename is  `deck.txt`.
+Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.txt` and the decklist format is MTG Arena (`mtga`).
 
 Run the script.
 
 ```shell
-python plugins/mtg/fetch.py deck.txt mtga
+python plugins/mtg/fetch.py game/decklist/deck.txt mtga
 ```
 
 Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
@@ -48,31 +48,31 @@ Options:
 Use a Moxfield decklist named `my_decklist.txt`.
 
 ```shell
-python plugins/mtg/fetch.py my_decklist.txt moxfield
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield
 ```
 
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest normal versions of these cards (not showcase or full/borderless/extended art). 
 
 ```shell
-python plugins/mtg/fetch.py my_decklist.txt moxfield -i
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i
 ```
 
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest full, borderless, or extended art for all cards when possible. 
 
 ```shell
-python plugins/mtg/fetch.py my_decklist.txt moxfield -i --prefer_full_art
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i --prefer_full_art
 ```
 
 Use an MTG Online decklist named `old_school.txt` and ignore all the provided sets and collector numbers. Instead, get the latest oldest normal versions of these cards (not showcase or full/borderless/extended art). 
 
 ```shell
-python plugins/mtg/fetch.py old_school.txt mtgo -i --prefer_older_sets
+python plugins/mtg/fetch.py game/decklist/old_school.txt mtgo -i --prefer_older_sets
 ```
 
-Use an Deckstats decklist named `eldraine_commander.txt`. Use the set and collector numbers when provided. If not, get art from the Eldraine (`ELD`) and Wilds of Eldraine (`WOE`) expansions when possible.
+Use a Deckstats decklist named `eldraine_commander.txt`. Use the set and collector numbers when provided. If not, get art from the Eldraine (`ELD`) and Wilds of Eldraine (`WOE`) expansions when possible.
 
 ```shell
-python plugins/mtg/fetch.py eldraine_commander.txt deckstats -s eld -s woe
+python plugins/mtg/fetch.py game/decklist/eldraine_commander.txt deckstats -s eld -s woe
 ```
 
 ## Formats
