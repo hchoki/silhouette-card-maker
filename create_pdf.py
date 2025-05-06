@@ -22,9 +22,10 @@ default_output_pdf_path = os.path.join(output_directory, 'game.pdf')
 @click.option("--crop", default=0, type=click.FloatRange(min=0, max=100), help="Crop a percentage of the outer portion of front and double-sided images, useful for existing print bleed.")
 @click.option("--extend_corners", default=0, type=click.IntRange(min=0), show_default=True, help="Reduce artifacts produced by rounded corners in card images.")
 @click.option("--load_offset", default=False, is_flag=True, help="Apply saved offsets. See `offset_pdf.py` for more information.")
+@click.option("--name", help="The name of the game.")
 
-def cli(front_dir_path, back_dir_path, double_sided_dir_path, output_pdf_path, card_size, paper_size, front_registration, only_fronts, crop, extend_corners, load_offset):
-    generate_pdf(front_dir_path, back_dir_path, double_sided_dir_path, output_pdf_path, card_size, paper_size, front_registration, only_fronts, crop, extend_corners, load_offset)
+def cli(front_dir_path, back_dir_path, double_sided_dir_path, output_pdf_path, card_size, paper_size, front_registration, only_fronts, crop, extend_corners, load_offset, name):
+    generate_pdf(front_dir_path, back_dir_path, double_sided_dir_path, output_pdf_path, card_size, paper_size, front_registration, only_fronts, crop, extend_corners, load_offset, name)
 
 if __name__ == '__main__':
     cli()
