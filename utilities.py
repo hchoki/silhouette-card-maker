@@ -132,9 +132,12 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if not only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
-    draw.text((page_width - 1150, page_height - 180), f'sheet: {num_sheet}, template: {template}', fill = (0, 0, 0), font = font)
-    if name is not None: 
-        draw.text((page_width - 1150, page_height - 230), f'name: {name}', fill = (0, 0, 0), font = font)
+    label = f'sheet: {num_sheet}, template: {template}'
+    if name is not None:
+        label = f'name: {name}, {label}'
+    
+    draw.text((page_width - 180, page_height - 180), label, fill = (0, 0, 0), anchor="ra", font = font)
+
     # Add a back page for every front page template
     pages.append(front_page)
     if not only_fronts:
@@ -151,7 +154,7 @@ def generate_pdf(
     only_fronts: bool,
     crop: float,
     extend_corners: int,
-    load_offset: bool, 
+    load_offset: bool,
     name: str
 ):
     f_path = Path(front_dir_path)
@@ -290,15 +293,15 @@ def generate_pdf(
                     )
 
                     add_front_back_pages(
-                        single_sided_front_page, 
-                        single_sided_back_page, 
-                        pages, 
-                        paper_layout.width, 
-                        paper_layout.height, 
-                        card_layout.template, 
-                        only_fronts, 
+                        single_sided_front_page,
+                        single_sided_back_page,
+                        pages,
+                        paper_layout.width,
+                        paper_layout.height,
+                        card_layout.template,
+                        only_fronts,
                         name
-                    ) 
+                    )
                 # Create double-sided card layout
                 it = iter(natsorted(list(ds_set)))
                 while True:
