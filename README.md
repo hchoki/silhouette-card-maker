@@ -134,6 +134,7 @@ Options:
                                   in card images.  [default: 0; x>=0]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
+  --name TEXT                     Label each page of the PDF with a name.
   --help                          Show this message and exit.
 ```
 
