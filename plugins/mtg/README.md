@@ -40,7 +40,7 @@ Options:
                                   preferred sets.
   --prefer_showcase               Prefer fetching cards with showcase
                                   treatment
-  --prefer_full_art               Prefer fetching cards with full art,
+  --prefer_extra_art               Prefer fetching cards with full art,
                                   borderless, or extended art.
   --help                          Show this message and exit.
 ```
@@ -62,7 +62,7 @@ python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest full, borderless, or extended art for all cards when possible. 
 
 ```shell
-python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i --prefer_full_art
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i --prefer_extra_art
 ```
 
 Use an MTG Online decklist named `old_school.txt` and ignore all the provided sets and collector numbers. Instead, get the latest oldest normal versions of these cards (not showcase or full/borderless/extended art). 

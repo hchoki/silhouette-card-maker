@@ -34,13 +34,13 @@ def fetch_card_art(
     double_sided_dir: str
 ) -> None:
     # Query for the front side
-    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version=large'
+    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version=png'
     card_art = request_scryfall(card_front_image_query).content
     if card_art is not None:
 
         # Save image based on quantity
         for counter in range(quantity):
-            image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.jpg')
+            image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
 
             with open(image_path, 'wb') as f:
                 f.write(card_art)
@@ -53,7 +53,7 @@ def fetch_card_art(
 
             # Save image based on quantity
             for counter in range(quantity):
-                image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.jpg')
+                image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
 
                 with open(image_path, 'wb') as f:
                     f.write(card_art)
@@ -68,7 +68,6 @@ def partition_printings(printings: List, condition: List) -> Tuple[List, List]:
         (matches if condition(card) else non_matches).append(card)
     return matches, non_matches
 
-
 def progressive_filtering(printings: List, filters):
     pool = printings
     leftovers = []
@@ -79,6 +78,15 @@ def progressive_filtering(printings: List, filters):
         pool = matched or pool  # Only narrow if we have any matches
 
     return pool + leftovers
+
+def filtering(printings: List, filters):
+    pool = printings
+
+    for condition in filters:
+        matched, _ = partition_printings(pool, condition)
+        pool = matched
+
+    return pool
 
 def fetch_card(
     index: int,
@@ -94,7 +102,7 @@ def fetch_card(
     preferred_sets: Set[str],
 
     prefer_showcase: bool,
-    prefer_full_art: bool,
+    prefer_extra_art: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -119,40 +127,46 @@ def fetch_card(
         # Query for card info
         card_json = request_scryfall(card_info_query).json()
 
-        # Get available printings
-        prints_search_json = request_scryfall(card_json['prints_search_uri']).json()
-        card_printings = prints_search_json['data']
+        set = card_json["set"]
+        collector_number = card_json["collector_number"]
 
-        # Optional reverse for older preferences
-        if prefer_older_sets:
-            card_printings.reverse()
+        # If preferred options are used, then filter over prints
+        if prefer_older_sets or len(preferred_sets) > 0 or prefer_showcase or prefer_extra_art:
+            # Get available printings
+            prints_search_json = request_scryfall(card_json['prints_search_uri']).json()
+            card_printings = prints_search_json['data']
 
-        # Define filters in order of preference
-        filters = [
-            lambda c: c['nonfoil'],
-            lambda c: not c['digital'],
-            lambda c: not c['promo'],
-            lambda c: c['set'] in preferred_sets,
-            lambda c: not prefer_showcase ^ ('frame_effects' in c and 'showcase' in c['frame_effects']),
-            lambda c: not prefer_full_art ^ (c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
-        ]
+            # Optional reverse for older preferences
+            if prefer_older_sets:
+                card_printings.reverse()
 
-        # Apply progressive filtering
-        filtered_printings = progressive_filtering(card_printings, filters)
+            # Define filters in order of preference
+            filters = [
+                lambda c: c['nonfoil'],
+                lambda c: not c['digital'],
+                lambda c: not c['promo'],
+                lambda c: c['set'] in preferred_sets,
+                lambda c: not prefer_showcase ^ ('frame_effects' in c and 'showcase' in c['frame_effects']),
+                lambda c: not prefer_extra_art ^ (c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
+            ]
 
-        # Pick best match
-        if not filtered_printings:
-            raise Exception(f'No printings found for "{name}"')
+            # Apply progressive filtering
+            filtered_printings = progressive_filtering(card_printings, filters)
 
-        best_print = filtered_printings[0]
+            if len(filtered_printings) == 0:
+                print(f'No printings found for "{name}" with preferred options. Using default instead.')
+            else:
+                best_print = filtered_printings[0]
+                set = best_print["set"]
+                collector_number = best_print["collector_number"]
 
         # Fetch card art
         fetch_card_art(
             index,
             quantity,
             clear_card_name,
-            best_print["set"],
-            best_print["collector_number"],
+            set,
+            collector_number,
             card_json['layout'],
             front_img_dir,
             double_sided_dir
@@ -165,7 +179,7 @@ def get_handle_card(
     preferred_sets: Set[str],
 
     prefer_showcase: bool,
-    prefer_full_art: bool,
+    prefer_extra_art: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -185,7 +199,7 @@ def get_handle_card(
             preferred_sets,
 
             prefer_showcase,
-            prefer_full_art,
+            prefer_extra_art,
 
             front_img_dir,
             double_sided_dir

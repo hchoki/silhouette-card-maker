@@ -16,7 +16,7 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--prefer_older_sets', default=False, is_flag=True, show_default=True, help="Prefer fetching cards from older sets if sets are not provided.")
 @click.option('-s', '--prefer_set', multiple=True, help="Prefer fetching cards from a particular set(s) if sets are not provided. Use this option multiple times to specify multiple preferred sets.")
 @click.option('--prefer_showcase', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with showcase treatment")
-@click.option('--prefer_full_art', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with full art, borderless, or extended art.")
+@click.option('--prefer_extra_art', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with full art, borderless, or extended art.")
 
 def cli(
     deck_path: str,
@@ -26,7 +26,7 @@ def cli(
     prefer_set: Set[str],
 
     prefer_showcase: bool,
-    prefer_full_art: bool
+    prefer_extra_art: bool
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
@@ -45,7 +45,7 @@ def cli(
                 prefer_set,
                 
                 prefer_showcase,
-                prefer_full_art,
+                prefer_extra_art,
 
                 front_directory,
                 double_sided_directory
