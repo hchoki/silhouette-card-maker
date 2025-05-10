@@ -66,7 +66,7 @@ And if you're already a card-making aficionado, perhaps you wouldn't save much m
 *Disclosure: There are affiliate links below, meaning I may receive a small commission if you click through and make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
 
 Equipment
-* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3Sua8le))
+* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`)
 * [Thermal laminator](https://amzn.to/3E82k57)
 * Inkjet printer
 * [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
@@ -90,8 +90,8 @@ The card stock I use is 110 lb but it may be too thick for some printers. Please
 Similarly, any decent lamination pouches will work. I've also heard good things about matte lamination pouches but they are not as common and also more expensive.
 
 Optional
-* [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3GKwigs))
-* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3GMN8eM))
+* [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`)
+* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`)
 * [Hobby knife with cutting mat](https://amzn.to/41UT2CF)
 
 You'll want to pick up extra cutting mats. Cutting mats are sticky and they hold the sheet as its being cut. Over time, they'll lose their stickiness and must be replaced. Additionally, it's nice to have extra mats so you can prep one as another one is being cut. Each mat should last for a few hundred cards or a few dozen sheets as long as you take care of them.
