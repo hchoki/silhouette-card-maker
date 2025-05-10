@@ -66,7 +66,7 @@ And if you're already a card-making aficionado, perhaps you wouldn't save much m
 *Disclosure: There are affiliate links below, meaning I may receive a small commission if you click through and make a purchase at no extra cost to you. I will only recommend products that I have tried and paid for myself and enjoyed using.*
 
 Equipment
-* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (Silhouette store coupon code: `DIYBOARDGAMES`)
+* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3Sua8le))
 * [Thermal laminator](https://amzn.to/3E82k57)
 * Inkjet printer
 * [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
@@ -90,8 +90,8 @@ The card stock I use is 110 lb but it may be too thick for some printers. Please
 Similarly, any decent lamination pouches will work. I've also heard good things about matte lamination pouches but they are not as common and also more expensive.
 
 Optional
-* [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link)
-* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2?affiliate_code=uKx6VtFWmI&referring_service=link)
+* [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3GKwigs))
+* [Extra cutting blades (AutoBlade)](https://www.silhouetteamerica.com/silh-blade-auto-2?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`), ([Amazon](https://amzn.to/3GMN8eM))
 * [Hobby knife with cutting mat](https://amzn.to/41UT2CF)
 
 You'll want to pick up extra cutting mats. Cutting mats are sticky and they hold the sheet as its being cut. Over time, they'll lose their stickiness and must be replaced. Additionally, it's nice to have extra mats so you can prep one as another one is being cut. Each mat should last for a few hundred cards or a few dozen sheets as long as you take care of them.
@@ -301,7 +301,7 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
-As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_front` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here](README.md#cli-options) for more information.
+As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_fronts` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here](README.md#cli-options) for more information.
 
 In regards to rerunning `create_pdf.py` in the future, you only need to do a few steps. Simply open Terminal or Powershell, navigate to the code, activate the virtual environment, and run `create_pdf.py`. You do not need to recreate the virtual environment or reinstall Python packages. However, this project will continue to grow and offer new features. If you want to get the latest updates, then you would have to get the latest code, create a new virtual environment, and reinstall Python packages.
 
