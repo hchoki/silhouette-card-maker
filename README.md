@@ -29,6 +29,7 @@ This project supports the following card and paper sizes, with more in the futur
 | ---------- | ----------- | ------------ | ------- | ------------ | -------- |
 | Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      |
 | A4         | ✅         | ✅           | ✅     |  ✅          | ✅      |
+| Tabloid    | ✅         | ❌           | ❌     |  ❌          | ❌      |
 | A3         | ✅         | ❌           | ❌     |  ❌          | ❌      |
 
 Card size measurements:
@@ -88,7 +89,7 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card image for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here](plugins/mtg/README.md). 
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here](plugins/mtg/README.md).
 
 ### Double-Sided Cards
 

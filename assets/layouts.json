@@ -166,6 +166,30 @@
                 }
             }
         },
+        "tabloid": {
+            "width": 4960,
+            "height": 3508,
+            "card_layouts": {
+                "standard": {
+                    "width": 742,
+                    "height": 1036,
+                    "x_pos": [
+                        140,
+                        898,
+                        1657,
+                        2416
+                    ],
+                    "y_pos": [
+                        457,
+                        1507,
+                        2556,
+                        3606
+
+                    ],
+                    "template": "tabloid_standard_v1"
+                }
+            }
+        },
         "a3": {
             "width": 4960,
             "height": 3508,
