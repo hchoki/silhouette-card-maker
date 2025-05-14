@@ -27,6 +27,7 @@ class CardSize(str, Enum):
 class PaperSize(str, Enum):
     LETTER = "letter"
     A4 = "a4"
+    A3 = "a3"
 
 class CardLayout(BaseModel):
     width: int

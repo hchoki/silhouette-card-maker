@@ -29,6 +29,7 @@ This project supports the following card and paper sizes, with more in the futur
 | ---------- | ----------- | ------------ | ------- | ------------ | -------- |
 | Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      |
 | A4         | ✅         | ✅           | ✅     |  ✅          | ✅      |
+| A3         | ✅         | ❌           | ❌     |  ❌          | ❌      |
 
 Card size measurements:
 

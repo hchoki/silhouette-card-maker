@@ -84,8 +84,8 @@
             }
         },
         "a4": {
-            "width": 3509,
-            "height": 2481,
+            "width": 3508,
+            "height": 2480,
             "card_layouts": {
                 "standard": {
                     "width": 742,
@@ -163,6 +163,30 @@
                         1626
                     ],
                     "template": "a4_pokerhalf_v1"
+                }
+            }
+        },
+        "a3": {
+            "width": 4960,
+            "height": 3508,
+            "card_layouts": {
+                "standard": {
+                    "width": 742,
+                    "height": 1036,
+                    "x_pos": [
+                        212,
+                        971,
+                        1730,
+                        2489,
+                        3248,
+                        4007
+                    ],
+                    "y_pos": [
+                        185,
+                        1235,
+                        2285
+                    ],
+                    "template": "a3_standard_v1"
                 }
             }
         }
