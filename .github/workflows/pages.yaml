@@ -50,13 +50,16 @@ jobs:
           wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Move into Hugo folder
-        run: cd hugo
+        run: |
+          cd hugo
+          pwd
       - name: Build with Hugo
         env:
           # For maximum backward compatibility with Hugo modules
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
+          pwd
           hugo \
             --gc --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
