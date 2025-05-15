@@ -1,0 +1,15 @@
+baseURL: https://example.org/
+languageCode: en-us
+title: Silhouette Card Makers
+theme: hextra
+menu:
+  main:
+    - name: Search
+      weight: 4
+      params:
+        type: search
+    - name: GitHub
+      weight: 5
+      url: "https://github.com/Alan-Cha/silhouette-card-maker-testing"
+      params:
+        icon: github
