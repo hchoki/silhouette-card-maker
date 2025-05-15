@@ -29,6 +29,9 @@ defaults:
 jobs:
   # Build job
   build:
+    defaults:
+      run:
+        working-directory: ./hugo
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.138.0
@@ -55,7 +58,6 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
-          cd hugo
           hugo \
             --gc --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
@@ -66,6 +68,9 @@ jobs:
 
   # Deployment job
   deploy:
+    defaults:
+      run:
+        working-directory: ./hugo
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
