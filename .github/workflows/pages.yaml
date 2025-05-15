@@ -34,7 +34,7 @@ jobs:
         working-directory: ./hugo
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.138.0
+      HUGO_VERSION: 0.147.3
     steps:
       - name: Checkout
         uses: actions/checkout@v4
