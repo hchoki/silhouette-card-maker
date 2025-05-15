@@ -26,7 +26,10 @@ python -m venv venv
 ```
 
 > [!NOTE]
-> You may see a security error the first time you try this in PowerShell. If you do, run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`. Then try activating the environment again.
+> You may see a **security error**. If you do, run the following, then try activating the environment again.
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+> ```
   {{< /tab >}}
 
 {{< /tabs >}}
