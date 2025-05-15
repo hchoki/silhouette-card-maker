@@ -51,7 +51,7 @@ You can find all the cutting templates for Silhouette Studio in [`cutting_templa
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
 
-### Basic Instructions:
+### Basic Usage
 
 Create a Python virtual environment.
 ```shell
@@ -178,7 +178,7 @@ It's pivotal to ensure that your the fronts and backs are aligned. However, it's
 
 `offset_pdf.py` is a CLI tool that adds an offset to every other page in a PDF, i.e. all the back pages. This offset can compensate for the natural offset from your printer.
 
-### Basic Instructions
+### Basic Usage
 
 First, you must determine the offset by using `assets/calibration.pdf`.
 
