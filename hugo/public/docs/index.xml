@@ -128,7 +128,7 @@
     &lt;a href=&#34;#double-sided-cards&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;To create double-sided cards, put front images in &lt;code&gt;game/front&lt;/code&gt; and back images in &lt;code&gt;game/double_sided&lt;/code&gt;. The filenames must match for each pair.&lt;/p&gt;
 &lt;h2&gt;White Corners&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;white-corners&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#white-corners&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/extend_corners.jpg&#34; alt=&#34;Extend corners&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/extend_corners.jpg&#34; alt=&#34;Extend corners&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;--extend_corners&lt;/code&gt; option can ameliorate this issue. You may need to experiment with the value but I recommend starting with &lt;code&gt;10&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
 
@@ -757,15 +757,15 @@ Options:
 &lt;h3&gt;Cut the sheets&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;cut-the-sheets&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#cut-the-sheets&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Open the &lt;code&gt;letter_standard_&amp;lt;version&amp;gt;.studio3&lt;/code&gt; cutting template in Silhouette Studio. Cutting templates can be found in the &lt;a href=&#34;cutting_templates/&#34; &gt;&lt;code&gt;cutting_templates&lt;/code&gt;&lt;/a&gt; directory.&lt;/p&gt;
 &lt;p&gt;Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and &amp;ldquo;L&amp;quot;s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/sheet_alignment.jpg&#34; alt=&#34;Sheet alignment&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/sheet_alignment.jpg&#34; alt=&#34;Sheet alignment&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/mat_alignment.jpg&#34; alt=&#34;Mat alignment&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/mat_alignment.jpg&#34; alt=&#34;Mat alignment&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Finally, start the cutting job. The machine should begin the Print &amp;amp; Cut process and cut out the cards.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3&gt;Finish the cards&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;finish-the-cards&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#finish-the-cards&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Click the media eject button on the machine to remove the mat. Peel off the cards and excess.&lt;/p&gt;
 &lt;p&gt;Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/relamination.jpg&#34; alt=&#34;Relaminating the cards.&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/relamination.jpg&#34; alt=&#34;Relaminating the cards.&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Now you&amp;rsquo;re ready to play with your cards!&lt;/p&gt;
 &lt;h2&gt;Next Steps&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;next-steps&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#next-steps&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;As mentioned, the &lt;code&gt;create_pdf.py&lt;/code&gt; script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it&amp;rsquo;s important for the card backs to be consistent. However, if you want to override this behavior, you can use the &lt;code&gt;--only_fronts&lt;/code&gt; option. &lt;code&gt;create_pdf.py&lt;/code&gt; can also create double-sided cards, utilize different card and paper sizes, and more! See &lt;a href=&#34;README.md#cli-options&#34; &gt;here&lt;/a&gt; for more information.&lt;/p&gt;
@@ -811,7 +811,7 @@ Options:
 &lt;p&gt;Ensure the sheet is placed correctly on the mat and the mat is placed correctly in the machine. Otherwise, the machine can struggle to scan the registration marks. The top left corner of the paper, not the lamination, should align with the top left corner of the grid on the mat. The left edge of the mat should align with the notch on the machine.&lt;/p&gt;
 &lt;p&gt;Try playing around with the lighting. If the room is too bright or too dark, the machine may have issues. Try shining a light at the sensor to provide more lighting. Try closing the cover as well.&lt;/p&gt;
 &lt;p&gt;In my own experience, the registration can occasionally fail as the machine is scanning the bottom left L. This occurs when the machine unintentionally scans the bottom left card as it&amp;rsquo;s searching for the bottom left L. If you have this issue, try covering the bottom left card with a Post-It note during registration and removing it before cutting.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/registration_fix.jpg&#34; alt=&#34;Registration fix&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/registration_fix.jpg&#34; alt=&#34;Registration fix&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;If none of the previous tips worked, the issue may be your choice of paper, lamination, or printing.&lt;/p&gt;
 &lt;h2&gt;Why didn&amp;rsquo;t my machine cut all the way through?&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;why-didnt-my-machine-cut-all-the-way-through&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#why-didnt-my-machine-cut-all-the-way-through&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see &lt;a href=&#34;#cutting-settings&#34; &gt;here&lt;/a&gt;.&lt;/p&gt;
