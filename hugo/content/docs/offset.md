@@ -33,7 +33,7 @@ To figure out the required offset, print out `calibration.pdf` with the card sto
 
 Shine a strong light on the front so you can see the shadows on the back. Determine the square such that the front square and the back square are aligned with each other. This square will provide your offset. Now, you can use `offset_pdf.py` to apply the appropriate offset to your PDF.
 
-Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-instructions) for more information.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-usage) for more information.
 
 Run the script.
 ```shell
@@ -50,7 +50,7 @@ You can save your x and y offset with the `--save` option. After saving your off
 python offset_pdf.py --x_offset -5 --y_offset 10 --save
 ```
 
-Additionally, you can automatically apply a saved offset in [`create_pdf.py`](#create_pdfpy) by using the `--load_offset` option.
+Additionally, you can automatically apply a saved offset in [`create_pdf.py`]({{% relref "create.md" %}}) by using the `--load_offset` option.
 
 ```shell
 python create_pdf.py --load_offset

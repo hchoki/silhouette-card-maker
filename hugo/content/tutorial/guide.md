@@ -9,7 +9,7 @@ weight: 20
 
 If you plan on having card backs and/or if you plan on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
 
-Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here](README.md#offset_pdfpy).
+Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here]({{% relref "../docs/offset.md" %}}).
 
 ### Cutting settings
 

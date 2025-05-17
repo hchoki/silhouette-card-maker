@@ -128,7 +128,7 @@ Crop the borders of the front and double-sided images. This option is useful if 
 python create_pdf.py --crop 6.5
 ```
 
-Remove the [white corners](#white-corners) from the PDF and load the saved offset from [`offset_pdf.py`](#offset_pdfpy).
+Remove the [white corners](#white-corners) from the PDF and load the saved offset from [`offset_pdf.py`]({{% relref "offset.md" %}}).
 
 ```shell
 python create_pdf.py --extend_corners 10 --load_offset
