@@ -86,8 +86,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy  # Ensures it runs only after deploy is successful
     steps:
+      - name: Create skip file
+        run: echo "\.s?css$" > skip_file.txt
       - name: Check links with linkcheck
         uses: filiph/linkcheck@3.0.0
         with:
           arguments: |
-            https://alan-cha.github.io/silhouette-card-maker-testing/ --ignore '.*\.css$'
+            https://alan-cha.github.io/silhouette-card-maker-testing/ --skip-file skip_file.txt
