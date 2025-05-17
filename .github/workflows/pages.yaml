@@ -90,4 +90,6 @@ jobs:
       - name: Check links with linkcheck
         uses: filiph/linkcheck@3.0.0
         with:
-          arguments: https://alan-cha.github.io/silhouette-card-maker-testing/
+          arguments: |
+            https://alan-cha.github.io/silhouette-card-maker-testing/
+            --ignore '.*\.css$'
