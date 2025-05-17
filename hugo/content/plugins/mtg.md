@@ -12,7 +12,7 @@ Navigate to the root directory. This plugin is not meant to be run in `plugins/m
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
-Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here]({{% relref "../docs/create/#basic-usage" %}}) for more information.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here]({{% ref "../docs/create/#basic-usage" %}}) for more information.
 
 Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.txt` and the decklist format is MTG Arena (`mtga`).
 
@@ -22,7 +22,7 @@ Run the script.
 python plugins/mtg/fetch.py game/decklist/deck.txt mtga
 ```
 
-Now you can create the PDF using [`create_pdf.py`]({{% relref "../docs/create" %}}).
+Now you can create the PDF using [`create_pdf.py`]({{% ref "../docs/create" %}}).
 
 ## CLI Options
 

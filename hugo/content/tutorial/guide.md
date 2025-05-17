@@ -9,7 +9,7 @@ weight: 20
 
 If you plan on having card backs and/or if you plan on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
 
-Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here]({{% relref "../docs/offset.md" %}}).
+Your printer may have built-in tools for calibration and alignment adjustment. However, if you do not have access to your printer's settings, I have provided a CLI tool that can add an offset to every other page in a provided PDF. You can use this offset to compensate to offset that your printer naturally provides. To learn more, see [here]({{% ref "../docs/offset.md" %}}).
 
 ### Cutting settings
 
@@ -137,7 +137,7 @@ python create_pdf.py
 You can find the PDF in `game/output/game.pdf`.
 
 > [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% relref "../docs/create.md" %}}).
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% ref "../docs/create.md" %}}).
 
 ---
 
@@ -181,7 +181,7 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
-As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_fronts` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here]({{% relref "../docs/create.md" %}}) for more information.
+As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_fronts` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here]({{% ref "../docs/create.md" %}}) for more information.
 
 In regards to rerunning `create_pdf.py` in the future, you only need to do a few steps. Simply open Terminal or Powershell, navigate to the code, activate the virtual environment, and run `create_pdf.py`. You do not need to recreate the virtual environment or reinstall Python packages. However, this project will continue to grow and offer new features. If you want to get the latest updates, then you would have to get the latest code, create a new virtual environment, and reinstall Python packages.
 

@@ -50,7 +50,7 @@ You can save your x and y offset with the `--save` option. After saving your off
 python offset_pdf.py --x_offset -5 --y_offset 10 --save
 ```
 
-Additionally, you can automatically apply a saved offset in [`create_pdf.py`]({{% relref "create.md" %}}) by using the `--load_offset` option.
+Additionally, you can automatically apply a saved offset in [`create_pdf.py`]({{% ref "create.md" %}}) by using the `--load_offset` option.
 
 ```shell
 python create_pdf.py --load_offset

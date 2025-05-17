@@ -51,7 +51,7 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card image for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here]({{% relref "../plugins" %}}).
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here]({{% ref "../plugins" %}}).
 
 ## Double-Sided Cards
 
@@ -128,7 +128,7 @@ Crop the borders of the front and double-sided images. This option is useful if 
 python create_pdf.py --crop 6.5
 ```
 
-Remove the [white corners](#white-corners) from the PDF and load the saved offset from [`offset_pdf.py`]({{% relref "offset.md" %}}).
+Remove the [white corners](#white-corners) from the PDF and load the saved offset from [`offset_pdf.py`]({{% ref "offset.md" %}}).
 
 ```shell
 python create_pdf.py --extend_corners 10 --load_offset
