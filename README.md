@@ -6,7 +6,7 @@ Ever wanted to make your own custom card game but without the hassle of a craft 
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, check out the [tutorial](tutorial.md)! We also have a [Discord server](https://discord.gg/jhsKmAgbXc) too!
+If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
 ## Purpose
 
@@ -14,7 +14,6 @@ The purpose of this repo is to enable you to use a Silhouette cutting machine to
 
 ## Contents
 
-* [tutorial.md](tutorial.md), an in-depth tutorial
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
 * [examples/](examples/), a directory containing sample games
 * [plugins](plugins), a directory containing scripts for streamlining card image acquisition
