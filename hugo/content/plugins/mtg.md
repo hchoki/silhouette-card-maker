@@ -1,4 +1,6 @@
-# MTG Plugin
+---
+title: 'Magic: The Gathering'
+---
 
 This plugin reads a decklist and automatically fetches the card art and puts them in the proper `game/` directories.
 
