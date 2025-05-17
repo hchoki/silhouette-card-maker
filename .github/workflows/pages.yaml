@@ -80,3 +80,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Check links job that runs only after the deploy job succeeds
+  check-links:
+    runs-on: ubuntu-latest
+    needs: deploy  # Ensures it runs only after deploy is successful
+    if: success()  # Only run this job if the deploy job is successful
+    steps:
+      - name: Check links with linkcheck
+        uses: filiph/linkcheck@3.0.0
+        with:
+          arguments: https://alan-cha.github.io/silhouette-card-maker-testing/
