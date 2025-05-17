@@ -167,13 +167,6 @@ Insert the mat into the machine. The left edge of the mat should be aligned with
 
 Finally, start the cutting job. The machine should begin the Print & Cut process and cut out the cards.
 
-<!-- > [!TIP]
-> If you experience trouble here, try these solutions.
-> * [Why is the registration failing?](#why-is-the-registration-failing)
-> * [Why didn't my machine cut all the way through?](#why-didnt-my-machine-cut-all-the-way-through)
-> * [Why is my machine cutting in the wrong place?](#why-is-my-machine-cutting-in-the-wrong-place)
-> * [Why did my cards come out diagonally?](#why-did-my-cards-come-out-diagonally) -->
-
 ---
 
 ### Finish the cards

@@ -6,7 +6,7 @@ Ever wanted to make your own custom card game but without the hassle of a craft 
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
+If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
 ## Purpose
 
@@ -14,6 +14,7 @@ The purpose of this repo is to enable you to use a Silhouette cutting machine to
 
 ## Contents
 
+* [documentation](https://alan-cha.github.io/silhouette-card-maker-testing)
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
 * [examples/](examples/), a directory containing sample games
 * [plugins](plugins), a directory containing scripts for streamlining card image acquisition
@@ -86,7 +87,7 @@ Get your PDF at `game/output/game.pdf`.
 
 ### Plugins
 
-Plugins streamline the process for acquiring card image for various games.
+Plugins streamline the process for acquiring card images for various games.
 
 The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here](plugins/mtg/README.md).
 

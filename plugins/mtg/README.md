@@ -1,8 +1,8 @@
 # MTG Plugin
 
-This plugin reads a decklist and automatically fetches the card art and puts in the proper `game/` directories.
+This plugin reads a decklist and automatically fetches the card art and puts them in the proper `game/` directories.
 
-This plugin supports many different decklist formats such as, `simple`, `mtga`, `mtgo`, `archidekt`, `deckstats`, and `moxfield`. To learn more, see [here](#formats).
+This plugin supports many decklist formats such as, `simple`, `mtga`, `mtgo`, `archidekt`, `deckstats`, and `moxfield`. To learn more, see [here](#formats).
 
 ## Basic instructions
 
