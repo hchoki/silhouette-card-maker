@@ -713,7 +713,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
   <p class="hx:flex hx:items-center hx:font-medium"><svg height=16px class="hx:inline-block hx:align-middle hx:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Note</p>
 
   <div class="hx:w-full hx:min-w-0 hx:leading-7">
-    <div class="hx:mt-6 hx:leading-7 hx:first:mt-0"><p>My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets <a href="examples/ZERO%20SUMZ/" >here</a>. These game assets are for educational purposes only.</p></div>
+    <div class="hx:mt-6 hx:leading-7 hx:first:mt-0"><p>My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets <a href="https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples/ZERO%20SUMZ" target="_blank" rel="noopener">here</a>. These game assets are for educational purposes only.</p></div>
   </div>
 </div>
 <p>Generate the PDF with the following:</p>
@@ -734,7 +734,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
   <p class="hx:flex hx:items-center hx:font-medium"><svg height=16px class="hx:inline-block hx:align-middle hx:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>Tip</p>
 
   <div class="hx:w-full hx:min-w-0 hx:leading-7">
-    <div class="hx:mt-6 hx:leading-7 hx:first:mt-0"><p><code>create_pdf.py</code> offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see <a href="README.md#cli-options" >here</a>.</p></div>
+    <div class="hx:mt-6 hx:leading-7 hx:first:mt-0"><p><code>create_pdf.py</code> offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see <a href="/docs/create/" >here</a>.</p></div>
   </div>
 </div>
 <hr>
@@ -749,7 +749,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 </div>
 <hr>
 <h3>Cut the sheets<span class="hx:absolute hx:-mt-20" id="cut-the-sheets"></span>
-    <a href="#cut-the-sheets" class="subheading-anchor" aria-label="Permalink for this section"></a></h3><p>Open the <code>letter_standard_&lt;version&gt;.studio3</code> cutting template in Silhouette Studio. Cutting templates can be found in the <a href="cutting_templates/" ><code>cutting_templates</code></a> directory.</p>
+    <a href="#cut-the-sheets" class="subheading-anchor" aria-label="Permalink for this section"></a></h3><p>Open the <code>letter_standard_&lt;version&gt;.studio3</code> cutting template in Silhouette Studio. Cutting templates can be found in the <a href="https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates" target="_blank" rel="noopener"><code>cutting_templates</code></a> directory.</p>
 <p>Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and &ldquo;L&quot;s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.</p>
 <p><img src="/images/sheet_alignment.jpg" alt="Sheet alignment"  loading="lazy" /></p>
 <p>Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.</p>
@@ -762,7 +762,7 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 <p><img src="/images/relamination.jpg" alt="Relaminating the cards."  loading="lazy" /></p>
 <p>Now you&rsquo;re ready to play with your cards!</p>
 <h2>Next Steps<span class="hx:absolute hx:-mt-20" id="next-steps"></span>
-    <a href="#next-steps" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>As mentioned, the <code>create_pdf.py</code> script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it&rsquo;s important for the card backs to be consistent. However, if you want to override this behavior, you can use the <code>--only_fronts</code> option. <code>create_pdf.py</code> can also create double-sided cards, utilize different card and paper sizes, and more! See <a href="README.md#cli-options" >here</a> for more information.</p>
+    <a href="#next-steps" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>As mentioned, the <code>create_pdf.py</code> script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it&rsquo;s important for the card backs to be consistent. However, if you want to override this behavior, you can use the <code>--only_fronts</code> option. <code>create_pdf.py</code> can also create double-sided cards, utilize different card and paper sizes, and more! See <a href="/docs/create/" >here</a> for more information.</p>
 <p>In regards to rerunning <code>create_pdf.py</code> in the future, you only need to do a few steps. Simply open Terminal or Powershell, navigate to the code, activate the virtual environment, and run <code>create_pdf.py</code>. You do not need to recreate the virtual environment or reinstall Python packages. However, this project will continue to grow and offer new features. If you want to get the latest updates, then you would have to get the latest code, create a new virtual environment, and reinstall Python packages.</p>
 <p>Lastly, we have a <a href="https://discord.gg/jhsKmAgbXc" target="_blank" rel="noopener">Discord server</a>! We&rsquo;d love to see you there! You can find help if you&rsquo;re struggling with the tutorial, you can see pictures of other people&rsquo;s cards, and you talk to many different people who are all interested in creating board games and playing card games.</p>
 <p>Thanks for reading and best of luck with your card cutting adventures!</p>

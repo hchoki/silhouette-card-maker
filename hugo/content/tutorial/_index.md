@@ -27,10 +27,10 @@ With the press of a button, a cutting machine can do all the hard work for you. 
 
 I'll go over everything you need to know to make your custom card games and proxies with a cutting machine including:
 
-* [Estimated costs of DIY cards](costs/)
-* [List of equipment and materials](supplies/)
-* [Primer on Silhouette cutting machines](primer/)
-* [Step by step cutting guide](guide/)
-* [Troubleshooting](troubleshooting/)
+* [Estimated costs of DIY cards]({{% relref "costs.md" %}})
+* [List of equipment and materials]({{% relref "supplies.md" %}})
+* [Primer on Silhouette cutting machines]({{% relref "primer.md" %}})
+* [Step by step cutting guide]({{% relref "guide.md" %}})
+* [Troubleshooting]({{% relref "troubleshooting.md" %}})
 
-When you're ready, start with [Estimated costs of DIY cards](costs/).
+When you're ready, start with [Estimated costs of DIY cards]({{% relref "costs.md" %}}).

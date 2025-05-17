@@ -15,7 +15,7 @@ If I had to say anything, I would say this combination is only marginally thicke
 
 ## Can I make double-sided cards?
 
-Yes. The `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here](README.md#double-sided-cards).
+Yes, the `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here]({{% relref "../docs/create.md#double_sided_cards" %}}).
 
 Long story short, put the fronts in `game/front` and the backs in `game/double_sided`. The names of the files must match for each pair. Then, simply run `create_pdf.py` as usual.
 
@@ -75,7 +75,7 @@ As mentioned in [Why is the registration failing?](#why-is-the-registration-fail
 
 ## Why are my cards offset?
 
-If either the fronts or the backs are offset, then there's most likely an issue with your printer alignment. Refer to your printer's instruction manual and try to recalibrate it. If there's no way to change the printer's settings, try using [offset.py](README.md#offset_pdfpy) to compensate for the offset.
+If either the fronts or the backs are offset, then there's most likely an issue with your printer alignment. Refer to your printer's instruction manual and try to recalibrate it. If there's no way to change the printer's settings, try using [offset.py]({{% relref "../docs/offset.md" %}}) to compensate for the offset.
 
 If both the fronts and backs are offset, then there may be an issue with registraion. Ensure that you are printing with the right scale and cutting with the right cutting template, and ensure that there's nothing that can interfere with the registration process.
 

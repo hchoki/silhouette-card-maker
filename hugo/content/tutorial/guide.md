@@ -126,7 +126,7 @@ pip install -r requirements.txt
 First, put all your card front images into `game/front`. Then, put a card back image into `game/back`.
 
 > [!NOTE]
-> My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](examples/ZERO%20SUMZ/). These game assets are for educational purposes only.
+> My friend, Jon Lenchner, has offered his card game, Zero sumZ, as an example for this tutorial. Zero sumZ is a abstract pattern-matching game and you can find the game assets [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples/ZERO%20SUMZ). These game assets are for educational purposes only.
 
 Generate the PDF with the following:
 
@@ -137,7 +137,7 @@ python create_pdf.py
 You can find the PDF in `game/output/game.pdf`.
 
 > [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here](README.md#cli-options).
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% relref "../docs/create.md" %}}).
 
 ---
 
@@ -152,7 +152,7 @@ Print out the PDF and laminate the sheets.
 
 ### Cut the sheets
 
-Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](cutting_templates/) directory.
+Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) directory.
 
 <!-- > [!NOTE]
 > The cutting template you should use depends on your PDF generation options. -->
@@ -181,7 +181,7 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
-As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_fronts` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here](README.md#cli-options) for more information.
+As mentioned, the `create_pdf.py` script offers many configuration options. Try exploring some of these options to determining what works best for you. For example, a common use case is to only print the card fronts to save on ink. By default, the PDF generation puts the registration on the card backs, because if you play unsleeved, it's important for the card backs to be consistent. However, if you want to override this behavior, you can use the `--only_fronts` option. `create_pdf.py` can also create double-sided cards, utilize different card and paper sizes, and more! See [here]({{% relref "../docs/create.md" %}}) for more information.
 
 In regards to rerunning `create_pdf.py` in the future, you only need to do a few steps. Simply open Terminal or Powershell, navigate to the code, activate the virtual environment, and run `create_pdf.py`. You do not need to recreate the virtual environment or reinstall Python packages. However, this project will continue to grow and offer new features. If you want to get the latest updates, then you would have to get the latest code, create a new virtual environment, and reinstall Python packages.
 
