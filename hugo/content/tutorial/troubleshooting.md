@@ -15,7 +15,7 @@ If I had to say anything, I would say this combination is only marginally thicke
 
 ## Can I make double-sided cards?
 
-Yes, the `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here]({{% ref "../docs/create.md#double_sided_cards" %}}).
+Yes, the `create_pdf.py` script has many other features including laying out double-sided cards. To see the full documentation, please see [here]({{% ref "../docs/create.md#double-sided-cards" %}}).
 
 Long story short, put the fronts in `game/front` and the backs in `game/double_sided`. The names of the files must match for each pair. Then, simply run `create_pdf.py` as usual.
 
@@ -61,7 +61,7 @@ If none of the previous tips worked, the issue may be your choice of paper, lami
 
 ## Why didn't my machine cut all the way through?
 
-Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see [here](#cutting-settings). 
+Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see [here]({{% relref "guide.md#cutting-settings" %}}). 
 
 If you configured you cutting settings, then try adjusting your settings by adding more force or more passes. If you are still having issues, try using a new blade and/or mat.
 

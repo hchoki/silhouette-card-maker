@@ -12,7 +12,7 @@
 <link fetchpriority="low" href="/site.webmanifest" rel="manifest" />
 <title>Troubleshooting – Silhouette Card Makers</title>
   <meta name="description" content="Do I need to laminate my cards? No. Lamination provides a lot of advantages like durability, water resistance, shuffleability, and card feel, but it’s not necessary. However, if you’re planning on using a cutting machine to help with another workflow that doesn’t require lamination, you don’t need to do so.
-Are laminated cards similar to mass produced cards? It depends on the weight of your card stock and the thickness of your lamination, but from personal experience with 110 lb card stock and 3 mil lamination, I think it’s very similar to mass produced cards." /><link rel="canonical" href="//localhost:1313/tutorial/troubleshooting/" itemprop="url" />
+Are laminated cards similar to mass produced cards? It depends on the weight of your card stock and the thickness of your lamination, but from personal experience with 110 lb card stock and 3 mil lamination, I think it’s very similar to mass produced cards." /><link rel="canonical" href="http://localhost:1313/tutorial/troubleshooting/" itemprop="url" />
 
 <meta property="og:title" content="Troubleshooting" />
 <meta property="og:description" content="Do I need to laminate my cards?
@@ -20,7 +20,7 @@ Are laminated cards similar to mass produced cards? It depends on the weight of 
 Are laminated cards similar to mass produced cards?
     It depends on the weight of your card stock and the thickness of your lamination, but from personal experience with 110 lb card stock and 3 mil lamination, I think it&rsquo;s very similar to mass produced cards." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="//localhost:1313/tutorial/troubleshooting/" /><meta property="article:section" content="tutorial" />
+<meta property="og:url" content="http://localhost:1313/tutorial/troubleshooting/" /><meta property="article:section" content="tutorial" />
 
 
 
@@ -500,7 +500,7 @@ Are laminated cards similar to mass produced cards? It depends on the weight of 
     <a href="#are-laminated-cards-similar-to-mass-produced-cards" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>It depends on the weight of your card stock and the thickness of your lamination, but from personal experience with 110 lb card stock and 3 mil lamination, I think it&rsquo;s very similar to mass produced cards.</p>
 <p>If I had to say anything, I would say this combination is only marginally thicker than mass produced card but if you plan on using card sleeves and playing with a mix of both, I would say it&rsquo;s almost indistinguishable.</p>
 <h2>Can I make double-sided cards?<span class="hx:absolute hx:-mt-20" id="can-i-make-double-sided-cards"></span>
-    <a href="#can-i-make-double-sided-cards" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Yes, the <code>create_pdf.py</code> script has many other features including laying out double-sided cards. To see the full documentation, please see <a href="/docs/create/#double_sided_cards" >here</a>.</p>
+    <a href="#can-i-make-double-sided-cards" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Yes, the <code>create_pdf.py</code> script has many other features including laying out double-sided cards. To see the full documentation, please see <a href="http://localhost:1313/docs/create/#double-sided-cards" target="_blank" rel="noopener">here</a>.</p>
 <p>Long story short, put the fronts in <code>game/front</code> and the backs in <code>game/double_sided</code>. The names of the files must match for each pair. Then, simply run <code>create_pdf.py</code> as usual.</p>
 <h2>Do you have printer recommendations?<span class="hx:absolute hx:-mt-20" id="do-you-have-printer-recommendations"></span>
     <a href="#do-you-have-printer-recommendations" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>No, but I can give you give you some ideas on what you should look for.</p>
@@ -523,14 +523,14 @@ Are laminated cards similar to mass produced cards? It depends on the weight of 
 <p><img src="/images/registration_fix.jpg" alt="Registration fix"  loading="lazy" /></p>
 <p>If none of the previous tips worked, the issue may be your choice of paper, lamination, or printing.</p>
 <h2>Why didn&rsquo;t my machine cut all the way through?<span class="hx:absolute hx:-mt-20" id="why-didnt-my-machine-cut-all-the-way-through"></span>
-    <a href="#why-didnt-my-machine-cut-all-the-way-through" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see <a href="#cutting-settings" >here</a>.</p>
+    <a href="#why-didnt-my-machine-cut-all-the-way-through" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Did you configure your cutting settings? The cutting templates do not contain cutting settings. You must add your settings manually. To learn more, see <a href="/tutorial/guide/#cutting-settings" >here</a>.</p>
 <p>If you configured you cutting settings, then try adjusting your settings by adding more force or more passes. If you are still having issues, try using a new blade and/or mat.</p>
 <h2>Why is my machine cutting in the wrong place?<span class="hx:absolute hx:-mt-20" id="why-is-my-machine-cutting-in-the-wrong-place"></span>
     <a href="#why-is-my-machine-cutting-in-the-wrong-place" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Make sure you&rsquo;re using the right cutting template. Each sheet should be labeled with the cutting template it&rsquo;s associated with, for example &ldquo;letter_bridge_v1&rdquo;.</p>
 <h2>Why did my cards come out diagonally?<span class="hx:absolute hx:-mt-20" id="why-did-my-cards-come-out-diagonally"></span>
     <a href="#why-did-my-cards-come-out-diagonally" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>As mentioned in <a href="#why-is-the-registration-failing" >Why is the registration failing?</a>, your machine may occasionally scan the bottom left card as it&rsquo;s searching for the bottom left L during registration. When this happens, the machine may either stop and complain, or continue and start cutting cards diagonally. To fix this, try being more careful when you place the sheet and the mat, or employ the Post-It note trick.</p>
 <h2>Why are my cards offset?<span class="hx:absolute hx:-mt-20" id="why-are-my-cards-offset"></span>
-    <a href="#why-are-my-cards-offset" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>If either the fronts or the backs are offset, then there&rsquo;s most likely an issue with your printer alignment. Refer to your printer&rsquo;s instruction manual and try to recalibrate it. If there&rsquo;s no way to change the printer&rsquo;s settings, try using <a href="/docs/offset/" >offset.py</a> to compensate for the offset.</p>
+    <a href="#why-are-my-cards-offset" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>If either the fronts or the backs are offset, then there&rsquo;s most likely an issue with your printer alignment. Refer to your printer&rsquo;s instruction manual and try to recalibrate it. If there&rsquo;s no way to change the printer&rsquo;s settings, try using <a href="http://localhost:1313/docs/offset/" target="_blank" rel="noopener">offset.py</a> to compensate for the offset.</p>
 <p>If both the fronts and backs are offset, then there may be an issue with registraion. Ensure that you are printing with the right scale and cutting with the right cutting template, and ensure that there&rsquo;s nothing that can interfere with the registration process.</p>
 <h2>Why are my cards the wrong size?<span class="hx:absolute hx:-mt-20" id="why-are-my-cards-the-wrong-size"></span>
     <a href="#why-are-my-cards-the-wrong-size" class="subheading-anchor" aria-label="Permalink for this section"></a></h2><p>Some printers secretly add an offset to your prints, even if they are set to 100% scale or actual size. You may need to do some manual calibration in order to have your cards print and be cut out at the right size.</p>

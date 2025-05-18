@@ -2,32 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/docs/create/</loc>
+    <loc>http://localhost:1313/docs/create/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/</loc>
+    <loc>http://localhost:1313/tutorial/</loc>
   </url><url>
-    <loc>//localhost:1313/docs/</loc>
+    <loc>http://localhost:1313/docs/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/costs/</loc>
+    <loc>http://localhost:1313/tutorial/costs/</loc>
   </url><url>
-    <loc>//localhost:1313/docs/offset/</loc>
+    <loc>http://localhost:1313/docs/offset/</loc>
   </url><url>
-    <loc>//localhost:1313/plugins/</loc>
+    <loc>http://localhost:1313/plugins/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/supplies/</loc>
+    <loc>http://localhost:1313/tutorial/supplies/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/primer/</loc>
+    <loc>http://localhost:1313/tutorial/primer/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/guide/</loc>
+    <loc>http://localhost:1313/tutorial/guide/</loc>
   </url><url>
-    <loc>//localhost:1313/tutorial/troubleshooting/</loc>
+    <loc>http://localhost:1313/tutorial/troubleshooting/</loc>
   </url><url>
-    <loc>//localhost:1313/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url><url>
-    <loc>//localhost:1313/plugins/mtg/</loc>
+    <loc>http://localhost:1313/plugins/mtg/</loc>
   </url><url>
-    <loc>//localhost:1313/</loc>
+    <loc>http://localhost:1313/</loc>
   </url><url>
-    <loc>//localhost:1313/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
   </url>
 </urlset>
