@@ -9,7 +9,7 @@ weight: 20
 
 If you plan on having card backs and if you plan on making double faced cards, then you need to ensure that printer can print with good front and back alignment. Otherwise, your card fronts and backs may have an offset.
 
-Your printer may have built-in tools for calibration and alignment adjustment. However, it doesn't, you can use [`offset_pdf.py`]({{% relref "../docs/offset.md" %}}) to compensate for the printer's offset.
+Your printer may have built-in tools for calibration and alignment adjustment. However, it doesn't, you can use [`offset_pdf.py`]({{% ref "../docs/offset.md" %}}) to compensate for the printer's offset.
 
 ### Cutting settings
 
@@ -120,7 +120,7 @@ Put card front images into `game/front`. Then, put a card back image into `game/
 > [!TIP]
 > I've prepared the game, Zero sumZ, as an [example](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples/ZERO%20SUMZ). Simply move the assets to the appropriate image folders.
 >
-> You can also use a [plugin]({{% relref "../plugins" %}}) to populate the image folders. For example, the [Magic: The Gathering plugin]({{% relref "../plugins/mtg.md" %}}) reads a decklist and automatically fetches card art.
+> You can also use a [plugin]({{% ref "../plugins" %}}) to populate the image folders. For example, the [Magic: The Gathering plugin]({{% ref "../plugins/mtg.md" %}}) reads a decklist and automatically fetches card art.
 
 Generate the PDF with the following:
 
@@ -129,7 +129,7 @@ python create_pdf.py
 ```
 
 > [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% relref "../docs/create.md" %}}).
+> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% ref "../docs/create.md" %}}).
 
 You can find the PDF in `game/output/game.pdf`.
 
@@ -168,9 +168,9 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
-As mentioned, the `create_pdf.py` script offers many [configuration options]({{% relref "../docs/create.md" %}}). `create_pdf.py` can create double-sided cards, utilize different paper sizes, cut different card sizes, and more!
+As mentioned, the `create_pdf.py` script offers many [configuration options]({{% ref "../docs/create.md" %}}). `create_pdf.py` can create double-sided cards, utilize different paper sizes, cut different card sizes, and more!
 
-If you're interested in making proxies for TCGs, try using a [plugin]({{% relref "../plugins" %}}). For example, the [Magic: The Gathering plugin]({{% relref "../plugins/mtg.md" %}}) reads a decklist and automatically fetches card art.
+If you're interested in making proxies for TCGs, try using a [plugin]({{% ref "../plugins" %}}). For example, the [Magic: The Gathering plugin]({{% ref "../plugins/mtg.md" %}}) reads a decklist and automatically fetches card art.
 
 Lastly, we have a [Discord server](https://discord.gg/jhsKmAgbXc)! We'd love to see you there! You can ask for help, share pictures, and chat with people who all love creating and playing card games.
 
