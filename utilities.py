@@ -108,20 +108,21 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
             card_height_crop = math.floor(card_height / 2 * (crop / 100))
             card_image = card_image.crop((card_width_crop, card_height_crop, card_width - card_width_crop, card_height - card_height_crop))
 
-        card_image = card_image.resize((math.floor(width * ppi_ratio), math.floor(height * ppi_ratio)))
         card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
+        
+        extend_corners_ppi = math.floor(extend_corners * ppi_ratio)
 
         draw_card_with_border(
             card_image,
             base_image,
-            (new_origin_x + extend_corners, new_origin_y + extend_corners, math.floor(width * ppi_ratio) - (2 * extend_corners), math.floor(height * ppi_ratio) - (2 * extend_corners)),
-            math.ceil(print_bleed * ppi_ratio) + extend_corners
+            (new_origin_x + extend_corners_ppi, new_origin_y + extend_corners_ppi, math.floor(width * ppi_ratio) - (2 * extend_corners_ppi), math.floor(height * ppi_ratio) - (2 * extend_corners_ppi)),
+            math.ceil(print_bleed * ppi_ratio) + extend_corners_ppi
         )
 
-def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, template: str, only_fronts: bool, name: str):
+def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, ppi_ratio: float, template: str, only_fronts: bool, name: str):
     # Add template version number to the back
     draw = ImageDraw.Draw(front_page)
-    font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40)
+    font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40 * ppi_ratio)
 
     # "Raw" specified location
     num_sheet = len(pages) + 1
@@ -132,7 +133,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if name is not None:
         label = f'name: {name}, {label}'
     
-    draw.text((page_width - 180, page_height - 180), label, fill = (0, 0, 0), anchor="ra", font = font)
+    draw.text((math.floor((page_width - 180) * ppi_ratio), math.floor((page_height - 180) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ra", font=font)
 
     # Add a back page for every front page template
     pages.append(front_page)
@@ -296,6 +297,7 @@ def generate_pdf(
                     pages,
                     paper_layout.width,
                     paper_layout.height,
+                    ppi_ratio,
                     card_layout.template,
                     only_fronts,
                     name
@@ -358,7 +360,17 @@ def generate_pdf(
                 )
 
                 # Add the front and back layouts
-                add_front_back_pages(double_sided_front_page, double_sided_back_page, pages, paper_layout.width, paper_layout.height, card_layout.template, False, name)
+                add_front_back_pages(
+                    double_sided_front_page,
+                    double_sided_back_page,
+                    pages,
+                    paper_layout.width,
+                    paper_layout.height,
+                    ppi_ratio,
+                    card_layout.template,
+                    False,
+                    name
+                )
 
             if len(pages) == 0:
                 print('No pages were generated')
