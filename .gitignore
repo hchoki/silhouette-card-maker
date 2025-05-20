@@ -17,3 +17,5 @@ game/decklist/*
 data
 
 images/*.xcf
+
+hugo/public/
