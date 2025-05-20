@@ -60,7 +60,7 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save):
     if output_pdf_path is None:
         output_pdf_path = f'{pdf_path.removesuffix(".pdf")}_offset.pdf'
 
-    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=300)
+    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=300, speed=0,  subsampling=0, quality=100)
     print(f'Offset PDF: {output_pdf_path}')
 
 if __name__ == '__main__':

@@ -124,7 +124,8 @@ Options:
                                   [default: game/output/game.pdf]
   --card_size [standard|japanese|poker|poker_half|bridge]
                                   The desired card size.  [default: standard]
-  --paper_size [letter|a4]        The desired paper size.  [default: letter]
+  --paper_size [letter|a4|tabloid|a3]
+                                  The desired paper size.  [default: letter]
   --front_registration            Enable the front pages to have Print & Play
                                   (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
@@ -134,6 +135,9 @@ Options:
                                   existing print bleed.  [0<=x<=100]
   --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded corners
                                   in card images.  [default: 0; x>=0]
+  --quality INTEGER RANGE         Image quality. A higher value corresponds to
+                                  better image quality and larger file size.
+                                  [default: 75; 0<=x<=100]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
   --name TEXT                     Label each page of the PDF with a name.
@@ -170,6 +174,12 @@ Remove the [white corners](#white-corners) from the PDF and load the saved offse
 
 ```shell
 python create_pdf.py --extend_corners 10 --load_offset
+```
+
+Use the highest image quality at the cost of a large file size.
+
+```shell
+python create_pdf.py --quality 100
 ```
 
 ## offset_pdf.py

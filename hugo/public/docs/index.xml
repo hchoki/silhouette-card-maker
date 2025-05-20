@@ -844,6 +844,8 @@ Options:
 &lt;p&gt;If both the fronts and backs are offset, then there may be an issue with registraion. Ensure that you are printing with the right scale and cutting with the right cutting template, and ensure that there&amp;rsquo;s nothing that can interfere with the registration process.&lt;/p&gt;
 &lt;h2&gt;Why are my cards the wrong size?&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;why-are-my-cards-the-wrong-size&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#why-are-my-cards-the-wrong-size&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Some printers secretly add an offset to your prints, even if they are set to 100% scale or actual size. You may need to do some manual calibration in order to have your cards print and be cut out at the right size.&lt;/p&gt;
+&lt;h2&gt;Why does the PDF have a lower image resolution? Why are there image artifacts?&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;why-does-the-pdf-have-a-lower-image-resolution-why-are-there-image-artifacts&#34;&gt;&lt;/span&gt;
+    &lt;a href=&#34;#why-does-the-pdf-have-a-lower-image-resolution-why-are-there-image-artifacts&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;The default quality is lossy. You can maximize the resolution by using &lt;code&gt;--quality 100&lt;/code&gt; option. See &lt;a href=&#34;//localhost:1313/docs/create/&#34; &gt;here&lt;/a&gt; for more information.&lt;/p&gt;
 
       </description>
     </item>

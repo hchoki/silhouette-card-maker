@@ -156,6 +156,7 @@ def generate_pdf(
     only_fronts: bool,
     crop: float,
     extend_corners: int,
+    quality: int,
     load_offset: bool,
     name: str
 ):
@@ -376,7 +377,7 @@ def generate_pdf(
                         pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset)
 
                 # Save the pages array as a PDF
-                pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
+                pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300, speed=0,  subsampling=0, quality=quality)
                 print(f'Generated PDF: {pdf_path}')
 
 class OffsetData(BaseModel):

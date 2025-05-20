@@ -82,3 +82,7 @@ If both the fronts and backs are offset, then there may be an issue with registr
 ## Why are my cards the wrong size?
 
 Some printers secretly add an offset to your prints, even if they are set to 100% scale or actual size. You may need to do some manual calibration in order to have your cards print and be cut out at the right size.
+
+## Why does the PDF have a lower image resolution? Why are there image artifacts?
+
+The default quality is lossy. You can maximize the resolution by using `--quality 100` option. See [here]({{% ref "../docs/create.md" %}}) for more information.
