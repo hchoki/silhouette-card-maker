@@ -88,8 +88,6 @@ Options:
                                   The desired card size.  [default: standard]
   --paper_size [letter|a4|tabloid|a3]
                                   The desired paper size.  [default: letter]
-  --front_registration            Enable the front pages to have Print & Cut
-                                  (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
   --crop FLOAT RANGE              Crop a percentage of the outer portion of
@@ -110,16 +108,10 @@ Options:
 
 ## Examples
 
-Put the registration marks on the front side, instead of back side.
+Do not generate the back side. This option is useful if you want to save ink and produce single-sided cards.
 
 ```shell
-python create_pdf.py --front_registration
-```
-
-Put the registration marks on the front side and do not generate the back side. This combo is useful if you want to make stickers or save ink by making cards without backs.
-
-```shell
-python create_pdf.py --front_registration --only_fronts
+python create_pdf.py --only_fronts
 ```
 
 Create poker-sized cards with A4 sized paper.
