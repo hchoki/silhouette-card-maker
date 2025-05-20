@@ -87,7 +87,7 @@ Options:
   --card_size [standard|japanese|poker|poker_half|bridge]
                                   The desired card size.  [default: standard]
   --paper_size [letter|a4]        The desired paper size.  [default: letter]
-  --front_registration            Enable the front pages to have Print & Play
+  --front_registration            Enable the front pages to have Print & Cut
                                   (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.

@@ -337,7 +337,7 @@ Secondly, determine what kind of custom cards you'd like to make. Do you want to
 
 Not all printers can handle card stock, and even if it can handle card stock, it may not be able to handle thicker card stock like 110 lb. Additionally, if you plan on making double-sided cards, getting a printer that can do duplex printing would be ideal. If you have a simplex printer, you can feed the printed pages back into printer to achieve double-sided printing, but you could have issues with alignment.
 
-Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Play.
+Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Cut.
 
 ### Why are my card delaminating?
 

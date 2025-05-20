@@ -16,6 +16,7 @@ The purpose of this repo is to enable you to use a Silhouette cutting machine to
 
 * [documentation](https://alan-cha.github.io/silhouette-card-maker-testing)
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
+* [calibration/](calibration/), a directory containing offset calibration sheets
 * [examples/](examples/), a directory containing sample games
 * [plugins](plugins), a directory containing scripts for streamlining card image acquisition
 * [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
@@ -126,7 +127,7 @@ Options:
                                   The desired card size.  [default: standard]
   --paper_size [letter|a4|tabloid|a3]
                                   The desired paper size.  [default: letter]
-  --front_registration            Enable the front pages to have Print & Play
+  --front_registration            Enable the front pages to have Print & Cut
                                   (registration marks).
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
@@ -190,7 +191,7 @@ It's pivotal to ensure that your the fronts and backs are aligned. However, it's
 
 ### Basic Usage
 
-First, you must determine the offset by using `assets/calibration.pdf`.
+First, you must determine the offset by using the [calibration sheets](calibration/).
 
 `calibration.pdf` has a front page and a back page.
 
@@ -210,7 +211,7 @@ The back page is the same grid of squares, except each square has a slight offse
 | (-2,  2) | (-1,  2) | ( 0,  2) | ( 1,  2) | ( 2,  2) |
 ```
 
-To figure out the required offset, print out `calibration.pdf` with the card stock you plan to use.
+To determine the required offset, print out `calibration.pdf` with the card stock you plan to use.
 
 Shine a strong light on the front so you can see the shadows on the back. Determine the square such that the front square and the back square are aligned with each other. This square will provide your offset. Now, you can use `offset_pdf.py` to apply the appropriate offset to your PDF.
 
