@@ -51,7 +51,7 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save):
     for page_number in range(len(pdf)):
         print(f"Page {page_number + 1}")
         page = pdf.get_page(page_number)
-        raw_images.append(page.render(scale=300/72).to_pil())
+        raw_images.append(page.render(scale=1200/72).to_pil())
 
     # Offset images
     final_images = offset_images(raw_images, new_x_offset, new_y_offset)
@@ -60,7 +60,7 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save):
     if output_pdf_path is None:
         output_pdf_path = f'{pdf_path.removesuffix(".pdf")}_offset.pdf'
 
-    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=300, speed=0, subsampling=0, quality=100)
+    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=1200, speed=0, subsampling=0, quality=100)
     print(f'Offset PDF: {output_pdf_path}')
 
 if __name__ == '__main__':

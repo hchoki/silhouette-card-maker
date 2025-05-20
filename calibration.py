@@ -88,4 +88,4 @@ for paper_size in PaperSize:
 
         card_list = [front_image, back_image]
         pdf_path = os.path.join("calibration", f"{paper_size.value}_calibration.pdf")
-        card_list[0].save(pdf_path, save_all=True, append_images=card_list[1:], resolution=300, speed=0, subsampling=0, quality=100)
+        card_list[0].save(pdf_path, save_all=True, append_images=card_list[1:], resolution=1200, speed=0, subsampling=0, quality=100)

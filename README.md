@@ -136,8 +136,10 @@ Options:
                                   existing print bleed.  [0<=x<=100]
   --extend_corners INTEGER RANGE  Reduce artifacts produced by rounded corners
                                   in card images.  [default: 0; x>=0]
-  --quality INTEGER RANGE         Image quality. A higher value corresponds to
-                                  better image quality and larger file size.
+  --ppi INTEGER RANGE             Pixels per inch (PPI) when creating PDF.
+                                  [default: 300; x>=0]
+  --quality INTEGER RANGE         File compression. A higher value corresponds
+                                  to better quality and larger file size.
                                   [default: 75; 0<=x<=100]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
@@ -177,10 +179,10 @@ Remove the [white corners](#white-corners) from the PDF and load the saved offse
 python create_pdf.py --extend_corners 10 --load_offset
 ```
 
-Use the highest image quality at the cost of a large file size.
+Produce a 600 pixels per inch (PPI) file with minimal compression.
 
 ```shell
-python create_pdf.py --quality 100
+python create_pdf.py --ppi 600 --quality 100
 ```
 
 ## offset_pdf.py

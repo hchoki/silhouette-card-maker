@@ -85,18 +85,18 @@ def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, 
         card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
         base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: float, extend_corners: int, flip: bool):
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: float, ppi_ratio: float, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
     for i, card_image in enumerate(card_images):
 
         # Calculate the location of the new card based on what number the card is
-        new_origin_x = x_pos[i % num_cards % num_cols]
-        new_origin_y = y_pos[(i % num_cards) // num_cols]
+        new_origin_x = math.floor(x_pos[i % num_cards % num_cols] * ppi_ratio)
+        new_origin_y = math.floor(y_pos[(i % num_cards) // num_cols] * ppi_ratio)
 
         if flip:
-            new_origin_y = y_pos[num_rows - ((i % num_cards) // num_cols) - 1]
+            new_origin_y = math.floor(y_pos[num_rows - ((i % num_cards) // num_cols) - 1] * ppi_ratio)
 
             # Rotate the back image to account for orientation
             card_image = card_image.rotate(180)
@@ -104,18 +104,18 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
         # Crop the outer portion of a card to remove preexisting print bleed
         if crop > 0:
             card_width, card_height = card_image.size
-            card_width_crop = math.floor(card_width / 2 * (crop/100))
-            card_height_crop = math.floor(card_height / 2 * (crop/100))
+            card_width_crop = math.floor(card_width / 2 * (crop / 100))
+            card_height_crop = math.floor(card_height / 2 * (crop / 100))
             card_image = card_image.crop((card_width_crop, card_height_crop, card_width - card_width_crop, card_height - card_height_crop))
 
-        card_image = card_image.resize((width, height))
+        card_image = card_image.resize((math.floor(width * ppi_ratio), math.floor(height * ppi_ratio)))
         card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
 
         draw_card_with_border(
             card_image,
             base_image,
-            (new_origin_x + extend_corners, new_origin_y + extend_corners, width - (2 * extend_corners), height - (2 * extend_corners)),
-            print_bleed + extend_corners
+            (new_origin_x + extend_corners, new_origin_y + extend_corners, math.floor(width * ppi_ratio) - (2 * extend_corners), math.floor(height * ppi_ratio) - (2 * extend_corners)),
+            math.ceil(print_bleed * ppi_ratio) + extend_corners
         )
 
 def get_base_images(blank_im: Image.Image, reg_im: Image.Image, front_registration: bool) -> Tuple[Image.Image, Image.Image]:
@@ -156,6 +156,7 @@ def generate_pdf(
     only_fronts: bool,
     crop: float,
     extend_corners: int,
+    ppi: int,
     quality: int,
     load_offset: bool,
     name: str
@@ -227,13 +228,18 @@ def generate_pdf(
 
         registration_filename =  f'{paper_size}_registration.jpg'
         registration_path = os.path.join(asset_directory, registration_filename)
+        
+        # The baseline PPI is 300
+        ppi_ratio = ppi / 300
 
         # Load a blank page
         with Image.open(blank_path) as blank_im:
-
+            blank_im = blank_im.resize([math.floor(blank_im.width * ppi_ratio), math.floor(blank_im.height * ppi_ratio)])
+            
             # Load an image with the registration marks
             with Image.open(registration_path) as reg_im:
-
+                reg_im = reg_im.resize([math.floor(reg_im.width * ppi_ratio), math.floor(reg_im.height * ppi_ratio)])
+                
                 # Create the array that will store the filled templates
                 pages: List[Image.Image] = []
 
@@ -256,6 +262,7 @@ def generate_pdf(
                             card_layout.height,
                             max_print_bleed,
                             crop,
+                            ppi_ratio,
                             extend_corners,
                             flip=True
                         )
@@ -291,6 +298,7 @@ def generate_pdf(
                         card_layout.height,
                         max_print_bleed,
                         crop,
+                        ppi_ratio,
                         extend_corners,
                         flip=False
                     )
@@ -339,6 +347,7 @@ def generate_pdf(
                         card_layout.height,
                         max_print_bleed,
                         crop,
+                        ppi_ratio,
                         extend_corners,
                         flip=False
                     )
@@ -355,6 +364,7 @@ def generate_pdf(
                         card_layout.height,
                         max_print_bleed,
                         crop,
+                        ppi_ratio,
                         extend_corners,
                         flip=True
                     )
@@ -377,7 +387,7 @@ def generate_pdf(
                         pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset)
 
                 # Save the pages array as a PDF
-                pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300, speed=0, subsampling=0, quality=quality)
+                pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
                 print(f'Generated PDF: {pdf_path}')
 
 class OffsetData(BaseModel):
