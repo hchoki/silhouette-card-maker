@@ -14,7 +14,7 @@ for paper_size in PaperSize:
     # Load a base page
     with Image.open(base_path) as im:
         font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40)
-        coord_font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 30)
+        coord_font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 25)
         
         print_width = im.width
         print_height = im.height
