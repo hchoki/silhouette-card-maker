@@ -110,9 +110,9 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
 
         # Resize the image to normalize extend_corners
         card_image = card_image.resize((math.floor(width * ppi_ratio), math.floor(height * ppi_ratio)))
-        card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
-        
+
         extend_corners_ppi = math.floor(extend_corners * ppi_ratio)
+        card_image = card_image.crop((extend_corners_ppi, extend_corners_ppi, card_image.width - extend_corners_ppi, card_image.height - extend_corners_ppi))
 
         draw_card_with_border(
             card_image,
@@ -134,7 +134,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     label = f'sheet: {num_sheet}, template: {template}'
     if name is not None:
         label = f'name: {name}, {label}'
-    
+
     draw.text((math.floor((page_width - 180) * ppi_ratio), math.floor((page_height - 180) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ra", font=font)
 
     # Add a back page for every front page template
@@ -222,14 +222,14 @@ def generate_pdf(
 
         registration_filename =  f'{paper_size}_registration.jpg'
         registration_path = os.path.join(asset_directory, registration_filename)
-        
+
         # The baseline PPI is 300
         ppi_ratio = ppi / 300
 
         # Load an image with the registration marks
         with Image.open(registration_path) as reg_im:
             reg_im = reg_im.resize([math.floor(reg_im.width * ppi_ratio), math.floor(reg_im.height * ppi_ratio)])
-            
+
             # Create the array that will store the filled templates
             pages: List[Image.Image] = []
 
