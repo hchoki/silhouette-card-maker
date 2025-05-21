@@ -108,6 +108,8 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
             card_height_crop = math.floor(card_height / 2 * (crop / 100))
             card_image = card_image.crop((card_width_crop, card_height_crop, card_width - card_width_crop, card_height - card_height_crop))
 
+        # Resize the image to normalize extend_corners
+        card_image = card_image.resize((math.floor(width * ppi_ratio), math.floor(height * ppi_ratio)))
         card_image = card_image.crop((extend_corners, extend_corners, card_image.width - extend_corners, card_image.height - extend_corners))
         
         extend_corners_ppi = math.floor(extend_corners * ppi_ratio)
