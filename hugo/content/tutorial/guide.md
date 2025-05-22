@@ -19,7 +19,7 @@ Silhouette Studio provides a number of cutting settings, including **blade force
 
 Before starting, determine the cutting settings that works best for you and the materials you want to cut.
 
-You can do this by creating a simple cutting template in Silhouette Studio. Set the blade force, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes.
+To do this, first create a simple cutting template in Silhouette Studio. Then, set the blade force, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Change the settings as necessary.
 
 <!-- !TODO: screenshot of a simple cutting template -->
 
