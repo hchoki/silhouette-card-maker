@@ -82,8 +82,9 @@ Options:
   --double_sided_dir_path TEXT    The path to the directory containing card
                                   backs for double-sided cards.  [default:
                                   game/double_sided]
-  --output_path TEXT          The desired path to the output PDF.
+  --output_path TEXT              The desired path to the output PDF.
                                   [default: game/output/game.pdf]
+  --output_images                 Create images instead of a PDF.
   --card_size [standard|japanese|poker|poker_half|bridge]
                                   The desired card size.  [default: standard]
   --paper_size [letter|tabloid|a4|a3|archb]

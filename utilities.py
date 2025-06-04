@@ -65,6 +65,12 @@ def delete_hidden_files_in_directory(path: str):
                 except OSError as e:
                     print(f"Could not remove {full_path}: {e}")
 
+def get_directory(path):
+    if os.path.isdir(path):
+        return os.path.abspath(path)
+    else:
+        return os.path.abspath(os.path.dirname(path))
+
 def get_back_card_image_path(back_dir_path) -> str | None:
     # List all files in the directory that do not end with .md
     # The directory may contain markdown files
@@ -174,14 +180,13 @@ def generate_pdf(
     delete_hidden_files_in_directory(front_dir_path)
     delete_hidden_files_in_directory(back_dir_path)
     delete_hidden_files_in_directory(double_sided_dir_path)
-    
+
     # Sanity check for output images
     if output_images:
-        if not os.path.isdir(output_path):
-            raise Exception(f'Cannot output images to output path "{output_path}" because it is not a directory.')
+        output_path = get_directory(output_path)
     else:
-        if not output_path.lower().endswith(".pdf"):      
-            raise Exception(f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.')  
+        if not output_path.lower().endswith(".pdf"):
+            raise Exception(f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.')
 
     # Get the back image, if it exists
     use_default_back_page = False
@@ -402,7 +407,7 @@ def generate_pdf(
             if output_images:
                 for index, page in enumerate(pages):
                     page.save(os.path.join(output_path, f'page{index + 1}.png'), resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
-                    
+
                 print(f'Generated images: {output_path}')
 
             else:
