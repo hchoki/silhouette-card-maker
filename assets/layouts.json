@@ -83,6 +83,30 @@
                 }
             }
         },
+        "tabloid": {
+            "width": 4960,
+            "height": 3508,
+            "card_layouts": {
+                "standard": {
+                    "width": 742,
+                    "height": 1036,
+                    "x_pos": [
+                        140,
+                        898,
+                        1657,
+                        2416
+                    ],
+                    "y_pos": [
+                        457,
+                        1507,
+                        2556,
+                        3606
+
+                    ],
+                    "template": "tabloid_standard_v1"
+                }
+            }
+        },
         "a4": {
             "width": 3508,
             "height": 2480,
@@ -166,30 +190,6 @@
                 }
             }
         },
-        "tabloid": {
-            "width": 4960,
-            "height": 3508,
-            "card_layouts": {
-                "standard": {
-                    "width": 742,
-                    "height": 1036,
-                    "x_pos": [
-                        140,
-                        898,
-                        1657,
-                        2416
-                    ],
-                    "y_pos": [
-                        457,
-                        1507,
-                        2556,
-                        3606
-
-                    ],
-                    "template": "tabloid_standard_v1"
-                }
-            }
-        },
         "a3": {
             "width": 4960,
             "height": 3508,
@@ -211,6 +211,30 @@
                         2285
                     ],
                     "template": "a3_standard_v1"
+                }
+            }
+        },
+        "archb": {
+            "width": 5400,
+            "height": 3600,
+            "card_layouts": {
+                "standard": {
+                    "width": 742,
+                    "height": 1036,
+                    "x_pos": [
+                        300,
+                        1111,
+                        1923,
+                        2735,
+                        3546,
+                        4357
+                    ],
+                    "y_pos": [
+                        162,
+                        1281,
+                        2401
+                    ],
+                    "template": "archb_standard_v1"
                 }
             }
         }

@@ -86,7 +86,7 @@ Options:
                                   [default: game/output/game.pdf]
   --card_size [standard|japanese|poker|poker_half|bridge]
                                   The desired card size.  [default: standard]
-  --paper_size [letter|a4|tabloid|a3]
+  --paper_size [letter|tabloid|a4|a3|archb]
                                   The desired paper size.  [default: letter]
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
