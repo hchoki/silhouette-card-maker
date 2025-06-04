@@ -4,7 +4,7 @@ import json
 import math
 import os
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from xml.dom import ValidationErr
 
 from natsort import natsorted
@@ -147,7 +147,8 @@ def generate_pdf(
     front_dir_path: str,
     back_dir_path: str,
     double_sided_dir_path: str,
-    pdf_path: str,
+    output_path: str,
+    output_images: bool,
     card_size: CardSize,
     paper_size: PaperSize,
     only_fronts: bool,
@@ -173,6 +174,14 @@ def generate_pdf(
     delete_hidden_files_in_directory(front_dir_path)
     delete_hidden_files_in_directory(back_dir_path)
     delete_hidden_files_in_directory(double_sided_dir_path)
+    
+    # Sanity check for output images
+    if output_images:
+        if not os.path.isdir(output_path):
+            raise Exception(f'Cannot output images to output path "{output_path}" because it is not a directory.')
+    else:
+        if not output_path.lower().endswith(".pdf"):      
+            raise Exception(f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.')  
 
     # Get the back image, if it exists
     use_default_back_page = False
@@ -390,8 +399,15 @@ def generate_pdf(
                     pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset)
 
             # Save the pages array as a PDF
-            pages[0].save(pdf_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
-            print(f'Generated PDF: {pdf_path}')
+            if output_images:
+                for index, page in enumerate(pages):
+                    page.save(os.path.join(output_path, f'page{index + 1}.png'), resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
+                    
+                print(f'Generated images: {output_path}')
+
+            else:
+                pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
+                print(f'Generated PDF: {output_path}')
 
 class OffsetData(BaseModel):
     x_offset: int
