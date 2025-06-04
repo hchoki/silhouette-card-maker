@@ -18,8 +18,9 @@ default_output_pdf_path = os.path.join(output_directory, 'game.pdf')
 @click.option("-x", "--x_offset", type=int, help="The desired offset in the x-axis.")
 @click.option("-y", "--y_offset", type=int, help="The desired offset in the y-axis.")
 @click.option("-s", "--save", default=False, is_flag=True, help="Save the x and y offset values.")
+@click.option("--ppi", default=300, type=click.IntRange(min=0), show_default=True, help="Pixels per inch (PPI) when creating PDF.")
 
-def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save):
+def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, ppi):
     new_x_offset = 0
     new_y_offset = 0
 
@@ -51,16 +52,16 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save):
     for page_number in range(len(pdf)):
         print(f"Page {page_number + 1}")
         page = pdf.get_page(page_number)
-        raw_images.append(page.render(scale=1200/72).to_pil())
+        raw_images.append(page.render(ppi/72).to_pil())
 
     # Offset images
-    final_images = offset_images(raw_images, new_x_offset, new_y_offset)
+    final_images = offset_images(raw_images, new_x_offset, new_y_offset, ppi)
 
     # The default for output_pdf_path is the original path but with _offset.py appended to the end.
     if output_pdf_path is None:
         output_pdf_path = f'{pdf_path.removesuffix(".pdf")}_offset.pdf'
 
-    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=1200, speed=0, subsampling=0, quality=100)
+    final_images[0].save(output_pdf_path, save_all=True, append_images=final_images[1:], resolution=ppi, speed=0, subsampling=0, quality=100)
     print(f'Offset PDF: {output_pdf_path}')
 
 if __name__ == '__main__':

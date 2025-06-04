@@ -250,5 +250,7 @@ Options:
   -x, --x_offset INTEGER  The desired offset in the x-axis.
   -y, --y_offset INTEGER  The desired offset in the y-axis.
   -s, --save              Save the x and y offset values.
+  --ppi INTEGER RANGE     Pixels per inch (PPI) when creating PDF.  [default:
+                          300; x>=0]
   --help                  Show this message and exit.
 ```

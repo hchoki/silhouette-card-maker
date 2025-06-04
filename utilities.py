@@ -422,13 +422,13 @@ def load_saved_offset() -> OffsetData:
 
     return None
 
-def offset_images(images: List[Image.Image], x_offset: int, y_offset: int) -> List[Image.Image]:
+def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int) -> List[Image.Image]:
     offset_images = []
 
     add_offset = False
     for image in images:
         if add_offset:
-            offset_images.append(ImageChops.offset(image, x_offset, y_offset))
+            offset_images.append(ImageChops.offset(image, math.floor(x_offset * ppi / 300), math.floor(y_offset * ppi / 300)))
         else:
             offset_images.append(image)
 
