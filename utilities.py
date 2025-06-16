@@ -401,7 +401,7 @@ def generate_pdf(
                     print('Offset cannot be applied')
                 else:
                     print(f'Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}')
-                    pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset)
+                    pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset, ppi)
 
             # Save the pages array as a PDF
             if output_images:
