@@ -24,12 +24,12 @@ There's nothing special about this printer cable but it's cheap and it's also a 
 ## Materials
 
 * Printer ink
-* [Card stock (110 lb)](https://amzn.to/3RuU4PA)
-* [Thermal lamination pouches (3 mil)](https://amzn.to/3E5yE8M)
+* [Double-sided glossy card stock](https://amzn.to/408Dbip)
+* [Thermal lamination pouches](https://amzn.to/3E5yE8M)
 
-The card stock I use is 110 lb but it may be too thick for some printers. Please refer to your printer's manual. If 110 lb is too thick, 60 lb also works well. I've also heard amazing things about double-sided glossy photo card stock, but it only works with dye-based inkjet printers, so I will not recommend it. Regardless, any decent card stock will work.
+Use glossy card stock for better lamination clarity.
 
-Similarly, any decent lamination pouches will work. I've also heard good things about matte lamination pouches but they are not as common and also more expensive.
+If you want a matte look, you can use matte lamination pouches, but I still recommend using glossy card stock either way. Note that matte lamination pouches may reduce the contrast and color saturation of your prints.
 
 Optional
 * [Extra cutting mats (12 x 12 in)](https://www.silhouetteamerica.com/cut-mat-12-3t-c?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`) / [Amazon alternative](https://amzn.to/3GKwigs)
