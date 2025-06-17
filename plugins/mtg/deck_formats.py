@@ -1,3 +1,4 @@
+import json
 import re
 
 from enum import Enum
@@ -117,7 +118,7 @@ def parse_archidekt(deck_text, handle_card) -> None:
     pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+).*')
     def is_archidekt_card_line(line: str) -> bool:
         return bool(pattern.match(line))
-    
+
     def extract_archidekt_card_data(line: str) -> card_data_tuple:
         match = pattern.match(line)
         quantity = int(match.group(1))
@@ -186,6 +187,25 @@ def parse_moxfield(deck_text, handle_card) -> None:
 
     parse_deck_helper(deck_text, is_moxfield_card_line, extract_moxfield_card_data, handle_card)
 
+# Scryfall deck builder JSON
+def parse_scryfall_json(deck_text, handle_card) -> None:
+    data = json.loads(deck_text)
+    entries = data.get("entries", {})
+    items = entries.get("mainboard", []) + entries.get("sideboard", []) + entries.get("maybeboard", [])
+
+    for index, item in enumerate(items, start=1):
+        card_digest = item.get("card_digest", {})
+        if card_digest is None:
+            continue
+
+        name = card_digest.get("name", "")
+        set_code = card_digest.get("set", "")
+        collector_number = card_digest.get("collector_number", "")
+        quantity = item.get("count", 1)
+
+        print(f'Index: {index}, quantity: {quantity}, set code: {set_code}, collector number: {collector_number}, name: {name}')
+        handle_card(index, name, set_code, collector_number, quantity)
+
 class DeckFormat(str, Enum):
     SIMPLE = "simple"
     MTGA = "mtga"
@@ -193,6 +213,7 @@ class DeckFormat(str, Enum):
     ARCHIDEKT = "archidekt"
     DECKSTATS = "deckstats"
     MOXFIELD = "moxfield"
+    SCRYFALL_JSON = "scryfall_json"
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
     if format == DeckFormat.SIMPLE:
@@ -207,5 +228,7 @@ def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
         parse_deckstats(deck_text, handle_card)
     elif format == DeckFormat.MOXFIELD:
         parse_moxfield(deck_text, handle_card)
+    elif format == DeckFormat.SCRYFALL_JSON:
+        parse_scryfall_json(deck_text, handle_card)
     else:
         raise ValueError("Unrecognized deck format")
