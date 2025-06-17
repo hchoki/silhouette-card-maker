@@ -1,3 +1,4 @@
+import json
 import re
 
 from enum import Enum
@@ -186,6 +187,19 @@ def parse_moxfield(deck_text, handle_card) -> None:
 
     parse_deck_helper(deck_text, is_moxfield_card_line, extract_moxfield_card_data, handle_card)
 
+def parse_scryfall(deck_text, handle_card) -> None:
+    data = json.loads(deck_text)
+    entries = data.get("entries", {})
+    items = entries.get("mainboard", []) + entries.get("sideboard", [])
+
+    for index, item in enumerate(items, start=1):
+        card_digest = item.get("card_digest", {})
+        name = card_digest.get("name", "")
+        set_code = card_digest.get("set", "")
+        collector_number = card_digest.get("collector_number", "")
+        quantity = item.get("count", 1)
+        handle_card(index, name, set_code, collector_number, quantity)
+
 class DeckFormat(str, Enum):
     SIMPLE = "simple"
     MTGA = "mtga"
@@ -193,6 +207,7 @@ class DeckFormat(str, Enum):
     ARCHIDEKT = "archidekt"
     DECKSTATS = "deckstats"
     MOXFIELD = "moxfield"
+    SCRYFALL = "scryfall"
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
     if format == DeckFormat.SIMPLE:
@@ -207,5 +222,7 @@ def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
         parse_deckstats(deck_text, handle_card)
     elif format == DeckFormat.MOXFIELD:
         parse_moxfield(deck_text, handle_card)
+    elif format == DeckFormat.SCRYFALL:
+        parse_scryfall(deck_text, handle_card)
     else:
         raise ValueError("Unrecognized deck format")
