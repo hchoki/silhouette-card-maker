@@ -49,15 +49,15 @@ Get your PDF at `game/output/game.pdf`.
 
 ## Plugins
 
-Plugins streamline the process for acquiring card image for various games.
+Plugins streamline the process for acquiring card images for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here]({{% ref "../plugins" %}}).
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, Moxfield, and Scryfall. To learn more, see [here]({{% ref "../plugins" %}}).
 
 ## Double-Sided Cards
 
 To create double-sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
 
-## White Corners
+## Corner Artifacts
 
 If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.
 

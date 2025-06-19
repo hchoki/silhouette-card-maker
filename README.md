@@ -10,29 +10,32 @@ If this is your first time here, check out the [tutorial](https://alan-cha.githu
 
 ## Purpose
 
-The purpose of this repo is to enable you to use a Silhouette cutting machine to create card games and proxies. Proxies are only intended to be used for casual play and playtesting. You may not use this repo to disguise fake cards to decieve people or to play in sanctioned tournaments. You are only permitted to sell cards made this way if you are the full privileged copyright holder.
+The purpose of this repo is to enable you to use a Silhouette cutting machine to create card games and proxies. Proxies are only intended to be used for casual play and playtesting.
+
+You may not use this repo to disguise fake cards to decieve people or to play in sanctioned tournaments. You are only permitted to sell cards if you are the full privileged copyright holder.
 
 ## Contents
 
 * [documentation](https://alan-cha.github.io/silhouette-card-maker-testing)
+* [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/)
+* [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
+* [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
 * [calibration/](calibration/), a directory containing offset calibration sheets
 * [examples/](examples/), a directory containing sample games
-* [plugins](plugins), a directory containing scripts for streamlining card image acquisition
-* [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
-* [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
+* [plugins/](plugins), a directory containing scripts for streamlining card image acquisition
 
-## Cutting Templates
+## Supported Sizes
 
 This project supports the following card and paper sizes, with more in the future:
 
-| Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` |
-| ---------- | ----------- | ------------ | ------- | ------------ | -------- |
-| Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      |
-| Tabloid    | ✅         | ❌           | ❌     |  ❌          | ❌      |
-| A4         | ✅         | ✅           | ✅     |  ✅          | ✅      |
-| A3         | ✅         | ❌           | ❌     |  ❌          | ❌      |
-| Arch B     | ✅         | ❌           | ❌     |  ❌          | ❌      |
+| Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` | `domino` |
+| ---------- | ----------- | ------------ | ------- | ------------ | -------- | -------- |
+| Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      | ✅      |
+| Tabloid    | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
+| A4         | ✅         | ✅           | ✅     |  ✅          | ✅      | ❌      |
+| A3         | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
+| Arch B     | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
 
 | Paper size | Inches      | Millimeters   |
 | ---------- | ----------- | ------------- |
@@ -49,6 +52,7 @@ This project supports the following card and paper sizes, with more in the futur
 | `poker`      | 2.5 x 3.5    | 63.5 x 88.9   |
 | `poker_half` | 1.75 x 2.45  | 44.45 x 62.23 |
 | `bridge`     | 2.25 x 3.5   | 57.15 x 88.9  |
+| `domino`     | 1.75 x 3.5   | 44.45 x 88.9  |
 
 \* including: Magic the Gathering, Pokémon, Lorcana, One Piece, Digimon, Star Wars: Unlimited, and Flesh and Blood.
 
@@ -97,13 +101,13 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card images for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, and Moxfield. To learn more, see [here](plugins/mtg/README.md).
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, Moxfield, and Scryfall. To learn more, see [here](plugins/mtg/README.md).
 
 ### Double-Sided Cards
 
 To create double-sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
 
-### White Corners
+### Corner Artifacts
 
 If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.
 

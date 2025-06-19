@@ -2,8 +2,16 @@
 
 This is the source code for [https://alan-cha.github.io/silhouette-card-maker-testing/](https://alan-cha.github.io/silhouette-card-maker-testing/).
 
-To run locally:
+## Local Development
 
-```shell
+### Install Hextra
+
+```sh
+git submodule update --init --recursive
+```
+
+### Serve Website
+
+```sh
 hugo server serve -D
 ```
