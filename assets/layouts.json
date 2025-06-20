@@ -34,21 +34,6 @@
                     ],
                     "template": "letter_japanese_v1"
                 },
-                "bridge": {
-                    "width": 673,
-                    "height": 1049,
-                    "x_pos": [
-                        256,
-                        961,
-                        1666,
-                        2371
-                    ],
-                    "y_pos": [
-                        214,
-                        1288
-                    ],
-                    "template": "letter_bridge_v2"
-                },
                 "poker": {
                     "width": 748,
                     "height": 1049,
@@ -80,6 +65,37 @@
                         1674
                     ],
                     "template": "letter_pokerhalf_v2"
+                },
+                "bridge": {
+                    "width": 673,
+                    "height": 1049,
+                    "x_pos": [
+                        256,
+                        961,
+                        1666,
+                        2371
+                    ],
+                    "y_pos": [
+                        214,
+                        1288
+                    ],
+                    "template": "letter_bridge_v2"
+                },
+                "domino": {
+                    "width": 554,
+                    "height": 1080,
+                    "x_pos": [
+                        230,
+                        801,
+                        1372,
+                        1944,
+                        2515
+                    ],
+                    "y_pos": [
+                        190,
+                        1280
+                    ],
+                    "template": "letter_domino_v1"
                 }
             }
         },
@@ -141,21 +157,6 @@
                     ],
                     "template": "a4_japanese_v1"
                 },
-                "bridge": {
-                    "width": 673,
-                    "height": 1049,
-                    "x_pos": [
-                        359,
-                        1064,
-                        1769,
-                        2475
-                    ],
-                    "y_pos": [
-                        179,
-                        1252
-                    ],
-                    "template": "a4_bridge_v1"
-                },
                 "poker": {
                     "width": 748,
                     "height": 1049,
@@ -187,6 +188,21 @@
                         1626
                     ],
                     "template": "a4_pokerhalf_v1"
+                },
+                "bridge": {
+                    "width": 673,
+                    "height": 1049,
+                    "x_pos": [
+                        359,
+                        1064,
+                        1769,
+                        2475
+                    ],
+                    "y_pos": [
+                        179,
+                        1252
+                    ],
+                    "template": "a4_bridge_v1"
                 }
             }
         },

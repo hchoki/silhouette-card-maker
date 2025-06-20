@@ -23,7 +23,7 @@ You may not use this repo to disguise fake cards to decieve people or to play in
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
 * [calibration/](calibration/), a directory containing offset calibration sheets
 * [examples/](examples/), a directory containing sample games
-* [plugins/](plugins), a directory containing scripts for streamlining card image acquisition
+* [plugins/](plugins/), a directory containing scripts for streamlining card image acquisition
 
 ## Supported Sizes
 
