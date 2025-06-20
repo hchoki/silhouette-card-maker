@@ -56,18 +56,18 @@ Create a new entry in `layouts.json`.
             "height": 2550,
             "card_layouts": {
 +               "domino": {
-+                   "width": 554,
-+                   "height": 1080,
++                   "width": 524,
++                   "height": 1049,
 +                   "x_pos": [
-+                       230,
-+                       801,
-+                       1372,
-+                       1944,
-+                       2515
++                       245,
++                       817,
++                       1388,
++                       1959,
++                       2531
 +                   ],
 +                   "y_pos": [
-+                       190,
-+                       1280
++                       205,
++                       1296
 +                   ],
 +                   "template": "letter_domino_v1"
 +               }
