@@ -31,19 +31,19 @@ This project supports the following card and paper sizes, with more in the futur
 
 | Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` | `domino` |
 | ---------- | ----------- | ------------ | ------- | ------------ | -------- | -------- |
-| Letter     | ✅         | ✅           | ✅     |  ✅          | ✅      | ✅      |
-| Tabloid    | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
-| A4         | ✅         | ✅           | ✅     |  ✅          | ✅      | ❌      |
-| A3         | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
-| Arch B     | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
+| `letter`   | ✅         | ✅           | ✅     |  ✅          | ✅      | ✅      |
+| `tabloid`  | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
+| `a4`       | ✅         | ✅           | ✅     |  ✅          | ✅      | ❌      |
+| `a3`       | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
+| `archb`    | ✅         | ❌           | ❌     |  ❌          | ❌      | ❌      |
 
 | Paper size | Inches      | Millimeters   |
 | ---------- | ----------- | ------------- |
-| Letter     | 8.5 x 11    | 215.9 x 279.4 |
-| Tabloid    | 11 x 17     | 279.4 x 431.8 |
-| A4         | 8.3 x 11.7  | 210 x 297     |
-| A3         | 11.7 x 16.5 | 297 x 420     |
-| Arch B     | 12 x 18     | 304.8 x 457.2 |
+| `letter`   | 8.5 x 11    | 215.9 x 279.4 |
+| `tabloid`  | 11 x 17     | 279.4 x 431.8 |
+| `a4`       | 8.3 x 11.7  | 210 x 297     |
+| `a3`       | 11.7 x 16.5 | 297 x 420     |
+| `archb`    | 12 x 18     | 304.8 x 457.2 |
 
 | Card size    | Inches       | Millimeters   |
 | ------------ | ------------ | ------------- |
@@ -135,7 +135,7 @@ Options:
   --output_path TEXT              The desired path to the output PDF.
                                   [default: game/output/game.pdf]
   --output_images                 Create images instead of a PDF.
-  --card_size [standard|japanese|poker|poker_half|bridge]
+  --card_size [standard|japanese|poker|poker_half|bridge|domino]
                                   The desired card size.  [default: standard]
   --paper_size [letter|tabloid|a4|a3|archb]
                                   The desired paper size.  [default: letter]
