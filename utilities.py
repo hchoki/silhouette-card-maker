@@ -85,15 +85,47 @@ def get_back_card_image_path(back_dir_path) -> str | None:
     else:
         raise Exception(f'Back image directory path "{back_dir_path}" contains more than one image. Files include "{files}".')
 
-def draw_card_with_border(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: int):
-    origin_x, origin_y, origin_width, origin_height = box
+def draw_card_with_bleed(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: tuple[int, int]):
+    origin_x, origin_y, _, _ = box
 
-    # Draw the card multiple times with different dimensions to create print bleed
-    for i in reversed(range(print_bleed)):
-        card_image_resize = card_image.resize((origin_width + (2 * i), origin_height + (2 * i)))
-        base_image.paste(card_image_resize, (origin_x - i, origin_y - i))
+    x_bleed = print_bleed[0]
+    y_bleed = print_bleed[1]
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: int, crop: float, ppi_ratio: float, extend_corners: int, flip: bool):
+    width, height = card_image.size
+    base_image.paste(card_image, (origin_x, origin_y))
+
+    class Axis(int, Enum):
+        X = 0
+        Y = 1
+
+    def extend_edge(crop_box: tuple[int, int, int, int], start: tuple[int, int], bleed: int, axis: Axis):
+        for bleed_i in range(bleed):
+            pos = (
+                start[0] + (bleed_i if axis == Axis.X else 0),
+                start[1] + (bleed_i if axis == Axis.Y else 0)
+            )
+
+            base_image.paste(card_image.crop(crop_box), pos)
+
+    # Extend the edges of the cards to create print bleed
+    # Top and bottom
+    extend_edge((0, 0, width, 1), (origin_x, origin_y - y_bleed), y_bleed, Axis.Y)
+    extend_edge((0, height - 1, width, height), (origin_x, origin_y + height), y_bleed, Axis.Y)
+
+    # Left and right
+    extend_edge((0, 0, 1, height), (origin_x - x_bleed, origin_y), x_bleed, Axis.X)
+    extend_edge((width - 1, 0, width, height), (origin_x + width, origin_y), x_bleed, Axis.X)
+
+    # Corners
+    for x_bleed, crop_x, pos_x in [(x_bleed, 0, origin_x - x_bleed), (x_bleed, width - 1, origin_x + width)]:
+        for y_bleed, crop_y, pos_y in [(y_bleed, 0, origin_y - y_bleed), (y_bleed, height - 1, origin_y + height)]:
+            for x_bleed_i in range(x_bleed):
+                for y_bleed_i in range(y_bleed):
+                    base_image.paste(card_image.crop((crop_x, crop_y, crop_x + 1, crop_y + 1)), (pos_x + x_bleed_i, pos_y + y_bleed_i))
+
+    return base_image
+
+def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: tuple[int, int], crop: float, ppi_ratio: float, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
@@ -122,11 +154,11 @@ def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, nu
         extend_corners_ppi = math.floor(extend_corners * ppi_ratio)
         card_image = card_image.crop((extend_corners_ppi, extend_corners_ppi, card_image.width - extend_corners_ppi, card_image.height - extend_corners_ppi))
 
-        draw_card_with_border(
+        draw_card_with_bleed(
             card_image,
             base_image,
             (new_origin_x + extend_corners_ppi, new_origin_y + extend_corners_ppi, math.floor(width * ppi_ratio) - (2 * extend_corners_ppi), math.floor(height * ppi_ratio) - (2 * extend_corners_ppi)),
-            math.ceil(print_bleed * ppi_ratio) + extend_corners_ppi
+            tuple(math.ceil(bleed * ppi_ratio) + extend_corners_ppi for bleed in print_bleed)
         )
 
 def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, ppi_ratio: float, template: str, only_fronts: bool, name: str):
@@ -458,9 +490,9 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: 
 
     return offset_images
 
-def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int) -> int:
+def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int) -> tuple[int, int]:
     if len(x_pos) == 1 & len(y_pos) == 1:
-        return 0
+        return (0, 0)
 
     x_border_max = 100000
     if len(x_pos) >= 2:
@@ -486,4 +518,4 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
         if y_border_max < 0:
             y_border_max = 100000
 
-    return min(x_border_max, y_border_max) + 1
+    return (x_border_max, y_border_max)
