@@ -85,40 +85,44 @@ def get_back_card_image_path(back_dir_path) -> str | None:
         raise Exception(f'Back image directory path "{back_dir_path}" contains more than one image. Files include "{files}".')
 
 def draw_card_with_bleed(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: tuple[int, int]):
-    origin_x, origin_y, origin_width, origin_height = box
+    origin_x, origin_y, _, _ = box
 
-    
-    left = print_bleed[0]
-    right = print_bleed[0]
-    top = print_bleed[1]
-    bottom = print_bleed[1]
+    x_bleed = print_bleed[0]
+    y_bleed = print_bleed[1]
 
     width, height = card_image.size
     base_image.paste(card_image, (origin_x, origin_y))
 
-    def extend_edge(crop_box, start, bleed, axis):
-        for i in range(bleed):
-            pos = (start[0] + (i if axis == 0 else 0), start[1] + (i if axis == 1 else 0))
+    class Axis(int, Enum):
+        X = 0
+        Y = 1
+
+    def extend_edge(crop_box: tuple[int, int, int, int], start: tuple[int, int], bleed: int, axis: Axis):
+        for bleed_i in range(bleed):
+            pos = (
+                start[0] + (bleed_i if axis == Axis.X else 0),
+                start[1] + (bleed_i if axis == Axis.Y else 0)
+            )
+
             base_image.paste(card_image.crop(crop_box), pos)
 
     # Extend the edges of the cards to create print bleed
     # Top and bottom
-    extend_edge((0, 0, width, 1), (origin_x, origin_y - top), top, 1)
-    extend_edge((0, height-1, width, height), (origin_x, origin_y + height), bottom, 1)
+    extend_edge((0, 0, width, 1), (origin_x, origin_y - y_bleed), y_bleed, Axis.Y)
+    extend_edge((0, height - 1, width, height), (origin_x, origin_y + height), y_bleed, Axis.Y)
 
     # Left and right
-    extend_edge((0, 0, 1, height), (origin_x - left, origin_y), left, 0)
-    extend_edge((width-1, 0, width, height), (origin_x + width, origin_y), right, 0)
+    extend_edge((0, 0, 1, height), (origin_x - x_bleed, origin_y), x_bleed, Axis.X)
+    extend_edge((width - 1, 0, width, height), (origin_x + width, origin_y), x_bleed, Axis.X)
 
     # Corners
-    for x, crop_x, pos_x in [(left, 0, origin_x - left), (right, width-1, origin_x + width)]:
-        for y, crop_y, pos_y in [(top, 0, origin_y - top), (bottom, height-1, origin_y + height)]:
-            for i in range(x):
-                for j in range(y):
-                    base_image.paste(card_image.crop((crop_x, crop_y, crop_x+1, crop_y+1)), (pos_x + i, pos_y + j))
+    for x_bleed, crop_x, pos_x in [(x_bleed, 0, origin_x - x_bleed), (x_bleed, width - 1, origin_x + width)]:
+        for y_bleed, crop_y, pos_y in [(y_bleed, 0, origin_y - y_bleed), (y_bleed, height - 1, origin_y + height)]:
+            for x_bleed_i in range(x_bleed):
+                for y_bleed_i in range(y_bleed):
+                    base_image.paste(card_image.crop((crop_x, crop_y, crop_x + 1, crop_y + 1)), (pos_x + x_bleed_i, pos_y + y_bleed_i))
 
     return base_image
-
 
 def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: tuple[int, int], crop: float, ppi_ratio: float, extend_corners: int, flip: bool):
     num_cards = num_rows * num_cols
@@ -485,7 +489,7 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: 
 
     return offset_images
 
-def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int) -> int:
+def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int) -> tuple[int, int]:
     if len(x_pos) == 1 & len(y_pos) == 1:
         return (0, 0)
 
