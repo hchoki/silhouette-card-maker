@@ -58,7 +58,9 @@ If the command is not recognized, you can also try:
 python3 --version
 ```
 
-If you don't have Python, install it [here](https://www.python.org/downloads/). Check the box to **"Add Python to PATH"** if asked. After installation, close **Terminal**/**PowerShell** and open a new instance.
+If you don't have Python, install it [here](https://www.python.org/downloads/). Check the box to **"Add Python.exe to PATH"** if asked. After installation, close **Terminal**/**PowerShell** and open a new instance.
+
+![Python installer](/images/python_installer.jpg)
 
 ### Upgrade pip
 
@@ -68,12 +70,14 @@ python -m pip install --upgrade pip
 
 ### Navigate to the code
 
+For the following command, replace `<path to the code>` with the file path to the code.
+
 ```shell
 cd <path to the code>
 ```
 
 > [!NOTE]
-> If you downloaded the code in the `Downloads` folder, then use the following:
+> For example, if the code in the `Downloads` folder, then use the following:
 > ```shell
 > cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
 > ```
@@ -106,6 +110,8 @@ Then, activate the environment:
   {{< /tab >}}
 
 {{< /tabs >}}
+
+You will know if the virtual environment has been activated when `(venv)` appears.
 
 ### Install Python packages
 
