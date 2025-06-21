@@ -12,7 +12,7 @@ If this is your first time here, check out the [tutorial](https://alan-cha.githu
 
 The purpose of this repo is to enable you to use a Silhouette cutting machine to create card games and proxies. Proxies are only intended to be used for casual play and playtesting.
 
-You may not use this repo to disguise fake cards to decieve people or to play in sanctioned tournaments. You are only permitted to sell cards if you are the full privileged copyright holder.
+Proxies should be easily identifiable as proxies. You may not use this repo to create counterfeit cards to decieve people or to play in sanctioned tournaments. You are only permitted to sell cards if you are the full privileged copyright holder.
 
 ## Contents
 
