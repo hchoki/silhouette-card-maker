@@ -66,23 +66,23 @@ You can find all the cutting templates for Silhouette Studio in [`cutting_templa
 ### Basic Usage
 
 Create a Python virtual environment.
-```shell
+```sh
 python -m venv venv
 ```
 
 Activate the Python virtual environment.
 **Terminal (macOS/Linux):**
-```shell
+```sh
 . venv/bin/activate
 ```
 
 **PowerShell (Windows):**
-```powershell
+```sh
 .\venv\Scripts\Activate.ps1
 ```
 
 Download Python packages.
-```shell
+```sh
 pip install -r requirements.txt
 ```
 
@@ -91,7 +91,7 @@ Put your front images in `game/front`.
 Put your back image in `game/back`.
 
 Run the script.
-```shell
+```sh
 python create_pdf.py
 ```
 
@@ -115,7 +115,7 @@ If your card images have rounded corners, they may be missing print bleed in the
 
 The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with `10`
 
-```shell
+```sh
 python create_pdf.py --extend_corners 10
 ```
 
@@ -161,31 +161,31 @@ Options:
 
 Do not generate the back side. This option is useful if you want to save ink and produce single-sided cards.
 
-```shell
+```sh
 python create_pdf.py --only_fronts
 ```
 
 Create poker-sized cards with A4 sized paper.
 
-```shell
+```sh
 python create_pdf.py --card_size poker --paper_size a4
 ```
 
 Crop the borders of the front and double-sided images. This option is useful if your images already have print bleed.
 
-```shell
+```sh
 python create_pdf.py --crop 6.5
 ```
 
 Remove the [rounded corners](#corner-artifacts) from the PDF and load the saved offset from [`offset_pdf.py`](#offset_pdfpy).
 
-```shell
+```sh
 python create_pdf.py --extend_corners 10 --load_offset
 ```
 
 Produce a 600 pixels per inch (PPI) file with minimal compression.
 
-```shell
+```sh
 python create_pdf.py --ppi 600 --quality 100
 ```
 
@@ -224,7 +224,7 @@ Shine a strong light on the front so you can see the shadows on the back. Determ
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-instructions) for more information.
 
 Run the script.
-```shell
+```sh
 python offset_pdf.py --x_offset -5 --y_offset 10
 ```
 
@@ -234,13 +234,13 @@ Get your offset PDF at `game/output/game_offset.pdf`.
 
 You can save your x and y offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
 
-```shell
+```sh
 python offset_pdf.py --x_offset -5 --y_offset 10 --save
 ```
 
 Additionally, you can automatically apply a saved offset in [`create_pdf.py`](#create_pdfpy) by using the `--load_offset` option.
 
-```shell
+```sh
 python create_pdf.py --load_offset
 ```
 

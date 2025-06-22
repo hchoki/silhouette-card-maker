@@ -8,7 +8,7 @@ weight: 1
 ## Basic Usage
 
 ### Create a Python virtual environment
-```shell
+```sh
 python -m venv venv
 ```
 
@@ -16,18 +16,18 @@ python -m venv venv
 {{< tabs items="macOS/Linux,Windows" defaultIndex="1" >}}
 
   {{< tab >}}
-```shell
+```sh
 . venv/bin/activate
 ```
   {{< /tab >}}
   {{< tab >}}
-```powershell
+```sh
 .\venv\Scripts\Activate.ps1
 ```
 
 > [!NOTE]
 > You may see a **security error**. If you do, run the following, then try activating the environment again.
-> ```powershell
+> ```sh
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 > ```
   {{< /tab >}}
@@ -41,7 +41,7 @@ Put your front images in `game/front`.
 Put your back image in `game/back`.
 
 ### Run the script
-```shell
+```sh
 python create_pdf.py
 ```
 
@@ -65,7 +65,7 @@ If your card images have rounded corners, they may be missing print bleed in the
 
 The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with `10`
 
-```shell
+```sh
 python create_pdf.py --extend_corners 10
 ```
 
@@ -111,30 +111,30 @@ Options:
 
 Do not generate the back side. This option is useful if you want to save ink and produce single-sided cards.
 
-```shell
+```sh
 python create_pdf.py --only_fronts
 ```
 
 Create poker-sized cards with A4 sized paper.
 
-```shell
+```sh
 python create_pdf.py --card_size poker --paper_size a4
 ```
 
 Crop the borders of the front and double-sided images. This option is useful if your images already have print bleed.
 
-```shell
+```sh
 python create_pdf.py --crop 6.5
 ```
 
 Remove the [rounded corners](#corner-artifacts) from the PDF and load the saved offset from [`offset_pdf.py`]({{% ref "offset.md" %}}).
 
-```shell
+```sh
 python create_pdf.py --extend_corners 10 --load_offset
 ```
 
 Produce a 600 pixels per inch (PPI) file with minimal compression.
 
-```shell
+```sh
 python create_pdf.py --ppi 600 --quality 100
 ```

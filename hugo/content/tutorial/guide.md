@@ -49,12 +49,12 @@ Download the code by cloning the repo or clicking [here](https://github.com/Alan
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
 ### Check if Python is installed
-```shell
+```sh
 python --version
 ```
 
 If the command is not recognized, you can also try:
-```shell
+```sh
 python3 --version
 ```
 
@@ -64,7 +64,7 @@ If you don't have Python, install it [here](https://www.python.org/downloads/). 
 
 ### Upgrade pip
 
-```shell
+```sh
 python -m pip install --upgrade pip
 ```
 
@@ -72,19 +72,19 @@ python -m pip install --upgrade pip
 
 For the following command, replace `<path to the code>` with the file path to the code.
 
-```shell
+```sh
 cd <path to the code>
 ```
 
 > [!NOTE]
 > For example, if the code in the `Downloads` folder, then use the following:
-> ```shell
+> ```sh
 > cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
 > ```
 
 ### Create a virtual environment
 
-```shell
+```sh
 python -m venv venv
 ```
 
@@ -93,18 +93,18 @@ Then, activate the environment:
 {{< tabs items="macOS/Linux,Windows" defaultIndex="1" >}}
 
   {{< tab >}}
-```shell
+```sh
 . venv/bin/activate
 ```
   {{< /tab >}}
   {{< tab >}}
-```powershell
+```sh
 .\venv\Scripts\Activate.ps1
 ```
 
 > [!NOTE]
 > If you see a **security error**, run the following, then try activating the environment again.
-> ```powershell
+> ```sh
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 > ```
   {{< /tab >}}
@@ -115,7 +115,7 @@ You will know if the virtual environment has been activated when `(venv)` appear
 
 ### Install Python packages
 
-```shell
+```sh
 pip install -r requirements.txt
 ```
 
@@ -130,7 +130,7 @@ Put card front images into `game/front`. Then, put a card back image into `game/
 
 Generate the PDF with the following:
 
-```shell
+```sh
 python create_pdf.py
 ```
 

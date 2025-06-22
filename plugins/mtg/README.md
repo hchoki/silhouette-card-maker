@@ -16,7 +16,7 @@ Put your decklist into a text file in `game/decklist`. In this example, the file
 
 Run the script.
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/deck.txt mtga
 ```
 
@@ -49,31 +49,31 @@ Options:
 
 Use a Moxfield decklist named `my_decklist.txt`.
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield
 ```
 
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest normal versions of these cards (not showcase or full/borderless/extended art). 
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i
 ```
 
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest full, borderless, or extended art for all cards when possible. 
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i --prefer_extra_art
 ```
 
 Use an MTG Online decklist named `old_school.txt` and ignore all the provided sets and collector numbers. Instead, get the latest oldest normal versions of these cards (not showcase or full/borderless/extended art). 
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/old_school.txt mtgo -i --prefer_older_sets
 ```
 
 Use a Deckstats decklist named `eldraine_commander.txt`. Use the set and collector numbers when provided. If not, get art from the Eldraine (`ELD`) and Wilds of Eldraine (`WOE`) expansions when possible.
 
-```shell
+```sh
 python plugins/mtg/fetch.py game/decklist/eldraine_commander.txt deckstats -s eld -s woe
 ```
 

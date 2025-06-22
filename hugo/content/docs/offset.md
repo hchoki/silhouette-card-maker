@@ -36,7 +36,7 @@ Shine a strong light on the front so you can see the shadows on the back. Determ
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-usage) for more information.
 
 Run the script.
-```shell
+```sh
 python offset_pdf.py --x_offset -5 --y_offset 10
 ```
 
@@ -46,13 +46,13 @@ Get your offset PDF at `game/output/game_offset.pdf`.
 
 You can save your x and y offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
 
-```shell
+```sh
 python offset_pdf.py --x_offset -5 --y_offset 10 --save
 ```
 
 Additionally, you can automatically apply a saved offset in [`create_pdf.py`]({{% ref "create.md" %}}) by using the `--load_offset` option.
 
-```shell
+```sh
 python create_pdf.py --load_offset
 ```
 
