@@ -38,7 +38,7 @@ The following is a table of working settings from various testers. Do not use th
 
 ## Instructions
 
-Before starting, I recommend joining our [Discord server](https://discord.gg/jhsKmAgbXc). If you have any questions, feel free to ask them in the `troubleshooting` channel.
+Before starting, please join our [Discord server](https://discord.gg/jhsKmAgbXc). If you have any questions, ask them in the `troubleshooting` channel.
 
 ### Set up environment
 
@@ -60,7 +60,7 @@ python3 --version
 
 If you don't have Python, install it [here](https://www.python.org/downloads/). Check the box to **"Add Python.exe to PATH"** if asked. After installation, close **Terminal**/**PowerShell** and open a new instance.
 
-![Python installer](/images/python_installer.jpg)
+![Python installer](/images/python_installer.png)
 
 ### Upgrade pip
 
@@ -111,7 +111,7 @@ Then, activate the environment:
 
 {{< /tabs >}}
 
-You will know if the virtual environment has been activated when `(venv)` appears.
+You will know if the virtual environment has been activated when `(venv)` appears in the prompt.
 
 ### Install Python packages
 
@@ -135,7 +135,7 @@ python create_pdf.py
 ```
 
 > [!TIP]
-> `create_pdf.py` offers many options such as configuring paper and card size, supporting double-sided cards, and adding registration marks to the front sides. To learn more, see [here]({{% ref "../docs/create.md" %}}).
+> `create_pdf.py` offers many options such as configuring **paper and card size** and supporting **double-sided cards**. To learn more, see [here]({{% ref "../docs/create.md" %}}).
 
 You can find the PDF in `game/output/game.pdf`.
 
@@ -150,15 +150,21 @@ Print out the PDF and laminate the sheets.
 
 Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) directory.
 
-Put a laminated sheet on the cutting mat. The side with the registration marks, the black square and "L"s, should face up. Orient the sheet so that the black square is in the top left corner. Apply the laminated sheet onto the mat such that the top left corner of the card stock, not the lamination, is aligned with the top left corner of the grid on the mat.
+![Cutting template](/images/cutting_template_standard.png)
+
+Put a laminated sheet on the cutting mat. The position of the sheet must match the cutting template. Note that for this template, the sheet must be in the **top left of the cutting mat grid**. Note that the **black square registration mark is the top left** as well.
 
 ![Sheet alignment](/images/sheet_alignment.jpg)
+
+Use a Post-It note to **cover the bottom left card**. You can use masking tape or a piece of paper with tape on it. Because the card is so close to the bottom left registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues.
+
+![Post-It note](/images/registration_fix.jpg)
 
 Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
 
 ![Mat alignment](/images/mat_alignment.jpg)
 
-Finally, start the cutting job.
+Put your cutting settings into Silhouette studio and start the cutting job. Remove the Post-It note after registration before cutting.
 
 ### Finish the cards
 

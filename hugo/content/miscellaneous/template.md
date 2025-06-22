@@ -8,7 +8,7 @@ This project already supports many [cutting templates]({{% ref "../_index.md#sup
 
 Open Silhouette Studio and create a cutting template.
 
-![Cutting template](/images/cutting_template.png)
+![Cutting template](/images/cutting_template_domino.png)
 
 Use the **Transform tools** to ensure that the cards are aligned and evenly distributed.
 
