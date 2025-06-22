@@ -49,11 +49,11 @@ Ensure that there is nothing blocking the registration sensor.
 
 Ensure that the sheets are generated with the right template and printed with 100% scale.
 
-Ensure the sheet is placed correctly on the mat and the mat is placed correctly in the machine. Otherwise, the machine can struggle to scan the registration marks. The top left corner of the paper, not the lamination, should align with the top left corner of the grid on the mat. The left edge of the mat should align with the notch on the machine.
+Ensure the sheet is placed correctly on the mat and the mat is placed correctly in the machine. The sheet placement should match the cutting template.
 
-Try playing around with the lighting. If the room is too bright or too dark, the machine may have issues. Try shining a light at the sensor to provide more lighting. Try closing the cover as well.
+Playing around with the lighting. If the room is too bright or too dark, the machine may have issues. Try shining a light at the sensor to provide more lighting. Try closing the cover as well.
 
-In my own experience, the registration can occasionally fail as the machine is scanning the bottom left L. This occurs when the machine unintentionally scans the bottom left card as it's searching for the bottom left L. If you have this issue, try covering the bottom left card with something light colored and opaque during registration and removing it before cutting. Try using masking tape or a Post-It note.
+Registration can fail when the machine scans something other than the registration marks. To prevent this, use Post-It notes to cover up the cards closest to the L registration marks. In my experience, you only need to do this for the L registration mark that gets scanned after the square. You can peel off the Post-It note after scanning before cutting. You can use masking tape or a piece of paper with tape as well.
 
 ![Registration fix](/images/registration_fix.jpg)
 
@@ -81,7 +81,7 @@ Make sure you're using the right cutting template. Each sheet should be labeled 
 
 ## Why did my cards come out diagonally?
 
-As mentioned in [Why is the registration failing?](#why-is-the-registration-failing), your machine may occasionally scan the bottom left card as it's searching for the bottom left L during registration. When this happens, the machine may either stop and complain, or continue and start cutting cards diagonally. To fix this, try covering the bottom left card with masking tape or a Post-It note.
+Registration can fail or be adversely affected when the machine scans something other than the registration marks. As described in [Why is the registration failing?](#why-is-the-registration-failing), employ the Post-It trick.
 
 ## Why are my cards offset?
 
