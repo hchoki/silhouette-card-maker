@@ -21,15 +21,7 @@ Long story short, put the fronts in `game/front` and the backs in `game/double_s
 
 ## Do you have printer recommendations?
 
-No, but I can give you give you some ideas on what you should look for.
-
-First, I do not recommend getting a laser printer. The laser toner affects the lamination, causing it to easily delaminate. It can work, but you may have issues with delamination during cutting and while removing cards from the cutting mat.
-
-Secondly, determine what kind of custom cards you'd like to make. Do you want to make double-sided laminated cardstock cards like mine? Perhaps single sided is suitable for your situation? Perhaps you'd like to cut out regular printer paper or sticker paper and use an alternative way of making custom cards.
-
-Not all printers can handle card stock, and even if it can handle card stock, it may not be able to handle thicker card stock like 110 lb. Additionally, if you plan on making double-sided cards, getting a printer that can do duplex printing would be ideal. If you have a simplex printer, you can feed the printed pages back into printer to achieve double-sided printing, but you could have issues with alignment.
-
-Invest in a good printer because you want the cards to look nice as you play with them and because poor quality printing can also affect the Cameo's Print & Cut.
+See the [Equipment]({{% ref "supplies.md#equipment" %}}) section.
 
 ## Why are my card delaminating?
 
