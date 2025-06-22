@@ -21,13 +21,13 @@ python -m venv venv
 ```
   {{< /tab >}}
   {{< tab >}}
-```sh
+```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
 > [!NOTE]
 > You may see a **security error**. If you do, run the following, then try activating the environment again.
-> ```sh
+> ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 > ```
   {{< /tab >}}

@@ -77,7 +77,7 @@ Activate the Python virtual environment.
 ```
 
 **PowerShell (Windows):**
-```sh
+```powershell
 .\venv\Scripts\Activate.ps1
 ```
 

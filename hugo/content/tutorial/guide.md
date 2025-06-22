@@ -98,13 +98,13 @@ Then, activate the environment:
 ```
   {{< /tab >}}
   {{< tab >}}
-```sh
+```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
 > [!NOTE]
 > If you see a **security error**, run the following, then try activating the environment again.
-> ```sh
+> ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 > ```
   {{< /tab >}}
