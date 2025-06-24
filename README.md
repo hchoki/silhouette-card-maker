@@ -88,9 +88,9 @@ Download Python packages.
 pip install -r requirements.txt
 ```
 
-Put your front images in `game/front`.
+Put your front images in the `game/front/` folder.
 
-Put your back image in `game/back`.
+Put your back image in the `game/back/` folder.
 
 Run the script.
 ```sh
@@ -107,7 +107,7 @@ The MTG plugin is currently available, which can automatically acquire card imag
 
 ### Double-Sided Cards
 
-To create double-sided cards, put front images in `game/front` and back images in `game/double_sided`. The filenames must match for each pair.
+To create double-sided cards, put front images in the `game/front/` folder and back images in the `game/double_sided/` folder. The filenames must match for each pair.
 
 ### Corner Artifacts
 

@@ -121,7 +121,7 @@ pip install -r requirements.txt
 
 ### Create the PDF
 
-Put card front images into `game/front`. Then, put a card back image into `game/back`.
+Put card front images into the `game/front/` folder. Then, put a card back image into the `game/back/` folder.
 
 > [!TIP]
 > I've prepared the game, Zero sumZ, as an [example](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples/ZERO%20SUMZ). Simply move the assets to the appropriate image folders.
