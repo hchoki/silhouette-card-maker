@@ -45,7 +45,7 @@ Ensure the sheet is placed correctly on the mat and the mat is placed correctly 
 
 Playing around with the lighting. If the room is too bright or too dark, the machine may have issues. Try shining a light at the sensor to provide more lighting. Try closing the cover as well.
 
-Registration can fail when the machine scans something other than the registration marks. To prevent this, use Post-It notes to cover up the cards closest to the L registration marks. In my experience, you only need to do this for the L registration mark that gets scanned after the square. You can peel off the Post-It note after scanning before cutting. You can use masking tape or a piece of paper with tape as well.
+Registration can fail when the machine scans something other than the registration marks. To prevent this, use Post-It notes to cover up the cards closest to the L registration marks. In my experience, you only need to do this for the L registration mark that gets scanned after the square. You can peel off the Post-It note after registration. You can use masking tape or a piece of paper with tape as well.
 
 ![Registration fix](/images/registration_fix.jpg)
 

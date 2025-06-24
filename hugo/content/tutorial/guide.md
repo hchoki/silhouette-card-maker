@@ -15,13 +15,13 @@ Your printer may have built-in tools for calibration and alignment adjustment. H
 
 Silhouette Studio provides a number of cutting settings, including **blade force**, **cutting speed**, **passes**, and **blade depth**.
 
-<!-- !TODO: screenshot of Silhouette Studio cutting settings -->
+![Cutting settings](/images/cutting_settings.png)
 
 Before starting, determine the cutting settings that works best for you and the materials you want to cut.
 
-To do this, first create a simple cutting template in Silhouette Studio. Then, set the blade force, cutting speed, and blade depth to something reasonable, but set passes to 1. You can have the machine recut again and again to determine the required passes. Change the settings as necessary.
+To do this, first create a simple cutting template in Silhouette Studio. Then, set the blade force, cutting speed, and blade depth to something reasonable, but **set passes to 1**. You can have the machine recut again and again to determine the required passes. Change the settings as necessary.
 
-<!-- !TODO: screenshot of a simple cutting template -->
+![Simple cutting template](/images/cutting_template_simple.png)
 
 The following is a table of working settings from various testers. Do not use these settings blindly. Test conservatively. If not, you risk breaking your machine or cutting through your mat.
 
@@ -38,13 +38,13 @@ The following is a table of working settings from various testers. Do not use th
 
 ## Instructions
 
-Before starting, please join our [Discord server](https://discord.gg/jhsKmAgbXc). If you have any questions, ask them in the `troubleshooting` channel.
+Before starting, join our [Discord server](https://discord.gg/jhsKmAgbXc). If you have any questions, you can ask them in the `#troubleshooting` channel.
 
 ### Set up environment
 
 [Install Silhouette Studio](https://www.silhouetteamerica.com/silhouette-studio).
 
-Download the code by cloning the repo or clicking [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip). Unzip the code if necessary.
+Download the `silhouette-card-makers` code by cloning the [repo](https://github.com/Alan-Cha/silhouette-card-maker-testing) or clicking [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip). Unzip the code if necessary.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
@@ -76,7 +76,7 @@ For the following command, replace `<path to the code>` with the file path to th
 cd <path to the code>
 ```
 
-> [!NOTE]
+> [!TIP]
 > For example, if the code in the `Downloads` folder, then use the following:
 > ```sh
 > cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
@@ -102,7 +102,7 @@ Then, activate the environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-> [!NOTE]
+> [!TIP]
 > If you see a **security error**, run the following, then try activating the environment again.
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
@@ -135,7 +135,7 @@ python create_pdf.py
 ```
 
 > [!TIP]
-> `create_pdf.py` offers many options such as configuring **paper and card size** and supporting **double-sided cards**. To learn more, see [here]({{% ref "../docs/create.md" %}}).
+>`create_pdf.py` has many options such as **paper and card size** and **double-sided cards**. To learn more, see [here]({{% ref "../docs/create.md" %}}).
 
 You can find the PDF in `game/output/game.pdf`.
 
@@ -148,7 +148,7 @@ Print out the PDF and laminate the sheets.
 
 ### Cut the sheets
 
-Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) directory.
+Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates/`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) directory.
 
 ![Cutting template](/images/cutting_template_standard.png)
 
@@ -164,7 +164,11 @@ Insert the mat into the machine. The left edge of the mat should be aligned with
 
 ![Mat alignment](/images/mat_alignment.jpg)
 
-Put your cutting settings into Silhouette studio and start the cutting job. Remove the Post-It note after registration before cutting.
+Put your [cutting settings](#cutting-settings) into Silhouette Studio. 
+
+![Cutting settings](/images/cutting_template_settings.png)
+
+Start the cutting job. Remember to remove the Post-It note after registration.
 
 ### Finish the cards
 
@@ -174,7 +178,7 @@ Peel off the cards and remove the excess.
 
 Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
 
-![Relaminating the cards.](/images/relamination.jpg)
+![Relaminating](/images/relamination.jpg)
 
 Now you're ready to play with your cards!
 

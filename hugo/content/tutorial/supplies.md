@@ -28,7 +28,7 @@ This is just a cheap printer cable. It's also a two pack so you can use it with 
 ## Materials
 
 * Printer ink
-* [Double-sided glossy card stock](https://amzn.to/408Dbip)
+* [Double-sided glossy card stock](https://amzn.to/44aHHyc)
 * [Thermal lamination pouches](https://amzn.to/3E5yE8M)
 
 Use glossy card stock for better lamination clarity.
