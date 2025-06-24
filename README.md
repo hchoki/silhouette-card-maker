@@ -61,7 +61,9 @@ This project supports the following card and paper sizes, with more in the futur
 You can find all the cutting templates for Silhouette Studio in [`cutting_templates/`](cutting_templates/).
 
 ## create_pdf.py
-`create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
+`create_pdf.py` is a CLI tool that layouts your card images into a PDF with registration marks that can be cut out with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
+
+![Example PDF](images/create_pdf.png)
 
 ### Basic Usage
 
@@ -101,7 +103,7 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card images for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, Moxfield, and Scryfall. To learn more, see [here](plugins/mtg/README.md).
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including **MTGA**, **MTGO**, **Archidekt**, **Deckstats**, **Moxfield**, and **Scryfall**. To learn more, see [here](plugins/mtg/README.md).
 
 ### Double-Sided Cards
 
@@ -109,7 +111,7 @@ To create double-sided cards, put front images in `game/front` and back images i
 
 ### Corner Artifacts
 
-If your card images have rounded corners, they may be missing print bleed in the PDF. You may have seen white Xs appear in your PDF; these are artifacts from rounded corners. Because of the missing print bleed, when these cards are cut, they may have a sliver of white on the corners.
+If your card images have rounded corners, they may be missing print bleed in the PDF. Because of the missing print bleed, when the cards are cut, they may have a sliver of white on the corners.
 
 ![Extend corners](images/extend_corners.jpg)
 
@@ -159,12 +161,6 @@ Options:
 
 ### Examples
 
-Do not generate the back side. This option is useful if you want to save ink and produce single-sided cards.
-
-```sh
-python create_pdf.py --only_fronts
-```
-
 Create poker-sized cards with A4 sized paper.
 
 ```sh
@@ -191,15 +187,17 @@ python create_pdf.py --ppi 600 --quality 100
 
 ## offset_pdf.py
 
-It's pivotal to ensure that your the fronts and backs are aligned. However, it's not always possible to calibrate a printer.
+It's pivotal to ensure that your card fronts and backs are aligned. The front and back alignment is mainly determined by your printer, but it's not always possible to calibrate it.
 
-`offset_pdf.py` is a CLI tool that adds an offset to every other page in a PDF, i.e. all the back pages. This offset can compensate for the natural offset from your printer.
+`offset_pdf.py` is a CLI tool that adds an offset to every other page in a PDF. This offset can compensate for the natural offset of your printer, allowing you to have good front and back alignment.
 
 ### Basic Usage
 
 First, you must determine the offset by using the [calibration sheets](calibration/).
 
 `calibration.pdf` has a front page and a back page.
+
+![Calibration](images/calibration.png)
 
 The front page is a simple grid of squares.
 
@@ -219,11 +217,11 @@ The back page is the same grid of squares, except each square has a slight offse
 
 To determine the required offset, print out `calibration.pdf` with the card stock you plan to use.
 
-Shine a strong light on the front so you can see the shadows on the back. Determine the square such that the front square and the back square are aligned with each other. This square will provide your offset. Now, you can use `offset_pdf.py` to apply the appropriate offset to your PDF.
+Shine a strong light on the front so you can see the shadows on the back. Determine which set of front and back squares are aligned. This set will provide your offset.
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-instructions) for more information.
 
-Run the script.
+Run the script with your offset.
 ```sh
 python offset_pdf.py --x_offset -5 --y_offset 10
 ```
@@ -232,7 +230,7 @@ Get your offset PDF at `game/output/game_offset.pdf`.
 
 ### Save Offset
 
-You can save your x and y offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
+You can save your `x` and `y` offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
 
 ```sh
 python offset_pdf.py --x_offset -5 --y_offset 10 --save

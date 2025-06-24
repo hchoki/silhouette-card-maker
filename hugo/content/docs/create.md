@@ -3,7 +3,9 @@ title: 'create_pdf.py'
 weight: 1
 ---
 
-`create_pdf.py` is a CLI tool that layouts your card images into a printable PDF. Then, you can cut out the cards with the appropriate cutting template in [`cutting_templates/`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates).
+`create_pdf.py` is a CLI tool that layouts your card images into a PDF with registration marks that can be cut out with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
+
+![Example PDF](/images/create_pdf.png)
 
 ## Basic Usage
 
@@ -51,7 +53,7 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card images for various games.
 
-The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including MTGA, MTGO, Archidekt, Deckstats, Moxfield, and Scryfall. To learn more, see [here]({{% ref "../plugins" %}}).
+The MTG plugin is currently available, which can automatically acquire card images based on a decklist. Various decklist formats are supported, including **MTGA**, **MTGO**, **Archidekt**, **Deckstats**, **Moxfield**, and **Scryfall**. To learn more, see [here]({{% ref "../plugins" %}}).
 
 ## Double-Sided Cards
 
@@ -108,12 +110,6 @@ Options:
 ```
 
 ## Examples
-
-Do not generate the back side. This option is useful if you want to save ink and produce single-sided cards.
-
-```sh
-python create_pdf.py --only_fronts
-```
 
 Create poker-sized cards with A4 sized paper.
 
