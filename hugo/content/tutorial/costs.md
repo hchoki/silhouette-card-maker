@@ -14,7 +14,7 @@ Each sheet produces 8 cards and each sheet is composed of:
 
 ($20/100 sheets + $20/200 pouches + $0.50 printing) / 8 cards = $0.10 per card with double-sided printing
 
-You could make a deck of 100 custom cards for around $10!
+You could make a deck of **100 cards for $10**!
 
 Sure, there may be a significant upfront cost to get started but you can quickly recoup the cost, especially if you're already accustomed to ordering custom cards online, paying for shipping, and sleeving up cards.
 
