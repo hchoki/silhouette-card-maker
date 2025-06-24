@@ -195,7 +195,7 @@ It's pivotal to ensure that your card fronts and backs are aligned. The front an
 
 First, you must determine the offset by using the [calibration sheets](calibration/).
 
-`calibration.pdf` has a front page and a back page.
+`<paper size>_calibration.pdf` has a front page and a back page.
 
 ![Calibration](images/calibration.png)
 
@@ -215,7 +215,7 @@ The back page is the same grid of squares, except each square has a slight offse
 | (-2,  2) | (-1,  2) | ( 0,  2) | ( 1,  2) | ( 2,  2) |
 ```
 
-To determine the required offset, print out `calibration.pdf` with the card stock you plan to use.
+To determine the required offset, print out `<paper size>_calibration.pdf` with the card stock you plan to use.
 
 Shine a strong light on the front so you can see the shadows on the back. Determine which set of front and back squares are aligned. This set will provide your offset.
 
@@ -230,7 +230,7 @@ Get your offset PDF at `game/output/game_offset.pdf`.
 
 ### Save Offset
 
-You can save your `x` and `y` offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
+You can save your x and y offset with the `--save` option. After saving your offset, it'll be automatically applied every time you run `offset_pdf.py`. You can override the loaded offset using `--x_offset` and `--y_offset`.
 
 ```sh
 python offset_pdf.py --x_offset -5 --y_offset 10 --save

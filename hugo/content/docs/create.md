@@ -36,6 +36,12 @@ python -m venv venv
 
 {{< /tabs >}}
 
+### Install Python packages
+
+```shell
+pip install -r requirements.txt
+```
+
 ### Prepare images
 
 Put your front images in the `game/front/` folder.
