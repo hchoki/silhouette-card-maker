@@ -49,18 +49,18 @@ Download the `silhouette-card-makers` code by cloning the [repo](https://github.
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
 ### Check if Python is installed
+
 ```sh
 python --version
 ```
 
-If the command is not recognized, you can also try:
-```sh
-python3 --version
-```
+If it doesn't work, try `python3` as well. If that works, replace the following Python commands with `python3`.
 
-If you don't have Python, install it by clicking [here](https://www.python.org/downloads/). In the installer, check the box to **"Add Python.exe to PATH"**. After installation, close **Terminal**/**PowerShell** and reopen it.
+If you don't have Python, install it by clicking [here](https://www.python.org/downloads/). In the installer, check the box to **"Add python.exe to PATH"**.
 
 ![Python installer](/images/python_installer.png)
+
+After installation, close **Terminal**/**PowerShell**, reopen it, and verify again.
 
 ### Upgrade pip
 
@@ -162,7 +162,7 @@ Put a sheet on the cutting mat. The position of the sheet must match the cutting
 
 ![Sheet alignment](/images/sheet_alignment.jpg)
 
-Use a Post-It note to **cover the bottom left card**. Because the card is so close to the bottom left L registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues. You can also use masking tape or a piece of paper with tape on it. 
+Use a Post-It note to **cover the bottom left card**. Because the card is so close to the bottom left L registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues. You can also use masking tape or a piece of paper with tape on it.
 
 ![Post-It note](/images/registration_fix.jpg)
 
@@ -170,7 +170,7 @@ Insert the mat into the machine. The left edge of the mat should be aligned with
 
 ![Mat alignment](/images/mat_alignment.jpg)
 
-Put your [cutting settings](#cutting-settings) into Silhouette Studio. 
+Put your [cutting settings](#cutting-settings) into Silhouette Studio.
 
 ![Cutting settings](/images/cutting_template_settings.png)
 
