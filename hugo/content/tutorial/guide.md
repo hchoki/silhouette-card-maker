@@ -58,7 +58,7 @@ If the command is not recognized, you can also try:
 python3 --version
 ```
 
-If you don't have Python, install it [here](https://www.python.org/downloads/). Check the box to **"Add Python.exe to PATH"** if asked. After installation, close **Terminal**/**PowerShell** and open a new instance.
+If you don't have Python, install it by clicking [here](https://www.python.org/downloads/). In the installer, check the box to **"Add Python.exe to PATH"**. After installation, close **Terminal**/**PowerShell** and reopen it.
 
 ![Python installer](/images/python_installer.png)
 
@@ -82,7 +82,11 @@ cd <path to the code>
 > cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
 > ```
 
-### Create a virtual environment
+### Create a Python virtual environment
+
+A virtual environment ensures that the Python packages you install in the next step will not affect the rest of your computer.
+
+Create a new virtual environment:
 
 ```sh
 python -m venv venv
@@ -137,7 +141,9 @@ python create_pdf.py
 > [!TIP]
 >`create_pdf.py` has many options such as **paper and card size** and **double-sided cards**. To learn more, see [here]({{% ref "../docs/create.md" %}}).
 
-You can find the PDF in `game/output/game.pdf`.
+You can find the PDF in `game/output/game.pdf` and it should look similar to the following:
+
+![PDF output](/images/create_pdf.png)
 
 ### Prepare the sheets
 
@@ -152,11 +158,11 @@ Open the `letter_standard_<version>.studio3` cutting template in Silhouette Stud
 
 ![Cutting template](/images/cutting_template_standard.png)
 
-Put a laminated sheet on the cutting mat. The position of the sheet must match the cutting template. Note that for this template, the sheet must be in the **top left of the cutting mat grid**. Note that the **black square registration mark is the top left** as well.
+Put a sheet on the cutting mat. The position of the sheet must match the cutting template. Note that for this template, the sheet must be in the **top left of the cutting mat grid**. Note that the **black square registration mark is the top left** as well.
 
 ![Sheet alignment](/images/sheet_alignment.jpg)
 
-Use a Post-It note to **cover the bottom left card**. You can use masking tape or a piece of paper with tape on it. Because the card is so close to the bottom left registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues.
+Use a Post-It note to **cover the bottom left card**. Because the card is so close to the bottom left L registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues. You can also use masking tape or a piece of paper with tape on it. 
 
 ![Post-It note](/images/registration_fix.jpg)
 
