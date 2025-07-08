@@ -24,6 +24,7 @@ class CardSize(str, Enum):
     POKER_HALF = "poker_half"
     BRIDGE = "bridge"
     DOMINO = "domino"
+    SQUARE_HALF = "square_half"
 
 class PaperSize(str, Enum):
     LETTER = "letter"
@@ -71,6 +72,21 @@ def get_directory(path):
         return os.path.abspath(path)
     else:
         return os.path.abspath(os.path.dirname(path))
+    
+def get_image_file_paths(dir_path: str) -> List[str]:
+    result = []
+
+    for current_folder, _, files in os.walk(dir_path):
+        for filename in files:
+            # Skip files that end with .md
+            if filename.endswith(".md"):
+                continue
+
+            full_path = os.path.join(current_folder, filename)
+            relative_path = os.path.relpath(full_path, dir_path)
+            result.append(relative_path)
+
+    return result
 
 def get_back_card_image_path(back_dir_path) -> str | None:
     # List all files in the directory that do not end with .md
@@ -175,7 +191,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if name is not None:
         label = f'name: {name}, {label}'
 
-    draw.text((math.floor((page_width - 180) * ppi_ratio), math.floor((page_height - 180) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ra", font=font)
+    draw.text((math.floor((page_width - 180) * ppi_ratio), math.floor((page_height - 140) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ra", font=font)
 
     # Add a back page for every front page template
     pages.append(front_page)
@@ -228,8 +244,8 @@ def generate_pdf(
         use_default_back_page = True
         print(f'No back image provided in back image directory "{back_dir_path}". Using default instead.')
 
-    front_image_filenames = [f for f in os.listdir(front_dir_path) if os.path.isfile(os.path.join(front_dir_path, f)) and not f.endswith(".md")]
-    ds_image_filenames = [f for f in os.listdir(double_sided_dir_path) if os.path.isfile(os.path.join(double_sided_dir_path, f)) and not f.endswith(".md")]
+    front_image_filenames = get_image_file_paths(front_dir_path)
+    ds_image_filenames = get_image_file_paths(double_sided_dir_path)
 
     # Check if double-sided back images has matching front images
     front_set = set(front_image_filenames)

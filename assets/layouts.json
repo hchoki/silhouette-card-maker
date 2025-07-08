@@ -96,6 +96,24 @@
                         1296
                     ],
                     "template": "letter_domino_v1"
+                },
+                "square_half": {
+                    "width": 524,
+                    "height": 524,
+                    "x_pos": [
+                        256,
+                        823,
+                        1388,
+                        1954,
+                        2520
+                    ],
+                    "y_pos": [
+                        167,
+                        731,
+                        1295,
+                        1859
+                    ],
+                    "template": "letter_squarehalf_v1"
                 }
             }
         },
