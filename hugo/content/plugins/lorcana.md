@@ -3,8 +3,6 @@ title: 'Lorcana'
 weight: 10
 ---
 
-# Lorcana Plugin
-
 This plugin reads a decklist, automatically fetches card art from [Lorcast](https://lorcast.com) and puts them in the proper `game/` directories.
 
 This plugin supports decklist exports from [Dreamborn.ink](https://dreamborn.ink). To learn more, see [here](#formats).
@@ -36,7 +34,7 @@ Options:
   --help  Show this message and exit.
 ```
 
-## Format
+## Formats
 
 ### `dreamborn`
 

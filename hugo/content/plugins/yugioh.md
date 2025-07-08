@@ -3,8 +3,6 @@ title: 'Yu-Gi-Oh!'
 weight: 5
 ---
 
-# Yu-Gi-Oh! Plugin
-
 This plugin reads a decklist, fetches card art from [ygoprodeck](https://ygoprodeck.com/card-database), and puts them in the proper `game/` directories.
 
 This plugin supports the following decklist formats: `ydk`, `ydke`. To learn more, see [here](#formats).
