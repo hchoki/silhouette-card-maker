@@ -24,6 +24,7 @@ Proxies should be easily identifiable as proxies. You may not use this repo to c
 
 * [documentation](https://alan-cha.github.io/silhouette-card-maker-testing)
 * [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/)
+* [supply list](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/supplies/)
 * [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
 * [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates
