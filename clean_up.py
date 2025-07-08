@@ -4,7 +4,7 @@ import shutil
 
 def delete_files():
     root_path = 'game'
-    image_folders = ['front', 'back', 'double_sided']
+    image_folders = ['front', 'double_sided']
     i = 0
 
     for folder_name in image_folders:
