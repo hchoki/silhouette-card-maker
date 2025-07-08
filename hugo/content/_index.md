@@ -14,6 +14,12 @@ You can do it all with the press of a button and a cutting machine! And I can sh
 
 If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
+## Demo
+
+Watch me cut 104 cards in 26 minutes without breaking a sweat!
+
+{{< youtube RVHtqsRW8t8 >}}
+
 ## Purpose
 
 The purpose of this repo is to enable you to use a Silhouette cutting machine to create card games and proxies. Proxies are only intended to be used for casual play and playtesting.

@@ -20,7 +20,7 @@ Run the script.
 python plugins/yugioh/fetch.py game/decklist/deck.ydk ydk
 ```
 
-Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
+Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy). You should use `--card_size japanese` for the correct card size.
 
 ## CLI Options
 
