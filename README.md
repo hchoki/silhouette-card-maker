@@ -10,7 +10,7 @@ If this is your first time here, check out the [tutorial](https://alan-cha.githu
 
 ## Demo
 
-Watch me cut 104 cards in 26 minutes without breaking a sweat!
+Watch me cut **104 cards in 26 minutes** without breaking a sweat!
 
 [![Proxying a MTG Commander Deck in 26 minutes](https://img.youtube.com/vi/RVHtqsRW8t8/0.jpg)](https://www.youtube.com/watch?v=RVHtqsRW8t8)
 

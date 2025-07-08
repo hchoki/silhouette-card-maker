@@ -16,7 +16,7 @@ If this is your first time here, check out the [tutorial](https://alan-cha.githu
 
 ## Demo
 
-Watch me cut 104 cards in 26 minutes without breaking a sweat!
+Watch me cut **104 cards in 26 minutes** without breaking a sweat!
 
 {{< youtube RVHtqsRW8t8 >}}
 
