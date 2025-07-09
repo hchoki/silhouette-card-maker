@@ -190,9 +190,9 @@ Now you're ready to play with your cards!
 
 ## Next Steps
 
-First, join our [Discord server](https://discord.gg/jhsKmAgbXc)! While you're there, go to `#roles` and give yourself the `SCM Graduate` role for completing the tutorial. Share some pictures in `#photo-showcase` as well!
+Please join our [Discord server](https://discord.gg/jhsKmAgbXc)! While you're there, go to `#roles` and give yourself the `SCM Graduate` role for completing the tutorial! Share some pictures in `#photo-showcase` as well!
 
-You can also try some of other features. As mentioned previously, the `create_pdf.py` script offers many [configuration options]({{% ref "../docs/create.md" %}}). `create_pdf.py` can make double-sided cards, use different paper sizes, cut various card sizes, and more!
+As mentioned previously, the `create_pdf.py` script offers many [configuration options]({{% ref "../docs/create.md" %}}). `create_pdf.py` can make double-sided cards, use different paper sizes, cut various card sizes, and more!
 
 If you're interested in making proxies for TCGs, try using a [plugin]({{% ref "../plugins" %}}). Currently, we have support for [Magic: The Gathering]({{% ref "../plugins/mtg.md" %}}), [Yu-Gi-Oh!]({{% ref "../plugins/yugioh.md" %}}), and [Lorcana]({{% ref "../plugins/lorcana.md" %}}). All you need to do is provide a decklist and the plugin will automatically fetch the images for you!
 
