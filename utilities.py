@@ -253,11 +253,13 @@ def generate_pdf(
             raise Exception(f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.')
 
     # Get the back image, if it exists
-    use_default_back_page = False
-    back_card_image_path = get_back_card_image_path(back_dir_path)
-    if back_card_image_path is None:
-        use_default_back_page = True
-        print(f'No back image provided in back image directory "{back_dir_path}". Using default instead.')
+    back_card_image_path = None
+    use_default_back_page = True
+    if not only_fronts:
+        back_card_image_path = get_back_card_image_path(back_dir_path)
+        use_default_back_page = back_card_image_path is None
+        if use_default_back_page:
+            print(f'No back image provided in back image directory \"{back_dir_path}\". Using default instead.')
 
     front_image_filenames = get_image_file_paths(front_dir_path)
     ds_image_filenames = get_image_file_paths(double_sided_dir_path)
