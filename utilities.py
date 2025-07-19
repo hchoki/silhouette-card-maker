@@ -94,28 +94,27 @@ def get_back_card_image_path(back_dir_path) -> str | None:
     # The directory may contain markdown files
     files = [f for f in os.listdir(back_dir_path) if (os.path.isfile(os.path.join(back_dir_path, f)) and not f.endswith(".md"))]
 
-
     if len(files) == 0:
         return None
-    
+
     if len(files) == 1:
         return os.path.join(back_dir_path, files[0])
 
+    # Multiple back files detected, provide a selection menu
     for i, f in enumerate(files):
-        print(f'[{i+1}] {f}')
+        print(f'[{i + 1}] {f}')
 
     while True:
-        choice = input("Enter the number of the file to use as the back image: ")
+        choice = input("Select a back image (enter the number): ")
+
         if not choice.isdigit():
             continue
 
-        choice = int(choice)-1
-        if choice < len(files) and choice >= 0: 
+        index = int(choice) - 1
+        if index >= 0 and index < len(files):
             break
 
-    return os.path.join(back_dir_path,files[choice])
-
-        #raise Exception(f'Back image directory path "{back_dir_path}" contains more than one image. Files include "{files}".')
+    return os.path.join(back_dir_path, files[index])
 
 def draw_card_with_bleed(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: tuple[int, int]):
     origin_x, origin_y, _, _ = box
@@ -322,7 +321,7 @@ def generate_pdf(
                 # Load the card back image
                 with Image.open(back_card_image_path) as back_im:
                     back_im = ImageOps.exif_transpose(back_im)
-                    
+
                     draw_card_layout(
                         [back_im] * num_cards,
                         single_sided_back_page,
