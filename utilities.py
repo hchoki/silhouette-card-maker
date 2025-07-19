@@ -8,7 +8,7 @@ from typing import Dict, List
 from xml.dom import ValidationErr
 
 from natsort import natsorted
-from PIL import Image, ImageChops, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 from pydantic import BaseModel
 
 # Specify directory locations
@@ -23,8 +23,9 @@ class CardSize(str, Enum):
     POKER = "poker"
     POKER_HALF = "poker_half"
     BRIDGE = "bridge"
+    BRIDGE_SQUARE = "bridge_square"
     DOMINO = "domino"
-    SQUARE_HALF = "square_half"
+    DOMINO_SQUARE = "domino_square"
 
 class PaperSize(str, Enum):
     LETTER = "letter"
@@ -72,7 +73,7 @@ def get_directory(path):
         return os.path.abspath(path)
     else:
         return os.path.abspath(os.path.dirname(path))
-    
+
 def get_image_file_paths(dir_path: str) -> List[str]:
     result = []
 
@@ -305,6 +306,8 @@ def generate_pdf(
 
                 # Load the card back image
                 with Image.open(back_card_image_path) as back_im:
+                    back_im = ImageOps.exif_transpose(back_im)
+                    
                     draw_card_layout(
                         [back_im] * num_cards,
                         single_sided_back_page,
@@ -336,7 +339,9 @@ def generate_pdf(
                     num_image = num_image + 1
 
                     front_image_path = os.path.join(front_dir_path, file)
-                    front_card_images.append(Image.open(front_image_path))
+                    front_image = Image.open(front_image_path)
+                    front_image = ImageOps.exif_transpose(front_image)
+                    front_card_images.append(front_image)
 
                 single_sided_front_page = reg_im.copy()
 
@@ -368,6 +373,7 @@ def generate_pdf(
                     only_fronts,
                     name
                 )
+
             # Create double-sided card layout
             it = iter(natsorted(list(ds_set)))
             while True:
@@ -383,10 +389,14 @@ def generate_pdf(
                     num_image = num_image + 1
 
                     front_image_path = os.path.join(front_dir_path, file)
-                    front_card_images.append(Image.open(front_image_path))
+                    front_image = Image.open(front_image_path)
+                    front_image = ImageOps.exif_transpose(front_image)
+                    front_card_images.append(front_image)
 
-                    back_image_path = os.path.join(double_sided_dir_path, file)
-                    back_card_images.append(Image.open(back_image_path))
+                    ds_image_path = os.path.join(double_sided_dir_path, file)
+                    ds_image = Image.open(ds_image_path)
+                    ds_image = ImageOps.exif_transpose(ds_image)
+                    back_card_images.append(ds_image)
 
                 double_sided_front_page = reg_im.copy()
                 double_sided_back_page = reg_im.copy()
