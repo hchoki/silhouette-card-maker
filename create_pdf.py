@@ -13,7 +13,7 @@ default_output_path = os.path.join(output_directory, 'game.pdf')
 
 @click.command()
 @click.option("--front_dir_path", default=front_directory, show_default=True, help="The path to the directory containing the card fronts.")
-@click.option("--back_dir_path", default=back_directory, show_default=True, help="The path to the directory containing one or no card backs.")
+@click.option("--back_dir_path", default=back_directory, show_default=True, help="The path to the directory containing one or more card backs.")
 @click.option("--double_sided_dir_path", default=double_sided_directory, show_default=True, help="The path to the directory containing card backs for double-sided cards.")
 @click.option("--output_path", default=default_output_path, show_default=True, help="The desired path to the output PDF.")
 @click.option("--output_images", default=False, is_flag=True, help="Create images instead of a PDF.")

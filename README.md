@@ -143,7 +143,7 @@ Options:
   --front_dir_path TEXT           The path to the directory containing the
                                   card fronts.  [default: game/front]
   --back_dir_path TEXT            The path to the directory containing one or
-                                  no card backs.  [default: game/back]
+                                  more card backs.  [default: game/back]
   --double_sided_dir_path TEXT    The path to the directory containing card
                                   backs for double-sided cards.  [default:
                                   game/double_sided]
