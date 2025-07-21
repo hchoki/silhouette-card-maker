@@ -46,7 +46,7 @@ This project supports the following card and paper sizes, with more in the futur
 | Paper size | `standard`* | `japanese`** | `poker` | `poker_half` | `bridge` | `bridge_square` | `domino` | `domino_square` |
 | ---------- | ----------- | ------------ | ------- | ------------ | -------- | --------------- | -------- | --------------- |
 | `letter`   | ✅          | ✅          | ✅      |  ✅         | ✅       | ✅             | ✅       | ✅             |
-| `tabloid`  | ✅          | ❌          | ❌      |  ❌         | ❌       | ❌             | ❌       | ❌             |
+| `tabloid`  | ✅          | ❌          | ❌      |  ❌         | ❌       | ❌             | ❌       | ✅             |
 | `a4`       | ✅          | ✅          | ✅      |  ✅         | ✅       | ❌             | ❌       | ❌             |
 | `a3`       | ✅          | ❌          | ❌      |  ❌         | ❌       | ❌             | ❌       | ❌             |
 | `archb`    | ✅          | ❌          | ❌      |  ❌         | ❌       | ❌             | ❌       | ❌             |
