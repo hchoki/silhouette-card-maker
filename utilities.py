@@ -35,9 +35,11 @@ class PaperSize(str, Enum):
     A3 = "a3"
     ARCHB = "archb"
 
-class CardLayout(BaseModel):
+class CardLayoutSize(BaseModel):
     width: int
     height: int
+
+class CardLayout(BaseModel):
     x_pos: List[int]
     y_pos: List[int]
     template: str
@@ -48,6 +50,7 @@ class PaperLayout(BaseModel):
     card_layouts: Dict[CardSize, CardLayout]
 
 class Layouts(BaseModel):
+    card_sizes: Dict[CardSize, CardLayoutSize]
     paper_layouts: Dict[PaperSize, PaperLayout]
 
 # Known junk files across OSes
@@ -343,11 +346,14 @@ def generate_pdf(
         paper_layout = layouts.paper_layouts[paper_size_enum]
 
         card_size_enum = CardSize(card_size)
+        if card_size_enum not in layouts.card_sizes:
+            raise Exception(f'Unsupported card size "{card_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
+        card_size = layouts.card_sizes[card_size]
         if card_size_enum not in paper_layout.card_layouts:
             raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
         card_layout = paper_layout.card_layouts[card_size_enum]
 
-        crop = parse_crop_string(crop_string, card_layout.width, card_layout.height, ppi)
+        crop = parse_crop_string(crop_string, card_size.width, card_size.height, ppi)
 
         num_rows = len(card_layout.y_pos)
         num_cols = len(card_layout.x_pos)
@@ -366,7 +372,7 @@ def generate_pdf(
             # Create the array that will store the filled templates
             pages: List[Image.Image] = []
 
-            max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout.width, card_layout.height)
+            max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_size.width, card_size.height)
 
             # Create reusable back page for single-sided cards
             single_sided_back_page = reg_im.copy()
@@ -383,8 +389,8 @@ def generate_pdf(
                         num_cols,
                         card_layout.x_pos,
                         card_layout.y_pos,
-                        card_layout.width,
-                        card_layout.height,
+                        card_size.width,
+                        card_size.height,
                         max_print_bleed,
                         (0, 0),
                         ppi_ratio,
@@ -421,8 +427,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_layout.width,
-                    card_layout.height,
+                    card_size.width,
+                    card_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
@@ -477,8 +483,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_layout.width,
-                    card_layout.height,
+                    card_size.width,
+                    card_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
@@ -494,8 +500,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_layout.width,
-                    card_layout.height,
+                    card_size.width,
+                    card_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
