@@ -151,7 +151,6 @@
                         1507,
                         2556,
                         3606
-
                     ],
                     "template": "tabloid_standard_v1"
                 },
@@ -188,6 +187,28 @@
                         3635
                     ],
                     "template": "tabloid_bridge_v1"
+                },
+                "domino_square": {
+                    "width": 524,
+                    "height": 524,
+                    "x_pos": [
+                        260,
+                        824,
+                        1388,
+                        1952,
+                        2515
+                    ],
+                    "y_pos": [
+                        307,
+                        873,
+                        1439,
+                        2005,
+                        2571,
+                        3137,
+                        3703,
+                        4269
+                    ],
+                    "template": "tabloid_dominosquare_v1"
                 }
             }
         },
