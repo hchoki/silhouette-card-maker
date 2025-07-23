@@ -152,6 +152,10 @@ Print out the PDF and laminate the sheets.
 > [!TIP]
 > Because cardstock is thick, you may need to use a higher setting on your laminator. If not, you may have cloudy lamination and delamination issues.
 
+![Print](/images/lamination.jpg)
+![Into the lamination pouch](/images/lamination2.jpg)
+![Into the laminator](/images/lamination3.jpg)
+
 ### Cut the sheets
 
 Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates/`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) folder.
@@ -160,17 +164,25 @@ Open the `letter_standard_<version>.studio3` cutting template in Silhouette Stud
 
 Put a sheet on the cutting mat. The position of the sheet must match the cutting template. Note that for this template, the sheet must be in the **top left of the cutting mat grid**. Note that the **black square registration mark is the top left** as well.
 
-![Sheet alignment](/images/sheet_alignment.jpg)
+![Notice the grid](/images/sheet_placement.jpg)
+![Notice the black square](/images/sheet_placement2.jpg)
 
 Use a Post-It note to **cover the bottom left card**. Because the card is so close to the bottom left L registration mark, the machine sometimes gets the two confused; covering the card will reduce registration issues. You can also use masking tape or a piece of paper with tape on it.
 
-![Post-It note](/images/registration_fix.jpg)
+![Bottom left card](/images/registration_fix.jpg)
+![Bottom left card covered](/images/registration_fix2.jpg)
 
 The machine's pinch rollers grip and move the mat. Ensure that they are set to the right position for your mat. The should grip both sides of your mat.
 
+![Pinch roller](/images/pinch_roller.jpg)
+![Pinch roller close up](/images/pinch_roller2.jpg)
+
 Insert the mat into the machine. The left edge of the mat should be aligned with the notch on the machine. Then, click the media load button on the machine.
 
-![Mat alignment](/images/mat_alignment.jpg)
+![Notch](/images/mat_placement.jpg)
+![Mat touching notch](/images/mat_placement2.jpg)
+![Notch close up](/images/mat_placement_close.jpg)
+![Mat touching notch close up](/images/mat_placement_close2.jpg)
 
 Put your [cutting settings](#cutting-settings) into Silhouette Studio.
 
@@ -178,17 +190,25 @@ Put your [cutting settings](#cutting-settings) into Silhouette Studio.
 
 Start the cutting job. Remember to remove the Post-It note after registration.
 
+![Starting job](/images/starting_job.jpg)
+
 ### Finish the cards
 
 Click the media eject button on the machine to remove the mat.
 
 Peel off the cards and remove the excess.
 
+![Cut cards](/images/peel.jpg)
+![The peel](/images/peel2.jpg)
+![Free cards](/images/peel3.jpg)
+
 Because the cutting process may cause the card edges to delaminate, put the cards through the laminator a second time.
 
 ![Relaminating](/images/relamination.jpg)
 
 Now you're ready to play with your cards!
+
+![Card fan](/images/card_fan.jpg)
 
 ## Next Steps
 
