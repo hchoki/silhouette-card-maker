@@ -25,6 +25,7 @@ default_output_path = os.path.join(output_directory, 'game.pdf')
 @click.option("--ppi", default=300, type=click.IntRange(min=0), show_default=True, help="Pixels per inch (PPI) when creating PDF.")
 @click.option("--quality", default=75, type=click.IntRange(min=0, max=100), show_default=True, help="File compression. A higher value corresponds to better quality and larger file size.")
 @click.option("--load_offset", default=False, is_flag=True, help="Apply saved offsets. See `offset_pdf.py` for more information.")
+@click.option('--skip', type=click.IntRange(min=0), multiple=True, help="Skip a card based on its index. Useful for registration issues. Examples: 0, 4.")
 @click.option("--name", help="Label each page of the PDF with a name.")
 
 def cli(
@@ -40,6 +41,7 @@ def cli(
     extend_corners,
     ppi,
     quality,
+    skip,
     load_offset,
     name
 ):
@@ -56,6 +58,7 @@ def cli(
         extend_corners,
         ppi,
         quality,
+        skip,
         load_offset,
         name
     )

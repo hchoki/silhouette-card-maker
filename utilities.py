@@ -206,11 +206,27 @@ def draw_card_with_bleed(card_image: Image, base_image: Image, box: tuple[int, i
 
     return base_image
 
-def draw_card_layout(card_images: List[Image.Image], base_image: Image.Image, num_rows: int, num_cols: int, x_pos: List[int], y_pos: List[int], width: int, height: int, print_bleed: tuple[int, int], crop: tuple[float, float], ppi_ratio: float, extend_corners: int, flip: bool):
+def draw_card_layout(
+    card_images: List[Image.Image | None],
+    base_image: Image.Image,
+    num_rows: int,
+    num_cols: int,
+    x_pos: List[int],
+    y_pos: List[int],
+    width: int,
+    height: int,
+    print_bleed: tuple[int, int],
+    crop: tuple[float, float],
+    ppi_ratio: float,
+    extend_corners: int,
+    flip: bool
+):
     num_cards = num_rows * num_cols
 
     # Fill all the spaces with the card back
     for i, card_image in enumerate(card_images):
+        if card_image is None:
+            continue
 
         # Calculate the location of the new card based on what number the card is
         new_origin_x = math.floor(x_pos[i % num_cards % num_cols] * ppi_ratio)
@@ -283,9 +299,11 @@ def generate_pdf(
     extend_corners: int,
     ppi: int,
     quality: int,
+    skip_indices: List[int],
     load_offset: bool,
     name: str
 ):
+    # Sanity checks for the different directories
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
         raise Exception(f'Front image directory path "{f_path}" is invalid.')
@@ -298,6 +316,7 @@ def generate_pdf(
     if not d_path.exists() or not d_path.is_dir():
         raise Exception(f'Double-sided image directory path "{d_path}" is invalid.')
 
+    # Delete hidden files that may affect image fetching
     delete_hidden_files_in_directory(front_dir_path)
     delete_hidden_files_in_directory(back_dir_path)
     delete_hidden_files_in_directory(double_sided_dir_path)
@@ -339,13 +358,13 @@ def generate_pdf(
         except ValidationErr as e:
             raise Exception(f'Cannot parse layouts.json: {e}.')
 
+        # Get paper size and paper layout
         paper_size_enum = PaperSize(paper_size)
         if paper_size_enum not in layouts.paper_layouts:
-            print(paper_size)
-            print(layouts.paper_layouts)
             raise Exception(f'Unsupported paper size "{paper_size}".')
         paper_layout = layouts.paper_layouts[paper_size_enum]
 
+        # Get card size and card layout
         card_size_enum = CardSize(card_size)
         if card_size_enum not in layouts.card_sizes:
             raise Exception(f'Unsupported card size "{card_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
@@ -359,6 +378,18 @@ def generate_pdf(
         num_rows = len(card_layout.y_pos)
         num_cols = len(card_layout.x_pos)
         num_cards = num_rows * num_cols
+
+        # Check skip indices
+        # You can only skip valid indices (within the max card count per page)
+        clean_skip_indices = [n for n in skip_indices if n < num_cards]
+        ignore_skip_indices = [n for n in skip_indices if n >= num_cards]
+
+        if len(ignore_skip_indices) > 0:
+            print(f'Ignoring skip indices that are outside range 0-{num_cards - 1}: {ignore_skip_indices}')
+
+        # If all possible cards are skipped, this may result in an infinite loop
+        if len(clean_skip_indices) == num_cards:
+            raise Exception(f'You cannot skip all cards per page')
 
         registration_filename =  f'{paper_size}_registration.jpg'
         registration_path = os.path.join(asset_directory, registration_filename)
@@ -383,8 +414,12 @@ def generate_pdf(
                 with Image.open(back_card_image_path) as back_im:
                     back_im = ImageOps.exif_transpose(back_im)
 
+                    back_images = [back_im] * num_cards
+                    for s in clean_skip_indices:
+                        back_images[s] = None
+
                     draw_card_layout(
-                        [back_im] * num_cards,
+                        back_images,
                         single_sided_back_page,
                         num_rows,
                         num_cols,
@@ -403,13 +438,23 @@ def generate_pdf(
             num_image = 1
             it = iter(natsorted(list(front_set - ds_set)))
             while True:
-                file_group = list(itertools.islice(it, num_cards))
+                file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
                 if not file_group:
                     break
 
                 # Fetch card art
                 front_card_images = []
-                for file in file_group:
+                file_group_iterator = iter(file_group)
+                for i in range(num_cards):
+                    if i in clean_skip_indices:
+                        front_card_images.append(None)
+                        continue
+
+                    try:
+                        file = next(file_group_iterator)
+                    except StopIteration:
+                        break
+
                     print(f'Image {num_image}: {file}')
                     num_image = num_image + 1
 
@@ -452,14 +497,25 @@ def generate_pdf(
             # Create double-sided card layout
             it = iter(natsorted(list(ds_set)))
             while True:
-                file_group = list(itertools.islice(it, num_cards))
+                file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
                 if not file_group:
                     break
 
                 # Fetch card art
                 front_card_images = []
                 back_card_images = []
-                for file in file_group:
+                file_group_iterator = iter(file_group)
+                for i in range(num_cards):
+                    if i in clean_skip_indices:
+                        front_card_images.append(None)
+                        back_card_images.append(None)
+                        continue
+
+                    try:
+                        file = next(file_group_iterator)
+                    except StopIteration:
+                        break
+
                     print(f'Image {num_image} (double-sided): {file}')
                     num_image = num_image + 1
 

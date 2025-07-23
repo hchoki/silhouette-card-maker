@@ -1,6 +1,6 @@
 # Custom Card Games with the Cameo Cutting Machine
 
-![](images/display.jpg)
+![](hugo/static/images/display.jpg)
 
 Ever wanted to make your own custom card game but without the hassle of a craft knife, a rotary cutter, or a paper guillotine? How about making your own proxies to playtest your favorite TCG?
 
@@ -72,7 +72,7 @@ You can find all the cutting templates for Silhouette Studio in [`cutting_templa
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a PDF with registration marks that can be cut out with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
 
-![Example PDF](images/create_pdf.png)
+![Example PDF](hugo/static/images/create_pdf.png)
 
 ### Basic Usage
 
@@ -126,13 +126,33 @@ To create double-sided cards, put front images in the `game/front/` folder and b
 
 If your card images have rounded corners, they may be missing print bleed in the PDF. Because of the missing print bleed, when the cards are cut, they may have a sliver of white on the corners.
 
-![Extend corners](images/extend_corners.jpg)
+![Extend corners](hugo/static/images/extend_corners.jpg)
 
 The `--extend_corners` option can ameliorate this issue. You may need to experiment with the value but I recommend starting with `10`
 
 ```sh
 python create_pdf.py --extend_corners 10
 ```
+
+### Skip Cards
+
+One solution for registration issues is to use a Post-It note to cover up cards near the registration marks.
+
+However, if you would prefer to skip this manual step, you can skip the card near registration marks using the `--skip` option.
+
+```sh
+python create_pdf.py --skip 4
+```
+
+![Skip front](hugo/static/images/skip_front.png)
+
+If you cut from the back, you might consider:
+
+```sh
+python create_pdf.py --skip 0
+```
+
+![Skip back](hugo/static/images/skip_back.png)
 
 ### CLI Options
 
@@ -167,6 +187,8 @@ Options:
                                   [default: 75; 0<=x<=100]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
+  --skip INTEGER RANGE            Skip a card based on its index. Useful for
+                                  registration issues. Examples: 0, 4.  [x>=0]
   --name TEXT                     Label each page of the PDF with a name.
   --help                          Show this message and exit.
 ```
@@ -209,7 +231,7 @@ First, you must determine the offset by using the [calibration sheets](calibrati
 
 `<paper size>_calibration.pdf` has a front page and a back page.
 
-![Calibration](images/calibration.png)
+![Calibration](hugo/static/images/calibration.png)
 
 The front page is a simple grid of squares.
 

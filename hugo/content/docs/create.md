@@ -81,6 +81,26 @@ The `--extend_corners` option can ameliorate this issue. You may need to experim
 python create_pdf.py --extend_corners 10
 ```
 
+### Skip Cards
+
+One solution for registration issues is to use a Post-It note to cover up cards near the registration marks.
+
+However, if you would prefer to skip this manual step, you can skip the card near registration marks using the `--skip` option.
+
+```sh
+python create_pdf.py --skip 4
+```
+
+![Skip front](/images/skip_front.png)
+
+If you cut from the back, you might consider:
+
+```sh
+python create_pdf.py --skip 0
+```
+
+![Skip back](/images/skip_back.png)
+
 ## CLI Options
 
 ```
@@ -114,6 +134,8 @@ Options:
                                   [default: 75; 0<=x<=100]
   --load_offset                   Apply saved offsets. See `offset_pdf.py` for
                                   more information.
+  --skip INTEGER RANGE            Skip a card based on its index. Useful for
+                                  registration issues. Examples: 0, 4.  [x>=0]
   --name TEXT                     Label each page of the PDF with a name.
   --help                          Show this message and exit.
 ```
