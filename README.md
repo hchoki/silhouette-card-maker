@@ -194,6 +194,7 @@ Options:
   --skip INTEGER RANGE            Skip a card based on its index. Useful for
                                   registration issues. Examples: 0, 4.  [x>=0]
   --name TEXT                     Label each page of the PDF with a name.
+  --version                       Show the version and exit.
   --help                          Show this message and exit.
 ```
 
