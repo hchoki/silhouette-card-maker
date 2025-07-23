@@ -1,4 +1,4 @@
-# Custom Card Games with the Cameo Cutting Machine
+# Custom Card Games with Silhouette Cutting Machines
 
 ![](hugo/static/images/display.jpg)
 
