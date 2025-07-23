@@ -9,7 +9,7 @@ This plugin supports the following decklist formats: `ydk`, `ydke`. To learn mor
 
 ## Basic instructions
 
-Navigate to the [root directory](../..). This plugin is not meant to be run in `plugins/yugioh/`.
+Navigate to the root directory. This plugin is not meant to be run in `plugins/yugioh/`.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 

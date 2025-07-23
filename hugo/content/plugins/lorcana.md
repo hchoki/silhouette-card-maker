@@ -9,7 +9,7 @@ This plugin supports decklist exports from [Dreamborn.ink](https://dreamborn.ink
 
 ## Basic instructions
 
-Navigate to the [root directory](../..). This plugin is not meant to be run in `plugins/lorcana/`.
+Navigate to the root directory. This plugin is not meant to be run in `plugins/lorcana/`.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
