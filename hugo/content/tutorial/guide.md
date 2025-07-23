@@ -147,10 +147,10 @@ You can find the PDF in `game/output/game.pdf` and it should look similar to the
 
 ### Prepare the sheets
 
-Print out the PDF and laminate the sheets.
+Print out the PDF and laminate the sheets. Because cardstock is thick, you may need to use a higher setting on your laminator. If not, you may have cloudy lamination and delamination issues.
 
 > [!TIP]
-> Because cardstock is thick, you may need to use a higher setting on your laminator. If not, you may have cloudy lamination and delamination issues.
+> You don't need to laminate if you don't want to. You can cut whatever you want, including unlaminated cardstock, vinyl stickers, and vinyl sticker on cardstock. Your machine should be able to cut anything within reason.
 
 ![Print](/images/lamination.jpg)
 ![Into the lamination pouch](/images/lamination2.jpg)
