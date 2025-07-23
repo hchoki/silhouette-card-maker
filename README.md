@@ -6,7 +6,7 @@ Ever wanted to make your own custom card game but without the hassle of a craft 
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
+If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker/tutorial/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
 ## Demo
 
@@ -22,9 +22,9 @@ Proxies should be easily identifiable as proxies. You may not use this repo to c
 
 ## Contents
 
-* [documentation](https://alan-cha.github.io/silhouette-card-maker-testing)
-* [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/)
-* [supply list](https://alan-cha.github.io/silhouette-card-maker-testing/tutorial/supplies/)
+* [documentation](https://alan-cha.github.io/silhouette-card-maker)
+* [tutorial](https://alan-cha.github.io/silhouette-card-maker/tutorial/)
+* [supply list](https://alan-cha.github.io/silhouette-card-maker/tutorial/supplies/)
 * [create_pdf.py](#create_pdfpy), a script for laying out your cards in a PDF
 * [offset_pdy.py](#offset_pdfpy), a script for adding an offset to your PDF
 * [cutting_templates/](cutting_templates/), a directory containing Silhoutte Studio cutting templates

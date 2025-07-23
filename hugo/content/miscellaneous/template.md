@@ -36,7 +36,7 @@ Print the template to PDF.
 
 ### Update `layouts.json`
 
-[`assets/layouts.json`](https://github.com/Alan-Cha/silhouette-card-maker-testing/blob/main/assets/layouts.json) contains the position of each cutting shape.
+[`assets/layouts.json`](https://github.com/Alan-Cha/silhouette-card-maker/blob/main/assets/layouts.json) contains the position of each cutting shape.
 
 Import the square PDF into a photo editing software. The photo editing software should convert the PDF into a photo format. The photo must be 300 PPI.
 
@@ -79,7 +79,7 @@ Create a new entry in `layouts.json`.
 
 ### Update `utilities.py`
 
-[`utilities.py`](https://github.com/Alan-Cha/silhouette-card-maker-testing/blob/main/utilities.py) contains two enums which capture every card and paper size. Update these appropriately.
+[`utilities.py`](https://github.com/Alan-Cha/silhouette-card-maker/blob/main/utilities.py) contains two enums which capture every card and paper size. Update these appropriately.
 
 ```diff
 class CardSize(str, Enum):
@@ -100,12 +100,12 @@ class PaperSize(str, Enum):
 
 ### Update Assets
 
-If you're adding a new paper size, you also need to add new base images to [`assets/`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/assets).
+If you're adding a new paper size, you also need to add new base images to [`assets/`](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/assets).
 
 For example, for `letter` paper size, there are the following files:
-* [`letter_blank.jpg`](https://github.com/Alan-Cha/silhouette-card-maker-testing/blob/main/assets/letter_blank.jpg)
-* [`letter_registration.jpg`](https://github.com/Alan-Cha/silhouette-card-maker-testing/blob/main/assets/letter_registration.jpg)
-* [`letter_registration.pdf`](https://github.com/Alan-Cha/silhouette-card-maker-testing/blob/main/assets/letter_registration.pdf)
+* [`letter_blank.jpg`](https://github.com/Alan-Cha/silhouette-card-maker/blob/main/assets/letter_blank.jpg)
+* [`letter_registration.jpg`](https://github.com/Alan-Cha/silhouette-card-maker/blob/main/assets/letter_registration.jpg)
+* [`letter_registration.pdf`](https://github.com/Alan-Cha/silhouette-card-maker/blob/main/assets/letter_registration.pdf)
 
 ### Run `create_pdf.py`
 

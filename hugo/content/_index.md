@@ -12,7 +12,7 @@ Ever wanted to make your own custom card game but without the hassle of a craft 
 
 You can do it all with the press of a button and a cutting machine! And I can show you how!
 
-If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker-testing/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
+If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
 ## Demo
 
@@ -28,14 +28,14 @@ Proxies should be easily identifiable as proxies. You may not use this repo to c
 
 ## Contents
 
-* [code repository](https://github.com/Alan-Cha/silhouette-card-maker-testing)
+* [code repository](https://github.com/Alan-Cha/silhouette-card-maker)
 * [tutorial]({{% ref "tutorial/" %}})
 * [supply list]({{% ref "tutorial/supplies.md" %}})
 * [create_pdf.py]({{% ref "docs/create.md" %}}), a script for laying out your cards in a PDF
 * [offset_pdy.py]({{% ref "docs/offset.md" %}}), a script for adding an offset to your PDF
-* [cutting_templates/](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates), a directory containing Silhoutte Studio cutting templates
-* [calibration/](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/calibration), a directory containing offset calibration sheets
-* [examples/](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples), a directory containing sample games
+* [cutting_templates/](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/cutting_templates), a directory containing Silhoutte Studio cutting templates
+* [calibration/](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/calibration), a directory containing offset calibration sheets
+* [examples/](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/examples), a directory containing sample games
 * [plugins/]({{% ref "plugins/" %}}), a directory containing scripts for streamlining card image acquisition
 
 

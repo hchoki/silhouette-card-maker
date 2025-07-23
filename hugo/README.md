@@ -1,6 +1,6 @@
 # Documentation Website
 
-This is the source code for [https://alan-cha.github.io/silhouette-card-maker-testing/](https://alan-cha.github.io/silhouette-card-maker-testing/).
+This is the source code for [https://alan-cha.github.io/silhouette-card-maker/](https://alan-cha.github.io/silhouette-card-maker/).
 
 ## Local Development
 

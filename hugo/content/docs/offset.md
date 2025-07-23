@@ -9,7 +9,7 @@ It's pivotal to ensure that your card fronts and backs are aligned. The front an
 
 ## Basic Usage
 
-First, you must determine the offset by using the [calibration sheets](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/calibration).
+First, you must determine the offset by using the [calibration sheets](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/calibration).
 
 `<paper size>_calibration.pdf` has a front page and a back page.
 

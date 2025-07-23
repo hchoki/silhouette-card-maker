@@ -44,7 +44,7 @@ Before starting, join our [Discord server](https://discord.gg/jhsKmAgbXc). If yo
 
 [Install Silhouette Studio](https://www.silhouetteamerica.com/silhouette-studio).
 
-Download the `silhouette-card-makers` code by cloning the [repo](https://github.com/Alan-Cha/silhouette-card-maker-testing) or clicking [here](https://github.com/Alan-Cha/silhouette-card-maker-testing/archive/refs/heads/main.zip). Unzip the code if necessary.
+Download the `silhouette-card-makers` code by cloning the [repo](https://github.com/Alan-Cha/silhouette-card-maker) or clicking [here](https://github.com/Alan-Cha/silhouette-card-maker/archive/refs/heads/main.zip). Unzip the code if necessary.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
@@ -79,7 +79,7 @@ cd <path to the code>
 > [!TIP]
 > For example, if the code in the `Downloads` folder, then use the following:
 > ```sh
-> cd Downloads/silhouette-card-maker-testing-main/silhouette-card-maker-testing-main
+> cd Downloads/silhouette-card-maker-main/silhouette-card-maker-main
 > ```
 
 ### Create a Python virtual environment
@@ -128,7 +128,7 @@ pip install -r requirements.txt
 Put card front images into the `game/front/` folder. Then, put a card back image into the `game/back/` folder.
 
 > [!TIP]
-> I've prepared the game, Zero sumZ, as an [example](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/examples/ZERO%20SUMZ). Simply move the assets to the appropriate image folders.
+> I've prepared the game, Zero sumZ, as an [example](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/examples/ZERO%20SUMZ). Simply move the assets to the appropriate image folders.
 >
 > You can also use a [plugin]({{% ref "../plugins" %}}) to populate the image folders. [Magic: The Gathering]({{% ref "../plugins/mtg.md" %}}), [Yu-Gi-Oh!]({{% ref "../plugins/yugioh.md" %}}), and [Lorcana]({{% ref "../plugins/lorcana.md" %}}) are currently supported.
 
@@ -158,7 +158,7 @@ Print out the PDF and laminate the sheets. Because cardstock is thick, you may n
 
 ### Cut the sheets
 
-Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates/`](https://github.com/Alan-Cha/silhouette-card-maker-testing/tree/main/cutting_templates) folder.
+Open the `letter_standard_<version>.studio3` cutting template in Silhouette Studio. Cutting templates can be found in the [`cutting_templates/`](https://github.com/Alan-Cha/silhouette-card-maker/tree/main/cutting_templates) folder.
 
 ![Cutting template](/images/cutting_template_standard.png)
 

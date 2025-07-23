@@ -38,4 +38,4 @@ jobs:
         uses: filiph/linkcheck@3.0.0
         with:
           arguments: |
-            https://alan-cha.github.io/silhouette-card-maker-testing/ --skip-file skip_file.txt
+            https://alan-cha.github.io/silhouette-card-maker/ --skip-file skip_file.txt

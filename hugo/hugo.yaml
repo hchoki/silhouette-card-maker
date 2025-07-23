@@ -9,7 +9,7 @@ menu:
         type: search
     - name: GitHub
       weight: 5
-      url: "https://github.com/Alan-Cha/silhouette-card-maker-testing"
+      url: "https://github.com/Alan-Cha/silhouette-card-maker"
       params:
         icon: github
     - name: Discord
