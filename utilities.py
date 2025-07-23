@@ -61,7 +61,7 @@ EXTRANEOUS_FILES = {
     "Icon\r",  # macOS oddball
 }
 
-def parse_crop_string(crop_string: str | None, card_width: int, card_height: int, ppi: int) -> tuple[float, float]:
+def parse_crop_string(crop_string: str | None, card_width: int, card_height: int) -> tuple[float, float]:
     """
     Calculates crop based on various formats.
 
@@ -80,13 +80,13 @@ def parse_crop_string(crop_string: str | None, card_width: int, card_height: int
     mm_match = re.fullmatch(rf"({float_pattern})mm", crop_string)
     if mm_match:
         crop_mm = float(mm_match.group(1))
-        return convertInToCrop(crop_mm / 25.4, card_width, card_height, ppi)
+        return convertInToCrop(crop_mm / 25.4, card_width, card_height)
 
     # Match "0.1in" or "0.125in"
     in_match = re.fullmatch(rf"({float_pattern})in", crop_string)
     if in_match:
         crop_in = float(in_match.group(1))
-        return convertInToCrop(crop_in, card_width, card_height, ppi)
+        return convertInToCrop(crop_in, card_width, card_height)
 
     # Match single float like "6.5" or "4.5"
     single_match = re.fullmatch(float_pattern, crop_string)
@@ -96,10 +96,11 @@ def parse_crop_string(crop_string: str | None, card_width: int, card_height: int
 
     raise ValueError(f"Invalid crop format: '{crop_string}'")
 
-def convertInToCrop(crop_in: float, card_width_px: int, card_height_px: int, ppi: int) -> tuple[float, float]:
+def convertInToCrop(crop_in: float, card_width_px: int, card_height_px: int) -> tuple[float, float]:
     # Convert from pixels to physical mm using DPI
-    card_width_mm = card_width_px / ppi
-    card_height_mm = card_height_px / ppi
+    # Card dimensions are based on 300 ppi
+    card_width_mm = card_width_px / 300
+    card_height_mm = card_height_px / 300
 
     crop_x_percent = 2 * crop_in / card_width_mm * 100
     crop_y_percent = 2 * crop_in / card_height_mm * 100
@@ -353,7 +354,7 @@ def generate_pdf(
             raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
         card_layout = paper_layout.card_layouts[card_size_enum]
 
-        crop = parse_crop_string(crop_string, card_size.width, card_size.height, ppi)
+        crop = parse_crop_string(crop_string, card_size.width, card_size.height)
 
         num_rows = len(card_layout.y_pos)
         num_cols = len(card_layout.x_pos)
