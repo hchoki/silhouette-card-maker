@@ -44,13 +44,13 @@ def parse_deckplanet(deck_text: str, handle_card: Callable) -> None:
     parse_deck_helper(deck_text, handle_card, is_deckplanet_line, extract_deckplanet_card_data)
 
 class DeckFormat(str, Enum):
-    DECKPLANET = "deckplanet"
+    DECKPLANET = 'deckplanet'
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
     if format == DeckFormat.DECKPLANET:
         return parse_deckplanet(deck_text, handle_card)
     else:
-        raise ValueError("Unrecognized deck format.")
+        raise ValueError('Unrecognized deck format.')
 
 if __name__ == '__main__':
     parse_deck()
