@@ -3,7 +3,7 @@ from os import path
 from requests import Response, get
 from time import sleep
 
-def request_altered(query: str) -> Response:
+def request_gatcg(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
     r.raise_for_status()
@@ -19,8 +19,8 @@ def fetch_card(
 ):
 
     # Query for card info
-    json = request_altered(f'https://api.gatcg.com/cards/{sub(r'[\', ]', lambda replace_map: {'\'': '', ',': '', ' ': '-'}[replace_map.group()], card_name.lower())}').json()
-    card_art = request_altered(f'https://api.gatcg.com/{json.get('editions', [{}])[0].get('image')}').content
+    json = request_gatcg(f'https://api.gatcg.com/cards/{sub(r'[\', ]', lambda replace_map: {'\'': '', ',': '', ' ': '-'}[replace_map.group()], card_name.lower())}').json()
+    card_art = request_gatcg(f'https://api.gatcg.com/{json.get('editions', [{}])[0].get('image')}').content
     
     for counter in range(quantity):
         image_path = path.join(front_img_dir, f'{str(index)}{card_name}{str(counter + 1)}.png')

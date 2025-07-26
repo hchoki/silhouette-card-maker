@@ -42,4 +42,50 @@ And finally, you can generate the [PDF files](../../README.md#create_pdfpy) for 
 
 ## CLI Options
 
-There are currently no additional options to run with the program, however they can be added on for any scenario that you may come across.
+```
+Usage: fetch.py [OPTIONS] DECK_PATH {cockatrice}
+
+Options:
+  --help  Show this message and exit.
+```
+
+## Formats
+
+### `cockatrice`
+
+The format for ``Cockatrice/Omnidex``.
+
+```
+# Main Deck
+3 Incapacitate
+4 Sable Remnant
+4 Slice and Dice
+2 Aesan Protector
+3 Blackmarket Broker
+4 Dream Fairy
+4 Fairy Whispers
+4 Galewhisper Rogue
+4 Reclaim
+4 Shimmercloak Assassin
+3 Stifling Trap
+4 Surveil the Winds
+3 Tempest Downfall
+3 Veiling Breeze
+4 Winbless Lookout
+4 Windmill Engineer
+3 Zephyr
+
+# Material Deck
+1 Spirit of Wind
+1 Tristan, Underhanded
+1 Tristan, Hired Blade
+1 Assassin's Ripper
+1 Bauble of Abundance
+1 Blinding Orb
+1 Curved Dagger
+1 Poisoned Coating Oil
+1 Poisoned Dagger
+1 Smoke Bombs
+1 Tariff Ring
+1 Windwalker Boots
+```
