@@ -139,6 +139,8 @@ The [Digimon plugin](plugins/digimon/README.md) supports **Tabletop Simulator**,
 
 The [One Piece plugin](plugins/one_piece/README.md) supports **OPTCG Simulator** and **Egman Events** formats.
 
+The Flesh and Blood plugin supports **Fabrary** format. To learn more, see [here](plugins/flesh_and_blood/README.md).
+
 ### Double-Sided Cards
 
 To create double-sided cards, put front images in the `game/front/` folder and back images in the `game/double_sided/` folder. The filenames (and file extensions) must match for each pair.
