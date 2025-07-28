@@ -2,9 +2,12 @@ from re import compile, sub
 from api import request_api
 
 def fetch_card_number(name: str) -> str:
+
+    if name == 'Spirit\'s Refuge':
+        name = 'Spirit\'s Rifuge' # At this time, this is the name of the card within Riftmana's database
     
     # Get the internal information based on the card name to route to the card itself
-    url = f'https://riftmana.com/wp-json/wp/v2/card-name?search={sub(r'\s+', '-', sub(r'[^A-Za-z0-9 ]+', '', name)).lower()}'
+    url = f'https://riftmana.com/wp-json/wp/v2/card-name?search={sub(r'\s+', '-', sub(r'[^A-Za-z0-9 \-]+', '', name)).lower()}'
     success, name_response = request_api(url)
     if not success:
         raise ValueError(f'Issue retrieving card information for {name}')
