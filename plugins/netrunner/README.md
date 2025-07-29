@@ -2,7 +2,7 @@
 
 This plugin reads a decklist from [NetrunnerDB](https://netrunnerdb.com/) and puts the card images into the proper `game/` directories.
 
-This plugin currently only the ``Plaintext`` and ``Jinteki/bbCode/Markdown`` formats.
+This plugin currently only the ``Plaintext``, ``Markdown``, ``bbCode``, and ``Jinteki`` formats.
 
 ## Instructions
 
@@ -38,7 +38,15 @@ Now, you are ready to run the program to generate the images for the deck using 
 > ```bash
 > python plugins/netrunner/fetch.py game/decklist/deck.txt plaintext
 > ```
-> If your deck is in the ``Jinteki/bbCode/Markdown`` format, then use the following command.
+> If your deck is in the ``Markdown`` format, then use the following command.
+> ```bash
+> python plugins/netrunner/fetch.py game/decklist/deck.txt markdown
+> ```
+> If your deck is in the ``bbCode`` format, then use the following command.
+> ```bash
+> python plugins/netrunner/fetch.py game/decklist/deck.txt bbcode
+> ```
+> If your deck is in the ``Jinteki`` format, then use the following command.
 > ```bash
 > python plugins/netrunner/fetch.py game/decklist/deck.txt jinteki
 > ```
