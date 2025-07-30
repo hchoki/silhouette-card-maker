@@ -23,7 +23,9 @@ def fetch_card(
 ):
 
     # Query for card info
-    json = request_fabtcg(f'https://cards.fabtcg.com/api/search/v1/cards/?name={sub(r'\s+', '+', sub(r'[^A-Za-z0-9 ]+', '', name)).lower()}{f'&pitch_lookup=exact&pitch={pitch.value}' if pitch != PitchOption.NONE else ''}').json()
+    filtered_name_for_url = sub(r'\s+', '+', sub(r'[^A-Za-z0-9 ]+', '', name)).lower()
+    pitch_argument = f'&pitch_lookup=exact&pitch={pitch.value}' if pitch != PitchOption.NONE else ''
+    json = request_fabtcg(f'https://cards.fabtcg.com/api/search/v1/cards/?name={filtered_name_for_url}{pitch_argument}').json()
     card_art = request_fabtcg(json.get('results')[0].get('image').get('normal')).content
     
     for counter in range(quantity):
