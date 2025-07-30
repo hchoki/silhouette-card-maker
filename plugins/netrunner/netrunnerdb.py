@@ -21,7 +21,8 @@ def fetch_card(
 
     # Query for card info
     # Query for a normalized name of Latin scripts
-    json = request_netrunnerdb(f'https://api-preview.netrunnerdb.com/api/v3/public/cards/{sub(r'\s+|-', '_', sub(r'[^A-Za-z0-9 \-]+', '', ''.join(c for c in normalize('NFD', name) if category(c) != 'Mn'))).lower()}').json()
+    filtered_name_for_url = sub(r'\s+|-', '_', sub(r'[^A-Za-z0-9 \-]+', '', ''.join(c for c in normalize('NFD', name) if category(c) != 'Mn'))).lower()
+    json = request_netrunnerdb(f'https://api-preview.netrunnerdb.com/api/v3/public/cards/{filtered_name_for_url}').json()
     card_art = request_netrunnerdb(json.get('data').get('attributes').get('latest_printing_images').get('nrdb_classic').get('large')).content
     
     for counter in range(quantity):
