@@ -19,8 +19,10 @@ def fetch_card(
 ):
 
     # Query for card info
-    json = request_gatcg(f'https://api.gatcg.com/cards/{sub(r'[\', ]', lambda replace_map: {'\'': '', ',': '', ' ': '-'}[replace_map.group()], card_name.lower())}').json()
-    card_art = request_gatcg(f'https://api.gatcg.com/{json.get('editions', [{}])[0].get('image')}').content
+    filtered_name_for_url = sub(r'[\', ]', lambda replace_map: {'\'': '', ',': '', ' ': '-'}[replace_map.group()], card_name.lower())
+    json = request_gatcg(f'https://api.gatcg.com/cards/{filtered_name_for_url}').json()
+    card_art_url = json.get('editions', [{}])[0].get('image')
+    card_art = request_gatcg(f'https://api.gatcg.com/{card_art_url}').content
     
     for counter in range(quantity):
         image_path = path.join(front_img_dir, f'{str(index)}{card_name}{str(counter + 1)}.png')
