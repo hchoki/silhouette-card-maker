@@ -62,7 +62,7 @@ This project supports the following card and paper sizes, with more in the futur
 | Card size         | Inches          | Millimeters   | Notes |
 | ----------------- | --------------- | ------------- | ----- |
 | `standard`        | 2.48 x 3.46     | **63 x 88**   | <ul><li>**Magic the Gathering**</li><li>**Pokémon**</li><li>**Lorcana**</li><li>**One Piece**</li><li>**Digimon**</li><li>**Star Wars: Unlimited**</li><li>**Flesh and Blood**</li></ui> |
-| `standard_double` | 4.96 x 3.46     | **126 x 88**  | <ul><li>**Magic the Gathering** oversized (Planechase, Archenemy, Commander)</li></ui> |
+| `standard_double` | 4.96 x 3.46     | **126 x 88**  | <ul><li>**Magic the Gathering** oversized <ul><li>Planechase</li> <li>Archenemy</li> <li>Commander</li></ui> </li></ui> |
 | `japanese`        | 2.32 x 3.39     | **59 x 86**   | <ul><li>**Yu-Gi-Oh!**</li></ui> |
 | `poker`           | **2.5 x 3.5**   | 63.5 x 88.9   |       |
 | `poker_half`      | **1.75 x 2.45** | 44.45 x 62.23 |       |
