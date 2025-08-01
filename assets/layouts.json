@@ -4,6 +4,10 @@
             "width": 743,
             "height": 1038
         },
+        "standard_double": {
+            "width": 1487,
+            "height": 1038
+        },
         "japanese": {
             "width": 694,
             "height": 1015
@@ -50,6 +54,17 @@
                         1280
                     ],
                     "template": "letter_standard_v4"
+                },
+                "standard_double": {
+                    "x_pos": [
+                        155,
+                        1658
+                    ],
+                    "y_pos": [
+                        231,
+                        1280
+                    ],
+                    "template": "letter_standarddouble_v1"
                 },
                 "japanese": {
                     "x_pos": [
@@ -238,6 +253,17 @@
                         1246
                     ],
                     "template": "a4_standard_v3"
+                },
+                    "standard_double": {
+                    "x_pos": [
+                        259,
+                        1762
+                    ],
+                    "y_pos": [
+                        196,
+                        1246
+                    ],
+                    "template": "a4_standarddouble_v1"
                 },
                 "japanese": {
                     "x_pos": [
