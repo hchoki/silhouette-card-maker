@@ -50,7 +50,7 @@ def parse_tts(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]
     return parse_deck_helper(deck_text, handle_card, split_tts_deck, is_tts_line, extract_tts_card_data)
 
 def parse_untap(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]:
-    pattern = compile(r'^(\d+) (.+)\s+\(DCG\) \(([a-zA-Z0-9]+-\d+)\).+?$') # '{Quantity} {Name} (DCG) ({Card Number})'
+    pattern = compile(r'^(\d+)\s+(.+?)\s+\(DCG\)\s+\(([a-zA-Z0-9]+-\d+)\).*$') # '{Quantity} {Name} (DCG) ({Card Number})'
 
     def is_untap_line(line) -> bool:
         return bool(pattern.match(line))
