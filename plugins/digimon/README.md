@@ -1,0 +1,149 @@
+# Digimon Plugin
+
+This plugin reads a decklist, fetches the card images, and puts the card images into the proper `game/` directories.
+
+This plugin currently supports the ``TTS (Tabletop Simulator)``, ``DigimonMeta``, and ``Untap`` formats.
+
+## Instructions
+
+Navigate to the [root directory](../..), as the plugins are not meant to be run in the [plugin directory](.).
+
+Open a terminal on your device in the root directory.
+
+> [!NOTE]
+> On Windows, this would be the ``PowerShell`` application, unless you use another terminal of your choice.
+>
+> On MacOS or Linux, this would be the ``Terminal`` application, unless you use another terminal of your choice.
+
+Create and start your Python virtual environment in the terminal.
+
+> [!NOTE]
+> Use the following command to create your Python virtual environment.
+> ```bash
+> python -m venv venv
+> ```
+>
+> On Windows, use the following command to start your Python virtual environment.
+> ```bash
+> .\venv\Scripts\Activate.ps1
+> ```
+>
+> On MacOS or Linux, use the following command to start your Python virtual environment.
+> ```bash
+> . venv/bin/activate
+> ```
+
+> [!WARNING]
+> If this fails on Windows due to authorization policy issues, then run the following command to get around it.
+> ```bash
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+> ```
+
+Then install the Python dependencies in the Python virtual environment using the following command.
+```bash
+pip install -r requirements.txt  
+```
+
+Put your decklist into a text file within the [decklist directory/folder](../../game/decklist).
+
+Now, you are ready to run the program to generate the images for the deck using one of the following commands.
+
+> [!NOTE]
+> If your deck is in the ``TTS`` format, then use the following command.
+> ```bash
+> python plugins/digimon/fetch.py game/decklist/deck.txt tts
+> ```
+> If your deck is in the ``DigimonMeta`` format, then use the following command.
+> ```bash
+> python plugins/digimon/fetch.py game/decklist/deck.txt digimonmeta
+> ```
+> If your deck is in the ``Untap` format, then use the following command.
+> ```bash
+> python plugins/digimon/fetch.py game/decklist/deck.txt untap
+> ```
+
+And finally, you can generate the [PDF files](../../README.md#create_pdfpy) for the deck to print so that you can play at the table!
+
+## CLI Options
+
+```
+Usage: fetch.py [OPTIONS] DECK_PATH {tts|untap|digimonmeta}
+
+Options:
+  --help  Show this message and exit.
+```
+
+## Formats
+
+### `tts`
+
+The format for ``TTS``.
+
+```
+["Exported from https://digimoncard.dev","BT15-006","BT15-006","BT15-006","BT15-006","BT2-070","BT2-070","BT2-070","BT15-069","BT15-069","BT15-069","BT15-069","P-123","BT16-082","BT16-082","BT16-082","BT16-082","BT19-062","BT18-026","BT18-053","BT7-013","BT8-067","EX9-011","EX9-012","EX9-043","BT11-055","BT18-052","BT19-052","EX7-044","ST17-07","EX9-030","BT15-064","EX9-064","BT12-072","EX1-073","EX1-073","EX1-073","EX1-073","EX3-013","EX9-073","EX9-073","BT11-092","BT11-092","BT11-092","BT11-092","EX9-068","EX9-068","BT9-102","BT9-102","BT9-102","BT9-102","BT15-096","BT15-096","BT15-096","BT15-096"]
+```
+
+### `digimonmeta`
+
+The format for ``DigimonMeta``.
+
+```
+4 (BT22-002)
+4 (ST19-03)
+4 (EX7-024)
+2 (EX9-024)
+2 (BT22-029)
+4 (P-165)
+2 (EX7-025)
+3 (EX9-027)
+1 (BT20-084)
+1 (ST19-11)
+4 (EX9-032)
+2 (BT22-036)
+2 (EX7-030)
+4 (EX9-033)
+2 (BT22-042)
+3 (P-136)
+1 (EX7-063)
+2 (EX9-067)
+1 (BT22-088)
+3 (P-105)
+1 (EX7-074)
+2 (BT22-098)
+```
+
+### `untap`
+
+The format for ``Untap``.
+
+```
+1 MetalTyrannomon                      (DCG) (BT11-055) 
+4 Analogman                            (DCG) (BT11-092) 
+1 Chaosdramon (X Antibody)             (DCG) (BT12-072) 
+4 DemiMeramon                          (DCG) (BT15-006) 
+1 Megadramon                           (DCG) (BT15-064) 
+4 Candlemon                            (DCG) (BT15-069) 
+4 Supreme Connection!                  (DCG) (BT15-096) 
+4 Ukkomon                              (DCG) (BT16-082) 
+1 Daipenmon                            (DCG) (BT18-026) 
+1 CannonBeemon                         (DCG) (BT18-052) 
+1 JetSilphymon                         (DCG) (BT18-053) 
+1 Vespamon                             (DCG) (BT19-052) 
+1 Cyberdramon                          (DCG) (BT19-062) 
+3 Tapirmon                              (DCG) (BT2-070) 
+1 MetalGreymon                          (DCG) (BT7-013) 
+1 MetalGreymon                          (DCG) (BT8-067) 
+4 Attack of the Heavy Mobile Digimon!   (DCG) (BT9-102) 
+4 Machinedramon                         (DCG) (EX1-073) 
+1 Chaosdramon                           (DCG) (EX3-013) 
+1 Gigadramon                            (DCG) (EX7-044) 
+1 MetalGreymon                          (DCG) (EX9-011) 
+1 MetalGreymon: Alterous Mode           (DCG) (EX9-012) 
+1 Andromon                              (DCG) (EX9-030) 
+1 MetalTyrannomon                       (DCG) (EX9-043) 
+1 Megadramon                            (DCG) (EX9-064) 
+2 Analogman                             (DCG) (EX9-068) 
+2 Machinedramon                         (DCG) (EX9-073) 
+1 Ukkomon                                 (DCG) (P-123) 
+1 Rapidmon                              (DCG) (ST17-07) 
+```
