@@ -36,21 +36,17 @@ Proxies should be easily identifiable as proxies. You may not use this repo to c
 
 This project supports the following card and paper sizes, with more in the future:
 
-| Paper size | `standard` | `standard_double` | `japanese` | `poker` | `poker_half` | `bridge` | `bridge_square` | `domino` | `domino_square` |
-| ---------- | ---------- | ----------------- | ---------- | ------- | ------------ | --------- | -------------- | -------- | --------------- |
-| `letter`   | ✅         | ✅               | ✅         | ✅     |  ✅          | ✅       | ✅             | ✅      | ✅              |
-| `tabloid`  | ✅         | ❌               | ❌         | ✅     |  ❌          | ✅       | ❌             | ❌      | ✅              |
-| `a4`       | ✅         | ✅               | ✅         | ✅     |  ✅          | ✅       | ❌             | ❌      | ❌              |
-| `a3`       | ✅         | ❌               | ❌         | ❌     |  ❌          | ❌       | ❌             | ❌      | ❌              |
-| `archb`    | ✅         | ❌               | ❌         | ❌     |  ❌          | ❌       | ❌             | ❌      | ❌              |
-
-| Paper size | Inches       | Millimeters   |
-| ---------- | ------------ | ------------- |
-| `letter`   | **8.5 x 11** | 215.9 x 279.4 |
-| `tabloid`  | **11 x 17**  | 279.4 x 431.8 |
-| `a4`       | 8.3 x 11.7   | **210 x 297** |
-| `a3`       | 11.7 x 16.5  | **297 x 420** |
-| `archb`    | **12 x 18**  | 304.8 x 457.2 |
+| Format            | `letter` | `tabloid` | `a4` | `a3` | `archb` |
+|-------------------|----------|-----------|------|------|---------|
+| `standard`        | ✅       | ✅        | ✅   | ✅   | ✅      |
+| `standard_double` | ✅       | ❌        | ✅   | ❌   | ❌      |
+| `japanese`        | ✅       | ❌        | ✅   | ❌   | ❌      |
+| `poker`           | ✅       | ✅        | ✅   | ❌   | ❌      |
+| `poker_half`      | ✅       | ❌        | ✅   | ❌   | ❌      |
+| `bridge`          | ✅       | ✅        | ✅   | ❌   | ❌      |
+| `bridge_square`   | ✅       | ❌        | ❌   | ❌   | ❌      |
+| `domino`          | ✅       | ❌        | ❌   | ❌   | ❌      |
+| `domino_square`   | ✅       | ✅        | ❌   | ❌   | ❌      |
 
 | Card size         | Inches          | Millimeters   | Notes |
 | ----------------- | --------------- | ------------- | ----- |
@@ -63,6 +59,14 @@ This project supports the following card and paper sizes, with more in the futur
 | `bridge_square`   | **2.25 x 2.25** | 57.15 x 57.15 |       |
 | `domino`          | **1.75 x 3.5**  | 44.45 x 88.9  |       |
 | `domino_square`   | **1.75 x 1.75** | 44.45 x 44.45 |       |
+
+| Paper size | Inches       | Millimeters   |
+| ---------- | ------------ | ------------- |
+| `letter`   | **8.5 x 11** | 215.9 x 279.4 |
+| `tabloid`  | **11 x 17**  | 279.4 x 431.8 |
+| `a4`       | 8.3 x 11.7   | **210 x 297** |
+| `a3`       | 11.7 x 16.5  | **297 x 420** |
+| `archb`    | **12 x 18**  | 304.8 x 457.2 |
 
 You can find all the cutting templates for Silhouette Studio in [`cutting_templates/`](cutting_templates/).
 
