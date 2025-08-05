@@ -68,7 +68,7 @@ You can find all the cutting templates for Silhouette Studio in [`cutting_templa
 
 ## Donate
 
-If you enjoyed using Silhouette Card Maker, consider [donating](https://www.paypal.com/donate/?business=JM8RZAWD2TMLQ&no_recurring=0&item_name=If+you+found+Silhouette+Card+Maker+useful%2C+you+can+help+support+me+and+the+project.+Thank+you%21&currency_code=USD) to help support me and the project. Thank you!
+If you enjoyed using Silhouette Card Maker, consider [donating](https://www.paypal.com/donate/?hosted_button_id=ZH2XCSLXERBW8) to help support me and the project. Thank you!
 
 ## create_pdf.py
 `create_pdf.py` is a CLI tool that layouts your card images into a PDF with registration marks that can be cut out with the appropriate cutting template in [`cutting_templates/`](cutting_templates/).
