@@ -39,7 +39,7 @@ def parse_markdown(deck_text: str, handle_card: Callable) -> None:
             name = match.group(2).strip()
             url = match.group(3).strip()
             set = match.group(4).strip()
-            quantity = int( match.group(1).strip() )
+            quantity = int(match.group(1).strip())
 
             return (name, set, url, quantity)
         
@@ -55,7 +55,7 @@ def parse_plaintext(deck_text: str, handle_card: Callable) -> None:
         match = pattern.match(line)
         if match:
             name = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
+            quantity = int(match.group(1).strip())
 
             return (name, '', '', quantity)
         

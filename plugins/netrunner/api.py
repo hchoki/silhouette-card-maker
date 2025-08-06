@@ -7,6 +7,10 @@ from unicodedata import normalize, category
 NETRUNNERDB_URL_TEMPLATE = 'https://api-preview.netrunnerdb.com/api/v3/public/cards/{card_name}'
 NRO_PROXY_URL_TEMPLATE = 'https://nro-public.s3.nl-ams.scw.cloud/nro/card-printings/v2/webp/english/card/{print_id}.webp'
 
+EDGE_CASE_ERROR_TEMPLATE = 'This is an edge case that was not discovered before. Submit an issue for the plugin with the card name ({card_name})'
+
+OUTPUT_CARD_ART_FILE_TEMPLATE = '{deck_index}{card_name}{quantity_counter}.png'
+
 def request_api(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
@@ -29,7 +33,7 @@ def fetch_card(
     json = request_api(NETRUNNERDB_URL_TEMPLATE.format(card_name=slugified)).json()
 
     if isinstance(json.get('data'), list) is True:
-        raise ValueError(f'This is an edge case that was not discovered before. Submit an issue for the plugin with the card name ({name})')
+        raise ValueError(EDGE_CASE_ERROR_TEMPLATE.format(card_name=name))
 
     # Get the latest printing id
     latest_print_id = json.get('data').get('attributes').get('latest_printing_id')
@@ -39,7 +43,7 @@ def fetch_card(
         
         # Save image based on quantity
         for counter in range(quantity):
-            image_path = path.join(front_img_dir, f'{str(index)}{name}{str(counter + 1)}.png')
+            image_path = path.join(front_img_dir, OUTPUT_CARD_ART_FILE_TEMPLATE.format(deck_index=str(index), card_name=name, quantity_counter=str(counter+1)))
 
             with open(image_path, 'wb') as f:
                 f.write(card_art)
