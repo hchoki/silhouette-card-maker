@@ -23,7 +23,9 @@ def fetch_card(
     # Query for a normalized name of Latin scripts
     filtered_name_for_url = sub(r'\s+|-', '_', sub(r'[^A-Za-z0-9 \-]+', '', ''.join(c for c in normalize('NFD', name) if category(c) != 'Mn'))).lower()
     json = request_netrunnerdb(f'https://api-preview.netrunnerdb.com/api/v3/public/cards/{filtered_name_for_url}').json()
-    card_art = request_netrunnerdb(json.get('data').get('attributes').get('latest_printing_images').get('nrdb_classic').get('large')).content
+
+    print_id = json.get('data').get('attributes').get('latest_printing_id')
+    card_art = request_netrunnerdb(f'https://nro-public.s3.nl-ams.scw.cloud/nro/card-printings/v2/webp/english/card/{print_id}.webp').content
     
     for counter in range(quantity):
         image_path = path.join(front_img_dir, f'{str(index)}{name}{str(counter + 1)}.png')
