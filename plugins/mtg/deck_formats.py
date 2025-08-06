@@ -35,7 +35,7 @@ def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extra
 # Blazemire Verge
 # Blightstep Pathway
 # Blood Crypt
-def parse_simple_list(deck_text, handle_card) -> None:
+def parse_simple_list(deck_text, handle_card: Callable) -> None:
     def is_simple_card_line(line) -> bool:
         return bool(line.strip())
 
@@ -58,7 +58,7 @@ def parse_simple_list(deck_text, handle_card) -> None:
 
 # Sideboard
 # 1 Containment Priest
-def parse_mtga(deck_text, handle_card) -> None:
+def parse_mtga(deck_text, handle_card: Callable) -> None:
     pattern = re.compile(r'(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+)', re.IGNORECASE)
     fallback_pattern = re.compile(r'(\d+)x?\s+(.+)')
 
@@ -95,7 +95,7 @@ def parse_mtga(deck_text, handle_card) -> None:
 # 1 Containment Priest
 # 3 Deafening Silence
 # 2 Disruptor Flute
-def parse_mtgo(deck_text, handle_card) -> None:
+def parse_mtgo(deck_text, handle_card: Callable) -> None:
     def is_mtgo_card_line(line) -> bool:
         line = line.strip()
         return bool(line and line[0].isdigit())
@@ -114,7 +114,7 @@ def parse_mtgo(deck_text, handle_card) -> None:
 # 1x Ashnod's Altar (ema) 218 *F* [Mana Advantage]
 # 1x Assassin's Trophy (sld) 139 [Targeted Disruption]
 # 2x Boseiju Reaches Skyward // Branch of Boseiju (neo) 177 [Ramp] ^Have,#37d67a^
-def parse_archidekt(deck_text, handle_card) -> None:
+def parse_archidekt(deck_text, handle_card: Callable) -> None:
     pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+).*')
     def is_archidekt_card_line(line: str) -> bool:
         return bool(pattern.match(line))
@@ -142,7 +142,7 @@ def parse_archidekt(deck_text, handle_card) -> None:
 
 # //Maybeboard
 # 1 [MID#159] Smoldering Egg // Ashmouth Dragon
-def parse_deckstats(deck_text, handle_card) -> None:
+def parse_deckstats(deck_text, handle_card: Callable) -> None:
     pattern = re.compile(r'^(\d+)\s+(?:\[(\w+)?#(\w+)\]\s+)?(.+)$')
     def is_deckstats_card_line(line: str) -> bool:
         return bool(pattern.match(line))
@@ -171,7 +171,7 @@ def parse_deckstats(deck_text, handle_card) -> None:
 # 1 Containment Priest (M21) 13
 # 1 Deafening Silence (MB2) 9
 # 1 Disruptor Flute (MH3) 209
-def parse_moxfield(deck_text, handle_card) -> None:
+def parse_moxfield(deck_text, handle_card: Callable) -> None:
     pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([\w\-]+)')
     def is_moxfield_card_line(line: str) -> bool:
         return bool(pattern.match(line))
@@ -188,7 +188,7 @@ def parse_moxfield(deck_text, handle_card) -> None:
     parse_deck_helper(deck_text, is_moxfield_card_line, extract_moxfield_card_data, handle_card)
 
 # Scryfall deck builder JSON
-def parse_scryfall_json(deck_text, handle_card) -> None:
+def parse_scryfall_json(deck_text, handle_card: Callable) -> None:
     data = json.loads(deck_text)
     entries = data.get("entries", {})
     items = entries.get("mainboard", []) + entries.get("sideboard", []) + entries.get("maybeboard", [])
@@ -215,7 +215,7 @@ class DeckFormat(str, Enum):
     MOXFIELD = "moxfield"
     SCRYFALL_JSON = "scryfall_json"
 
-def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
+def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
     if format == DeckFormat.SIMPLE:
         parse_simple_list(deck_text, handle_card)
     elif format == DeckFormat.MTGA:

@@ -7,15 +7,14 @@ from base64 import b64decode
 from api import fetch_card_number
 
 card_data_tuple = Tuple[str, str, int] # Name, Card Number, Quantity
-
 def parse_deck_helper(
         deck_text: str,
         deck_splitter: Callable[[str], Set[str]],
         is_card_line: Callable[[str], bool],
         extract_card_data: Callable[[str], card_data_tuple],
-    ) -> Dict[str, int]:
+        handle_card: Callable
+    ) -> None:
     error_lines = []
-    deck: Dict[str, int] = {}
 
     index = 0
     for line in deck_splitter(deck_text):
@@ -25,17 +24,18 @@ def parse_deck_helper(
             name, card_number, quantity = extract_card_data(line)
 
             print(f'Index: {index}, quantity: {quantity}, card number: {card_number}, name: {name}')
-
-            deck[card_number] = deck.get(card_number, 0) + quantity
+            try:
+                handle_card(index, card_number, quantity)
+            except Exception as e:
+                print(f'Error: {e}')
+                error_lines.append((line, e))
         else:
             print(f'Skipping: "{line}"')
 
     if len(error_lines) > 0:
         print(f'Errors: {error_lines}')
 
-    return deck
-
-def parse_tts(deck_text: str) -> Dict[str, int]:
+def parse_tts(deck_text: str, handle_card: Callable):
     pattern = compile(r'^([A-Z0-9]+)-(\d+[a-z]?)-(\d+)$') # '{Set ID}-{Card ID}-{Art Number}'
     alternate_art_suffix = 'a'
 
@@ -55,9 +55,9 @@ def parse_tts(deck_text: str) -> Dict[str, int]:
     def split_tts_deck(deck_text: str) -> Set[str]:
         return deck_text.strip().split(' ')
 
-    return parse_deck_helper(deck_text, split_tts_deck, is_tts_line, extract_tts_card_data)
+    parse_deck_helper(deck_text, split_tts_deck, is_tts_line, extract_tts_card_data, handle_card)
 
-def parse_pixelborn(deck_text: str) -> Dict[str, int]:
+def parse_pixelborn(deck_text: str, handle_card: Callable):
     pattern = compile(r'^([A-Z0-9]+)-(\d+[a-z]?)-(\d+)$') # '{Set ID}-{Card ID}-{Art Number}'
     alternate_art_suffix = 'a'
 
@@ -78,9 +78,9 @@ def parse_pixelborn(deck_text: str) -> Dict[str, int]:
         decoded = b64decode(deck_text).decode()
         return decoded.split('$')
 
-    return parse_deck_helper(deck_text, split_pixelborn_deck, is_pixelborn_line, extract_pixelborn_card_data)
+    parse_deck_helper(deck_text, split_pixelborn_deck, is_pixelborn_line, extract_pixelborn_card_data, handle_card)
 
-def parse_piltover_archive(deck_text: str) -> Dict[str, int]:
+def parse_piltover_archive(deck_text: str, handle_card: Callable):
     pattern = compile(r'^(\d+) (.+)$') # '{Quantity} {Card Name}'
 
     def is_piltover_archive_line(line) -> bool:
@@ -98,19 +98,19 @@ def parse_piltover_archive(deck_text: str) -> Dict[str, int]:
     def split_piltover_archive_deck(deck_text: str) -> Set[str]:
         return deck_text.strip().split('\n')
 
-    return parse_deck_helper(deck_text, split_piltover_archive_deck, is_piltover_archive_line, extract_piltover_archive_card_data)
+    parse_deck_helper(deck_text, split_piltover_archive_deck, is_piltover_archive_line, extract_piltover_archive_card_data, handle_card)
 
 class DeckFormat(str, Enum):
     TTS       = 'tts'
     PIXELBORN = 'pixelborn'
     PILTOVER  = 'piltover_archive'
 
-def parse_deck(deck_text: str, format: DeckFormat) -> Dict[str, int]:
+def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable):
     if format == DeckFormat.TTS:
-        return parse_tts(deck_text)
+        parse_tts(deck_text, handle_card)
     elif format == DeckFormat.PIXELBORN:
-        return parse_pixelborn(deck_text)
+        parse_pixelborn(deck_text, handle_card)
     elif format == DeckFormat.PILTOVER:
-        return parse_piltover_archive(deck_text)
+        parse_piltover_archive(deck_text, handle_card)
     else:
         raise ValueError('Unrecognized deck format.')

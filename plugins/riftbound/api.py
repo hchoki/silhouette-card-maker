@@ -45,8 +45,6 @@ def fetch_card_art(index: int, card_number: str, quantity: int, source: ImageSer
                 with open(image_path, 'wb') as f:
                     f.write(card_art)
 
-                    print(image_path)
-
 def fetch_card_number(name: str) -> str:
     # Get the internal information based on the card name to route to the card itself
     sanitized = sub(r'[^A-Za-z0-9 ]+', '', name)
@@ -66,3 +64,18 @@ def fetch_card_number(name: str) -> str:
 
     if match:
         return match.group(1).strip()
+
+def get_handle_card(
+    source: ImageServer,
+    front_img_dir: str
+):
+    def configured_fetch_card(index: int, card_number: str, quantity: int):
+        fetch_card_art(
+            index,
+            card_number,
+            quantity,
+            source,
+            front_img_dir
+        )
+
+    return configured_fetch_card

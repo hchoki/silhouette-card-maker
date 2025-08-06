@@ -29,7 +29,7 @@ def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extra
     if len(error_lines) > 0:
         print(f'Errors: {error_lines}')
 
-def parse_dreamborn_list(deck_text, handle_card) -> None:
+def parse_dreamborn_list(deck_text, handle_card: Callable) -> None:
     pattern = re.compile(r'(\d+)x?\s+(.+)', re.IGNORECASE)
 
     def is_dreamborn_card_line(line) -> bool:
@@ -52,7 +52,7 @@ def parse_dreamborn_list(deck_text, handle_card) -> None:
 class DeckFormat(str, Enum):
     DREAMBORN = "dreamborn"
 
-def parse_deck(deck_text: str, format: DeckFormat, handle_card) -> None:
+def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
     if format == DeckFormat.DREAMBORN:
         parse_dreamborn_list(deck_text, handle_card)
     else:
