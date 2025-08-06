@@ -12,3 +12,4 @@ The following plugins are currently available:
 * [Yu-Gi-Oh!]({{% ref "yugioh.md" %}})
 * [Lorcana]({{% ref "lorcana.md" %}})
 * [Riftbound]({{% ref "riftbound.md" %}})
+* [Altered]({{% ref "altered.md" %}})
