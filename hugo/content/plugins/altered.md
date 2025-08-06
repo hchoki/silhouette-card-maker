@@ -3,8 +3,6 @@ title: 'Altered'
 weight: 20
 ---
 
-# Altered Plugin
-
 This plugin reads a decklist, automatically fetches card art from [Altered](https://www.altered.gg/) and puts them in the proper `game/` directories.
 
 This plugin supports decklist exports from [Ajordat](https://altered.ajordat.com/). To learn more, see [here](#formats).
