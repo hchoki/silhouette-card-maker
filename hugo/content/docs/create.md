@@ -59,11 +59,15 @@ Get your PDF at `game/output/game.pdf`.
 
 Plugins streamline the process for acquiring card images for various games.
 
-The Magic: The Gathering plugin supports various decklist formats, including **MTGA**, **MTGO**, **Archidekt**, **Deckstats**, **Moxfield**, and **Scryfall**. To learn more, see [here]({{% ref "../plugins/mtg" %}}).
+The [Magic: The Gathering]({{% ref "../plugins/mtg" %}}) plugin supports various decklist formats, including **MTGA**, **MTGO**, **Archidekt**, **Deckstats**, **Moxfield**, and **Scryfall**.
 
-The Yu-Gi-Oh! plugin supports **YDK** and **YDKE** formats. To learn more, see [here]({{% ref "../plugins/yugioh" %}}).
+The [Yu-Gi-Oh!]({{% ref "../plugins/yugioh" %}}) plugin supports **YDK** and **YDKE** formats.
 
-The Lorcana plugin supports **Dreamborn** format. To learn more, see [here]({{% ref "../plugins/lorcana" %}}).
+The [Lorcana]({{% ref "../plugins/lorcana" %}}) plugin supports **Dreamborn** format.
+
+The [Riftbound plugin]({{% ref "../plugins/riftbound" %}}) supports **Tabletop Simulator**, **Pixelborn**, and **Piltover Archive** formats.
+
+The [Altered plugin]({{% ref "../plugins/altered" %}}) supports **Ajordat** format.
 
 ## Double-Sided Cards
 
