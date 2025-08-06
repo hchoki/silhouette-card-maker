@@ -26,7 +26,7 @@ Run the script.
 python plugins/riftbound/fetch.py game/decklist/deck.txt tts
 ```
 
-Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
+Now you can create the PDF using [`create_pdf.py`]({{% ref "../docs/create" %}}).
 
 ## CLI Options
 
