@@ -261,7 +261,7 @@ To determine the required offset, print out `<paper size>_calibration.pdf` with 
 
 Shine a strong light on the front so you can see the shadows on the back. Determine which set of front and back squares are aligned. This set will provide your offset.
 
-Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-instructions) for more information.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](#basic-usage) for more information.
 
 Run the script with your offset.
 ```sh

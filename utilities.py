@@ -359,22 +359,23 @@ def generate_pdf(
         except ValidationErr as e:
             raise Exception(f'Cannot parse layouts.json: {e}.')
 
-        # Get paper size and paper layout
-        paper_size_enum = PaperSize(paper_size)
-        if paper_size_enum not in layouts.paper_layouts:
+        # paper_layout represents the size of a paper and all possible card layouts
+        if paper_size not in layouts.paper_layouts:
             raise Exception(f'Unsupported paper size "{paper_size}".')
-        paper_layout = layouts.paper_layouts[paper_size_enum]
+        paper_layout = layouts.paper_layouts[paper_size]
 
-        # Get card size and card layout
-        card_size_enum = CardSize(card_size)
-        if card_size_enum not in layouts.card_sizes:
+        # card_layout_size represents the size of a card
+        if card_size not in layouts.card_sizes:
             raise Exception(f'Unsupported card size "{card_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
-        card_size = layouts.card_sizes[card_size]
-        if card_size_enum not in paper_layout.card_layouts:
-            raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
-        card_layout = paper_layout.card_layouts[card_size_enum]
+        card_layout_size = layouts.card_sizes[card_size]
 
-        crop = parse_crop_string(crop_string, card_size.width, card_size.height)
+        # card_layout represents the position of cards
+        if card_size not in paper_layout.card_layouts:
+            raise Exception(f'Unsupported card size "{card_size}" with paper size "{paper_size}". Try card sizes: {paper_layout.card_layouts.keys()}.')
+        card_layout = paper_layout.card_layouts[card_size]
+
+        # Determine the amount of x and y crop
+        crop = parse_crop_string(crop_string, card_layout_size.width, card_layout_size.height)
 
         num_rows = len(card_layout.y_pos)
         num_cols = len(card_layout.x_pos)
@@ -405,7 +406,7 @@ def generate_pdf(
             # Create the array that will store the filled templates
             pages: List[Image.Image] = []
 
-            max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_size.width, card_size.height)
+            max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout_size.width, card_layout_size.height)
 
             # Create reusable back page for single-sided cards
             single_sided_back_page = reg_im.copy()
@@ -426,8 +427,8 @@ def generate_pdf(
                         num_cols,
                         card_layout.x_pos,
                         card_layout.y_pos,
-                        card_size.width,
-                        card_size.height,
+                        card_layout_size.width,
+                        card_layout_size.height,
                         max_print_bleed,
                         (0, 0),
                         ppi_ratio,
@@ -474,8 +475,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_size.width,
-                    card_size.height,
+                    card_layout_size.width,
+                    card_layout_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
@@ -541,8 +542,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_size.width,
-                    card_size.height,
+                    card_layout_size.width,
+                    card_layout_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
@@ -558,8 +559,8 @@ def generate_pdf(
                     num_cols,
                     card_layout.x_pos,
                     card_layout.y_pos,
-                    card_size.width,
-                    card_size.height,
+                    card_layout_size.width,
+                    card_layout_size.height,
                     max_print_bleed,
                     crop,
                     ppi_ratio,
