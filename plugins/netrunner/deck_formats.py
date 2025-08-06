@@ -63,6 +63,7 @@ def parse_plaintext(deck_text: str, handle_card: Callable) -> None:
 
 def parse_bbcode(deck_text: str, handle_card: Callable) -> None:
     pattern = compile(r'(\d+)x \[url=(https://netrunnerdb.com/en/card/\d+)\](.+)\[/url\] \[i\]\((.+)\)\[/i\].+') # '{Quantity}x [url={URL}]{Name}[/url] [i]({Set})[/i] '
+    
     def is_bbcode_line(line) -> bool:
         return bool(pattern.match(line))
     
