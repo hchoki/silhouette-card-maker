@@ -16,11 +16,10 @@ def fetch_card(
     qr: str,
     front_img_dir: str,
 ):
-
     # Query for card info
     json = request_altered(f'https://api.altered.gg/cards/{qr}').json()
     card_art = request_altered(json.get('imagePath')).content
-    
+
     for counter in range(quantity):
         image_path = path.join(front_img_dir, f'{str(index)}{qr}{str(counter + 1)}.png')
 
@@ -39,4 +38,3 @@ def get_handle_card(
         )
 
     return configured_fetch_card
-    

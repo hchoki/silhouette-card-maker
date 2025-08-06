@@ -41,7 +41,7 @@ Create and start your Python virtual environment in the terminal.
 
 Then install the Python dependencies in the Python virtual environment using the following command.
 ```bash
-pip install -r requirements.txt  
+pip install -r requirements.txt
 ```
 
 Put your decklist into a text file within the [decklist directory/folder](../../game/decklist).

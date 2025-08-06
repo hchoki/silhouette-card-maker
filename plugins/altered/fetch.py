@@ -5,7 +5,6 @@ from deck_formats import DeckFormat, parse_deck
 from altered  import get_handle_card
 
 front_directory = path.join('game', 'front')
-double_sided_directory = path.join('game', 'double_sided')
 
 @command()
 @argument('deck_path')
@@ -19,7 +18,7 @@ def cli(deck_path: str, format: DeckFormat):
     with open(deck_path, 'r') as deck_file:
         deck_text = deck_file.read()
 
-        parse_deck(deck_text, format, get_handle_card( front_directory ))
+        parse_deck(deck_text, format, get_handle_card(front_directory))
 
 if __name__ == '__main__':
     cli()

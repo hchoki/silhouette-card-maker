@@ -14,7 +14,7 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
 
             qr_code, quantity = extract_card_data(line)
 
-            print(f'Index: {index}, quantity: {quantity}, qr code: {qr_code}')
+            print(f'Index: {index}, quantity: {quantity}, QR code: {qr_code}')
             try:
                 handle_card(index, qr_code, quantity)
             except Exception as e:
@@ -32,15 +32,15 @@ def parse_ajordat(deck_text: str, handle_card: Callable) -> None:
 
     def is_ajordat_line(line) -> bool:
         return bool(pattern.match(line))
-    
+
     def extract_ajordat_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
             qr_code = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
+            quantity = int(match.group(1).strip())
 
             return (qr_code, quantity)
-        
+
     parse_deck_helper(deck_text, handle_card, is_ajordat_line, extract_ajordat_card_data)
 
 class DeckFormat(str, Enum):
