@@ -15,7 +15,7 @@ If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **Pow
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here]({{% ref "../docs/create/#basic-usage" %}}) for more information.
 
-Put your decklist into a text file in [game/decklist](../../game/decklist). In this example, the filename is `deck.ydk` and the decklist format is YDK (`ydk`).
+Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.ydk` and the decklist format is YDK (`ydk`).
 
 Run the script.
 
