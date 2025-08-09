@@ -46,7 +46,7 @@ def parse_markdown(deck_text: str, handle_card: Callable) -> None:
     parse_deck_helper(deck_text, handle_card, is_markdown_line, extract_markdown_card_data)
 
 def parse_plaintext(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)x\s+(.+?)(?:\s+([●★◆▪■]+.+))?$') # '{Quantity}x {Name} {Symbols}' where Symbols is optional
+    pattern = compile(r'^(\d+)x\s+([^(]+?)(?:\s+\(([^)]+)\))?(?:\s+([^\w\s].*))?$') # '{Quantity}x {Name} ({Set}) {Symbols}' where Set and Symbols are optional
 
     def is_plaintext_line(line) -> bool:
         return bool(pattern.match(line))
@@ -56,8 +56,9 @@ def parse_plaintext(deck_text: str, handle_card: Callable) -> None:
         if match:
             name = match.group(2).strip()
             quantity = int(match.group(1).strip())
+            set = match.group(3).strip() if match.group(3) else ''
 
-            return (name, '', '', quantity)
+            return (name, set, '', quantity)
         
     parse_deck_helper(deck_text, handle_card, is_plaintext_line, extract_plaintext_card_data)
 
