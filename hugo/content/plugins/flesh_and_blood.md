@@ -1,4 +1,7 @@
-# Flesh and Blood Plugin
+---
+title: 'Flesh and Blood'
+weight: 35
+---
 
 This plugin reads a decklist, fetches card art from [Fabrary](https://fabrary.net/), and puts the card images into the proper `game/` directories.
 
@@ -6,13 +9,13 @@ This plugin supports decklist exports from [Fabrary](https://fabrary.net/). To l
 
 ## Basic Instructions
 
-Navigate to the [root directory](../..) as plugins are not meant to be run in the [plugin directory](.).
+Navigate to the root directory as plugins are not meant to be run in the plugins directory.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
-Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-usage) for more information.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here]({{% ref "../docs/create/#basic-usage" %}}) for more information.
 
-Put your decklist into a text file in [game/decklist](../game/decklist/). In this example, the filename is `deck.txt` and the decklist format is Fabrary (`fabrary`).
+Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.txt` and the decklist format is Fabrary (`fabrary`).
 
 Run the script.
 
@@ -20,7 +23,7 @@ Run the script.
 python plugins/flesh_and_blood/fetch.py game/decklist/deck.txt fabrary
 ```
 
-Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
+Now you can create the PDF using [`create_pdf.py`]({{% ref "../docs/create" %}}).
 
 ## CLI Options
 

@@ -18,3 +18,4 @@ The following plugins are currently available:
 * [Grand Archive]({{% ref "grand_archive.md" %}})
 * [Digimon]({{% ref "digimon.md" %}})
 * [One Piece]({{% ref "one_piece.md" %}})
+* [Flesh and Blood]({{% ref "flesh_and_blood.md" %}})
