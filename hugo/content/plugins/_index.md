@@ -15,3 +15,4 @@ The following plugins are currently available:
 * [Altered]({{% ref "altered.md" %}})
 * [Netrunner]({{% ref "netrunner.md" %}})
 * [Gundam]({{% ref "gundam.md" %}})
+* [Grand Archive]({{% ref "grand_archive.md" %}})
