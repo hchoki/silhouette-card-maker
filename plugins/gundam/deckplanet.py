@@ -20,11 +20,13 @@ def fetch_card(
     # Query for card info
     card_art = request_deckplanet(f'https://multi-deckplanet.us-southeast-1.linodeobjects.com/gundam/{card_number}.webp').content
     
-    for counter in range(quantity):
-        image_path = path.join(front_img_dir, f'{str(index)}{card_number}{str(counter + 1)}.png')
+    if card_art is not None:
+        # Save image based on quantity
+        for counter in range(quantity):
+            image_path = path.join(front_img_dir, f'{str(index)}{card_number}{str(counter + 1)}.png')
 
-        with open(image_path, 'wb') as f:
-            f.write(card_art)
+            with open(image_path, 'wb') as f:
+                f.write(card_art)
 
 def get_handle_card(
     front_img_dir: str,
