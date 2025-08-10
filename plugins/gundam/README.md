@@ -64,7 +64,7 @@ Options:
 
 ## Formats
 
-### `DeckPlanet`
+### `deckplanet`
 
 The format for `DeckPlanet`.
 
@@ -90,4 +90,29 @@ The format for `DeckPlanet`.
 2 The Witch and the Bride [GD01-117]
 1 Naval Bombardment [GD01-120]
 4 Overflowing Affection [GD01-118]
+```
+
+### `limitless`
+
+The format for `Limitless TCG`.
+
+```
+4 Dopp GD01-039
+4 Zaku Ⅰ ST03-007
+1 Pisces GD01-021
+4 Zaku Ⅱ ST03-008
+4 Zaku Ⅱ GD01-035
+3 Guntank GD01-008
+4 Char's Zaku Ⅱ ST03-006
+4 Char's Zaku Ⅱ GD01-026
+2 G-Fighter GD01-009
+2 Gouf ST03-009
+4 Char's Gelgoog GD01-023
+3 Gundam ST01-001
+
+4 Char Aznable ST03-011
+4 Amuro Ray ST01-010
+
+
+3 Falmel ST03-016
 ```
