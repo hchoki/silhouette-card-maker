@@ -59,15 +59,53 @@ def parse_limitless(deck_text: str, handle_card: Callable) -> None:
         
     parse_deck_helper(deck_text, handle_card, is_limitless_line, extract_limitless_card_data)
 
+def parse_egman(deck_text: str, handle_card: Callable) -> None:
+    pattern = compile(r'^(\d+)\s+([A-Z0-9]+-\d+)\s+.+$') # '{Quantity} {Card Number} {Name}'
+
+    def is_egman_line(line) -> bool:
+        return bool(pattern.match(line))
+    
+    def extract_egman_card_data(line) -> card_data_tuple:
+        match = pattern.match(line)
+        if match:
+            card_number = match.group(2).strip()
+            quantity = int( match.group(1).strip() )
+
+            return (card_number, quantity)
+        
+    parse_deck_helper(deck_text, handle_card, is_egman_line, extract_egman_card_data)
+
+def parse_exburst(deck_text: str, handle_card: Callable) -> None:
+    pattern = compile(r'^(\d+)\s+x\s+([A-Z0-9]+-\d+).*$') # '{Quantity} x {Card Number}'
+
+    def is_exburst_line(line) -> bool:
+        return bool(pattern.match(line))
+    
+    def extract_exburst_card_data(line) -> card_data_tuple:
+        match = pattern.match(line)
+        if match:
+            card_number = match.group(2).strip()
+            quantity = int( match.group(1).strip() )
+
+            return (card_number, quantity)
+        
+    parse_deck_helper(deck_text, handle_card, is_exburst_line, extract_exburst_card_data)
+
 class DeckFormat(str, Enum):
     DECKPLANET = 'deckplanet'
     LIMITLESSTCG = 'limitless'
+    EGMANEVENTS = 'egman'
+    EXBURST = 'exburst'
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
     if format == DeckFormat.DECKPLANET:
         return parse_deckplanet(deck_text, handle_card)
     elif format == DeckFormat.LIMITLESSTCG:
         return parse_limitless(deck_text, handle_card)
+    elif format == DeckFormat.EGMANEVENTS:
+        return parse_egman(deck_text, handle_card)
+    elif format == DeckFormat.EXBURST:
+        return parse_exburst(deck_text, handle_card)
     else:
         raise ValueError('Unrecognized deck format.')
 

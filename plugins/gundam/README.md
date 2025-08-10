@@ -116,3 +116,49 @@ The format for `Limitless TCG`.
 
 3 Falmel ST03-016
 ```
+
+### `egman`
+
+The format for `Egman Events`.
+
+```
+4 GD01-039 Dopp
+4 ST03-007 Zaku I | MS-05
+4 GD01-035 Zaku II | MS-06
+4 ST03-006 Char's Zaku II | MS-06S
+4 GD01-026 Char's Zaku II | MS-065
+4 ST03-008 Zaku II | MS-06
+1 GD01-021 Pisces | OZ-09MMS
+3 GD01-008 Guntank | RX-75
+2 GD01-009 G-Fighter
+2 ST03-009 Gouf | MS-078
+4 GD01-023 Char's Gelgoog | MS-14S
+3 ST01-001 Gundam | RX-78-2
+4 ST03-011 Char Aznable
+4 ST01-010 Amuro Ray
+3 ST03-016 Falmel
+```
+
+### `exburst`
+
+The format for `ExBurst`.
+
+```
+4 x ST04-008
+4 x ST01-005
+4 x GD01-059
+4 x GD01-018
+4 x ST01-001
+3 x GD01-044
+3 x GD01-003
+2 x GD01-047
+4 x ST01-010
+4 x GD01-093
+3 x ST04-016
+1 x ST01-015
+2 x GD01-112
+2 x GD01-111
+2 x ST03-013
+4 x GD01-100
+
+```
