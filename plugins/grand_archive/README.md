@@ -2,7 +2,7 @@
 
 This plugin reads a decklist, fetches the card image from the [Grand Archive website](https://gatcg.com), and puts the card images into the proper `game/` directories.
 
-This plugin currently supports the ``Cockatrice/Omnidex`` format.
+This plugin currently supports the ``Silvie`` format.
 
 ## Instructions
 

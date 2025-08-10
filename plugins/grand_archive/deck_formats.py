@@ -27,13 +27,13 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
     if len(error_lines) > 0:
         print(f'Errors: {error_lines}')
 
-def parse_cockatrice(deck_text: str, handle_card: Callable) -> None:
+def parse_silvie(deck_text: str, handle_card: Callable) -> None:
     pattern = compile(r'^(\d+)\s+(.+)$') # '{Quantity} {Name}'
 
-    def is_cockatrice_line(line) -> bool:
+    def is_silvie_line(line) -> bool:
         return bool(pattern.match(line))
     
-    def extract_cockatrice_card_data(line) -> card_data_tuple:
+    def extract_silvie_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
             card_name = match.group(2).strip()
@@ -41,14 +41,14 @@ def parse_cockatrice(deck_text: str, handle_card: Callable) -> None:
 
             return (card_name, quantity)
         
-    parse_deck_helper(deck_text, handle_card, is_cockatrice_line, extract_cockatrice_card_data)
+    parse_deck_helper(deck_text, handle_card, is_silvie_line, extract_silvie_card_data)
 
 class DeckFormat(str, Enum):
-    COCKATRICE = "cockatrice"
+    SILVIE = "silvie"
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
-    if format == DeckFormat.COCKATRICE:
-        return parse_cockatrice(deck_text, handle_card)
+    if format == DeckFormat.SILVIE:
+        return parse_silvie(deck_text, handle_card)
     else:
         raise ValueError("Unrecognized deck format.")
 
