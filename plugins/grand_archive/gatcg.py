@@ -3,6 +3,9 @@ from os import path
 from requests import Response, get
 from time import sleep
 
+CARD_URL_TEMPLATE = 'https://api.gatcg.com/cards/{name}'
+CARD_ART_URL_TEMPLATE = 'https://api.gatcg.com/{card_art_suffix}'
+
 def request_gatcg(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
@@ -18,17 +21,24 @@ def fetch_card(
     front_img_dir: str,
 ):
 
-    # Query for card info
-    filtered_name_for_url = sub(r'[\', ]', lambda replace_map: {'\'': '', ',': '', ' ': '-'}[replace_map.group()], card_name.lower())
-    json = request_gatcg(f'https://api.gatcg.com/cards/{filtered_name_for_url}').json()
-    card_art_url = json.get('editions', [{}])[0].get('image')
-    card_art = request_gatcg(f'https://api.gatcg.com/{card_art_url}').content
-    
-    for counter in range(quantity):
-        image_path = path.join(front_img_dir, f'{str(index)}{card_name}{str(counter + 1)}.png')
+    # Query for card info    
+    sanitized = sub(r'[^A-Za-z0-9 \-]+', '', card_name)
+    slugified = sub(r'\s+', '-', sanitized).lower()
+    name_response = request_gatcg(CARD_URL_TEMPLATE.format(name=slugified))
 
-        with open(image_path, 'wb') as f:
-            f.write(card_art)
+    card_art_url = name_response.json().get('editions', [{}])[0].get('image')
+    art_response = request_gatcg(CARD_ART_URL_TEMPLATE.format(card_art_suffix=card_art_url))
+    
+    if art_response is not None:
+        card_art = art_response.content
+
+        if card_art is not None:
+            # Save image based on quantity
+            for counter in range(quantity):
+                image_path = path.join(front_img_dir, f'{str(index)}{card_name}{str(counter + 1)}.png')
+
+                with open(image_path, 'wb') as f:
+                    f.write(card_art)
 
 def get_handle_card(
     front_img_dir: str,
