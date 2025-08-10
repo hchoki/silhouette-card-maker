@@ -1,6 +1,5 @@
 from os import path
-from re import compile, search
-from requests import Response, get, HTTPError
+from requests import Response, get
 from time import sleep
 
 def request_digimoncard(query: str) -> Response:
@@ -15,11 +14,26 @@ def fetch_card_art(index: int, card_number: str, quantity: int, front_img_dir: s
 
     card_art = request_digimoncard(f'https://images.digimoncard.io/images/cards/{card_number}.jpg').content
     
-    # Save image based on quantity
-    for counter in range(quantity):
-        image_path = path.join(front_img_dir, f'{index}{card_number}_{counter + 1}.jpg')
+    if card_art is not None:
+        # Save image based on quantity
+        for counter in range(quantity):
+            image_path = path.join(front_img_dir, f'{index}{card_number}_{counter + 1}.jpg')
 
-        with open(image_path, 'wb') as f:
-            f.write(card_art)
+            with open(image_path, 'wb') as f:
+                f.write(card_art)
 
-        print(f'{image_path}')
+            print(f'{image_path}')
+
+            
+def get_handle_card(
+    front_img_dir: str
+):
+    def configured_fetch_card(index: int, card_number: str, quantity: int):
+        fetch_card_art(
+            index,
+            card_number,
+            quantity,
+            front_img_dir
+        )
+
+    return configured_fetch_card

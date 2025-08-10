@@ -1,16 +1,19 @@
 from re import compile
 from enum import Enum
 from _collections_abc import Set
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Tuple
 from ast import literal_eval
 
 card_data_tuple = Tuple[str, str, int] # Name, Card Number, Quantity 
 
-def parse_deck_helper(deck_text: str, handle_card: Optional[Callable],
-                      deck_splitter: Callable[[str], Set[str]], is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple],
-                      ) -> Dict[str, int]:
+def parse_deck_helper(
+        deck_text: str,
+        handle_card: Callable,
+        deck_splitter: Callable[[str], Set[str]],
+        is_card_line: Callable[[str], bool],
+        extract_card_data: Callable[[str], card_data_tuple],
+    ) -> None:
     error_lines = []
-    deck: Dict[str, int] = {}
 
     index = 0
 
@@ -21,17 +24,18 @@ def parse_deck_helper(deck_text: str, handle_card: Optional[Callable],
             name, card_number, quantity = extract_card_data(line)
 
             print(f'Index: {index}, quantity: {quantity}, card number: {card_number}, name: {name}')
-
-            deck[card_number] = deck.get(card_number, 0) + quantity
+            try:
+                handle_card(index, card_number, quantity)
+            except Exception as e:
+                print(f'Error: {e}')
+                error_lines.append((line, e))
         else:
             print(f'Skipping: "{line}"')
 
     if len(error_lines) > 0:
         print(f'Errors: {error_lines}')
 
-    return deck
-
-def parse_tts(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]:
+def parse_tts(deck_text: str, handle_card: Callable):
     pattern = compile(r'^([a-zA-Z0-9]+-\d+)$') # '{Card Number}'
 
     def is_tts_line(line) -> bool:
@@ -47,9 +51,9 @@ def parse_tts(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]
     def split_tts_deck(deck_text: str) -> Set[str]:
         return literal_eval(deck_text.strip())
         
-    return parse_deck_helper(deck_text, handle_card, split_tts_deck, is_tts_line, extract_tts_card_data)
+    parse_deck_helper(deck_text, handle_card, split_tts_deck, is_tts_line, extract_tts_card_data)
 
-def parse_untap(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]:
+def parse_untap(deck_text: str, handle_card: Callable):
     pattern = compile(r'^(\d+)\s+(.+?)\s+\(DCG\)\s+\(([a-zA-Z0-9]+-\d+)\).*$') # '{Quantity} {Name} (DCG) ({Card Number})'
 
     def is_untap_line(line) -> bool:
@@ -67,9 +71,9 @@ def parse_untap(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, in
     def split_untap_deck(deck_text: str) -> Set[str]:
         return deck_text.strip().split('\n')
     
-    return parse_deck_helper(deck_text, handle_card, split_untap_deck, is_untap_line, extract_untap_card_data)
+    parse_deck_helper(deck_text, handle_card, split_untap_deck, is_untap_line, extract_untap_card_data)
 
-def parse_digimonmeta(deck_text: str, handle_card: Optional[Callable]) -> Dict[str, int]:
+def parse_digimonmeta(deck_text: str, handle_card: Callable):
     pattern = compile(r'^(\d+) \(([a-zA-Z0-9]+-\d+)\)$') # '{Quantity} ({Card Number})'
 
     def is_digimonmeta_line(line) -> bool:
@@ -86,20 +90,20 @@ def parse_digimonmeta(deck_text: str, handle_card: Optional[Callable]) -> Dict[s
     def split_digimonmeta_deck(deck_text: str) -> Set[str]:
         return deck_text.strip().split('\n')
 
-    return parse_deck_helper(deck_text, handle_card, split_digimonmeta_deck, is_digimonmeta_line, extract_digimonmeta_card_data)
+    parse_deck_helper(deck_text, handle_card, split_digimonmeta_deck, is_digimonmeta_line, extract_digimonmeta_card_data)
 
 class DeckFormat(str, Enum):
     TTS         = 'tts'
     UNTAP       = 'untap'
     DIGIMONMETA = 'digimonmeta'
 
-def parse_deck(deck_text: str, format: DeckFormat, handle_card: Optional[Callable] = None) -> Dict[str, int]:
+def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable):
     if format == DeckFormat.TTS:
-        return parse_tts(deck_text, handle_card)
+        parse_tts(deck_text, handle_card)
     elif format == DeckFormat.UNTAP:
-        return parse_untap(deck_text, handle_card)
+        parse_untap(deck_text, handle_card)
     elif format == DeckFormat.DIGIMONMETA:
-        return parse_digimonmeta(deck_text, handle_card)
+        parse_digimonmeta(deck_text, handle_card)
     else:
         raise ValueError('Unrecognized deck format.')
 
