@@ -15,12 +15,12 @@ If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **Pow
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here]({{% ref "../docs/create/#basic-usage" %}}) for more information.
 
-Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.txt` and the decklist format is Tabletop Simulator (`ajordat`).
+Put your decklist into a text file in `game/decklist`. In this example, the filename is `deck.txt` and the decklist format is Ajordat (`ajordat`).
 
 Run the script.
 
 ```sh
-python plugins/riftbound/fetch.py game/decklist/deck.txt tts
+python plugins/altered/fetch.py game/decklist/deck.txt ajordat
 ```
 
 Now you can create the PDF using [`create_pdf.py`]({{% ref "../docs/create" %}}).
