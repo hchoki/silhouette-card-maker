@@ -1,57 +1,26 @@
 # Flesh and Blood Plugin
 
-This plugin reads a decklist from [Fabrary](https://fabrary.net/) and puts the card images into the proper `game/` directories.
+This plugin reads a decklist, fetches card art from [Fabrary](https://fabrary.net/), and puts the card images into the proper `game/` directories.
 
-This plugin currently only supports the ``Fabrary`` format.
+This plugin supports decklist exports from [Fabrary](https://fabrary.net/). To learn more, see [here](#formats).
 
-## Instructions
+## Basic Instructions
 
-Navigate to the [root directory](../..), as the plugins are not meant to be run in the [plugin directory](.).
+Navigate to the [root directory](../..) as plugins are not meant to be run in the [plugin directory](.).
 
-Open a terminal on your device in the root directory.
+If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
-> [!NOTE]
-> On Windows, this would be the ``PowerShell`` application, unless you use another terminal of your choice.
->
-> On MacOS or Linux, this would be the ``Terminal`` application, unless you use another terminal of your choice.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-usage) for more information.
 
-Create and start your Python virtual environment in the terminal.
+Put your decklist into a text file in [game/decklist](../game/decklist/). In this example, the filename is `deck.txt` and the decklist format is Markdown (`markdown`).
 
-> [!NOTE]
-> Use the following command to create your Python virtual environment.
-> ```bash
-> python -m venv venv
-> ```
->
-> On Windows, use the following command to start your Python virtual environment.
-> ```bash
-> .\venv\Scripts\Activate.ps1
-> ```
->
-> On MacOS or Linux, use the following command to start your Python virtual environment.
-> ```bash
-> . venv/bin/activate
-> ```
+Run the script.
 
-> [!WARNING]
-> If this fails on Windows due to authorization policy issues, then run the following command to get around it.
-> ```bash
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-> ```
-
-Then install the Python dependencies in the Python virtual environment using the following command.
-```bash
-pip install -r requirements.txt  
-```
-
-Put your decklist into a text file within the [decklist directory/folder](../../game/decklist).
-
-Now, you are ready to run the program to generate the images for the deck using the following command.
-```bash
+```sh
 python plugins/flesh_and_blood/fetch.py game/decklist/deck.txt fabrary
 ```
 
-And finally, you can generate the [PDF files](../../README.md#create_pdfpy) for the deck to print so that you can play at the table!
+Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
 
 ## CLI Options
 
@@ -62,7 +31,7 @@ Options:
   --help  Show this message and exit.
 ```
 
-## Format
+## Formats
 
 ### `fabrary`
 

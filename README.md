@@ -139,7 +139,7 @@ The [Digimon plugin](plugins/digimon/README.md) supports **Tabletop Simulator**,
 
 The [One Piece plugin](plugins/one_piece/README.md) supports **OPTCG Simulator** and **Egman Events** formats.
 
-The Flesh and Blood plugin supports **Fabrary** format. To learn more, see [here](plugins/flesh_and_blood/README.md).
+The [Flesh and Blood plugin](plugins/flesh_and_blood/README.md) supports **Fabrary** format.
 
 ### Double-Sided Cards
 
