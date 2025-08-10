@@ -45,7 +45,6 @@ def parse_fabrary(deck_text: str, handle_card: Callable) -> None:
             quantity = int( match.group(1).strip() )
             name = match.group(2).strip()
             pitch_extract = '' if match.group(3) is None else match.group(3).strip()
-            pitch: PitchOption
             if pitch_extract == 'red':
                 pitch = PitchOption.RED
             elif pitch_extract == 'yellow':
