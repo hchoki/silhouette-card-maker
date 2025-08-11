@@ -129,7 +129,7 @@ The [Riftbound plugin](plugins/riftbound/README.md) supports **Tabletop Simulato
 
 The [Altered plugin](plugins/altered/README.md) supports **Ajordat** format.
 
-The [Netrunner plugin](plugins/netrunner/README.md) supports **Markdown**, **Plaintext**, **bbCode**, and **Jinteki** formats.
+The [Netrunner plugin](plugins/netrunner/README.md) supports **text*, **bbCode**, **markdown**, **plain text**,  and **Jinteki** formats.
 
 ### Double-Sided Cards
 
