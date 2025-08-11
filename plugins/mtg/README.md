@@ -2,7 +2,7 @@
 
 This plugin reads a decklist and automatically fetches the card art and puts them in the proper `game/` directories.
 
-This plugin supports many decklist formats such as, `simple`, `mtga`, `mtgo`, `archidekt`, `deckstats`, `moxfield`, and `scryfall_json`. To learn more, see [here](#formats).
+This plugin supports many decklist formats such as `simple`, `mtga`, `mtgo`, `archidekt`, `deckstats`, `moxfield`, and `scryfall_json`. To learn more, see [here](#formats).
 
 ## Basic Instructions
 

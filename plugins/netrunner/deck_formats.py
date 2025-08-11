@@ -4,7 +4,7 @@ from typing import Callable, Tuple
 
 card_data_tuple = Tuple[str, str, str, int] # Name, Set, URL, Quantity
 
-def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple]) -> None:
+def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple], handle_card: Callable) -> None:
     error_lines = []
 
     index = 0
@@ -27,47 +27,29 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
     if len(error_lines) > 0:
         print(f'Errors: {error_lines}')
 
-def parse_markdown(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^\* (\d+)x \[(.+)\]\((.+)\) _\((.+)\)_.+$') # '* {Quantity}x [{Name}]({URL}) _({Set})_ '
+def parse_text(deck_text: str, handle_card: Callable) -> None:
+    pattern = compile(r'^(\d+)x\s+(.+?)\s+\((.+?)\)\s*(?:[•\s]+)?$') # '{Quantity}x {Name} ({Set})' possibly followed by influence pips "•"
 
-    def is_markdown_line(line) -> bool:
+    def is_text_line(line) -> bool:
         return bool(pattern.match(line))
-    
-    def extract_markdown_card_data(line) -> card_data_tuple:
+
+    def extract_plaintext_card_data(line):
         match = pattern.match(line)
         if match:
-            name = match.group(2).strip()
-            url = match.group(3).strip()
-            set = match.group(4).strip()
             quantity = int(match.group(1).strip())
-
-            return (name, set, url, quantity)
-        
-    parse_deck_helper(deck_text, handle_card, is_markdown_line, extract_markdown_card_data)
-
-def parse_plaintext(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)x\s+([^(]+?)(?:\s+\(([^)]+)\))?(?:\s+([^\w\s].*))?$') # '{Quantity}x {Name} ({Set}) {Symbols}' where Set and Symbols are optional
-
-    def is_plaintext_line(line) -> bool:
-        return bool(pattern.match(line))
-    
-    def extract_plaintext_card_data(line) -> card_data_tuple:
-        match = pattern.match(line)
-        if match:
             name = match.group(2).strip()
-            quantity = int(match.group(1).strip())
-            set = match.group(3).strip() if match.group(3) else ''
+            set_name = match.group(3).strip()
 
-            return (name, set, '', quantity)
-        
-    parse_deck_helper(deck_text, handle_card, is_plaintext_line, extract_plaintext_card_data)
+            return (name, set_name, '', quantity)
+
+    parse_deck_helper(deck_text, is_text_line, extract_plaintext_card_data, handle_card)
 
 def parse_bbcode(deck_text: str, handle_card: Callable) -> None:
     pattern = compile(r'(\d+)x \[url=(https://netrunnerdb.com/en/card/\d+)\](.+)\[/url\] \[i\]\((.+)\)\[/i\].+') # '{Quantity}x [url={URL}]{Name}[/url] [i]({Set})[/i] '
-    
+
     def is_bbcode_line(line) -> bool:
         return bool(pattern.match(line))
-    
+
     def extract_bbcode_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
@@ -77,15 +59,50 @@ def parse_bbcode(deck_text: str, handle_card: Callable) -> None:
             quantity = int(match.group(1).strip())
 
             return (name, set, url, quantity)
-        
-    parse_deck_helper(deck_text, handle_card, is_bbcode_line, extract_bbcode_card_data)
+
+    parse_deck_helper(deck_text, is_bbcode_line, extract_bbcode_card_data, handle_card)
+
+def parse_markdown(deck_text: str, handle_card: Callable) -> None:
+    pattern = compile(r'^\* (\d+)x \[(.+)\]\((.+)\) _\((.+)\)_.+$') # '* {Quantity}x [{Name}]({URL}) _({Set})_ '
+
+    def is_markdown_line(line) -> bool:
+        return bool(pattern.match(line))
+
+    def extract_markdown_card_data(line) -> card_data_tuple:
+        match = pattern.match(line)
+        if match:
+            name = match.group(2).strip()
+            url = match.group(3).strip()
+            set = match.group(4).strip()
+            quantity = int(match.group(1).strip())
+
+            return (name, set, url, quantity)
+
+    parse_deck_helper(deck_text, is_markdown_line, extract_markdown_card_data, handle_card)
+
+def parse_plain_text(deck_text: str, handle_card: Callable) -> None:
+    pattern = compile(r'^(\d+)x\s+([^(]+?)(?:\s+\(([^)]+)\))?(?:\s+([^\w\s].*))?$') # '{Quantity}x {Name} ({Set}) {Symbols}' where Set and Symbols are optional
+
+    def is_plaintext_line(line) -> bool:
+        return bool(pattern.match(line))
+
+    def extract_plaintext_card_data(line) -> card_data_tuple:
+        match = pattern.match(line)
+        if match:
+            name = match.group(2).strip()
+            quantity = int(match.group(1).strip())
+            set = match.group(3).strip() if match.group(3) else ''
+
+            return (name, set, '', quantity)
+
+    parse_deck_helper(deck_text, is_plaintext_line, extract_plaintext_card_data, handle_card)
 
 def parse_jinteki(deck_text: str, handle_card: Callable) -> None:
     pattern = compile(r'^(\d+) (.+)$') # '{Quantity} {Name}'
 
     def is_tabletop_simulator_line(line) -> bool:
         return bool(pattern.match(line))
-    
+
     def extract_tabletop_simulator_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
@@ -93,22 +110,25 @@ def parse_jinteki(deck_text: str, handle_card: Callable) -> None:
             quantity = int(match.group(1).strip())
 
             return (name, '', '', quantity)
-        
-    parse_deck_helper(deck_text, handle_card, is_tabletop_simulator_line, extract_tabletop_simulator_card_data)
+
+    parse_deck_helper(deck_text, is_tabletop_simulator_line, extract_tabletop_simulator_card_data, handle_card)
 
 class DeckFormat(str, Enum):
-    MARKDOWN = 'markdown'
-    PLAINTEXT = 'plaintext'
+    TEXT = 'text'
     BBCODE = 'bbcode'
+    MARKDOWN = 'markdown'
+    PLAIN_TEXT = 'plain_text'
     JINTEKI = 'jinteki'
 
 def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
-    if format == DeckFormat.MARKDOWN:
-        return parse_markdown(deck_text, handle_card)
-    elif format == DeckFormat.PLAINTEXT:
-        return parse_plaintext(deck_text, handle_card)
+    if format == DeckFormat.TEXT:
+        return parse_text(deck_text, handle_card)
     elif format == DeckFormat.BBCODE:
         return parse_bbcode(deck_text, handle_card)
+    elif format == DeckFormat.MARKDOWN:
+        return parse_markdown(deck_text, handle_card)
+    elif format == DeckFormat.PLAIN_TEXT:
+        return parse_plain_text(deck_text, handle_card)
     elif format == DeckFormat.JINTEKI:
         return parse_jinteki(deck_text, handle_card)
     else:

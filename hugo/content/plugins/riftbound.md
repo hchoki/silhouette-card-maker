@@ -5,7 +5,7 @@ weight: 15
 
 This plugin reads a decklist, fetches the card image from either [Piltover Archive](https://piltoverarchive.com/) or [Riftmana](https://riftmana.com/), and puts the card images into the proper `game/` directories.
 
-This plugin supports many decklist formats such as, `tts`, `pixelborn`, and `piltover_archive`. To learn more, see [here](#formats).
+This plugin supports many decklist formats such as `tts`, `pixelborn`, and `piltover_archive`. To learn more, see [here](#formats).
 
 > [!WARNING]
 > `Pixelborn` will be shutdown August 7th, 2025 with Riot's announcement of their [Digital Tools Policy for Riftbound](https://developer.riotgames.com/docs/riftbound). As a result, the format itself may not receive any more support as an export option. However, the `Pixelborn` format will remain here, in the event that it still persists beyond that date.
