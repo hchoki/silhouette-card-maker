@@ -2,67 +2,25 @@
 
 This plugin reads a decklist, fetches the card images, and puts the card images into the proper `game/` directories.
 
-This plugin currently supports the ``TTS (Tabletop Simulator)``, ``DigimonMeta``, and ``Untap`` formats.
+This plugin supports many decklist formats such as, `tts`, `digimonmeta`, and `untap`. To learn more, see [here](#formats).
 
-## Instructions
+## Basic Instructions
 
-Navigate to the [root directory](../..), as the plugins are not meant to be run in the [plugin directory](.).
+Navigate to the [root directory](../..) as plugins are not meant to be run in the [plugin directory](.).
 
-Open a terminal on your device in the root directory.
+If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
-> [!NOTE]
-> On Windows, this would be the ``PowerShell`` application, unless you use another terminal of your choice.
->
-> On MacOS or Linux, this would be the ``Terminal`` application, unless you use another terminal of your choice.
+Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-usage) for more information.
 
-Create and start your Python virtual environment in the terminal.
+Put your decklist into a text file in [game/decklist](../game/decklist/). In this example, the filename is `deck.txt` and the decklist format is Tabletop Simulator (`tts`).
 
-> [!NOTE]
-> Use the following command to create your Python virtual environment.
-> ```bash
-> python -m venv venv
-> ```
->
-> On Windows, use the following command to start your Python virtual environment.
-> ```bash
-> .\venv\Scripts\Activate.ps1
-> ```
->
-> On MacOS or Linux, use the following command to start your Python virtual environment.
-> ```bash
-> . venv/bin/activate
-> ```
+Run the script.
 
-> [!WARNING]
-> If this fails on Windows due to authorization policy issues, then run the following command to get around it.
-> ```bash
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-> ```
-
-Then install the Python dependencies in the Python virtual environment using the following command.
-```bash
-pip install -r requirements.txt  
+```sh
+python plugins/digimon/fetch.py game/decklist/deck.txt tts
 ```
 
-Put your decklist into a text file within the [decklist directory/folder](../../game/decklist).
-
-Now, you are ready to run the program to generate the images for the deck using one of the following commands.
-
-> [!NOTE]
-> If your deck is in the ``TTS`` format, then use the following command.
-> ```bash
-> python plugins/digimon/fetch.py game/decklist/deck.txt tts
-> ```
-> If your deck is in the ``DigimonMeta`` format, then use the following command.
-> ```bash
-> python plugins/digimon/fetch.py game/decklist/deck.txt digimonmeta
-> ```
-> If your deck is in the ``Untap` format, then use the following command.
-> ```bash
-> python plugins/digimon/fetch.py game/decklist/deck.txt untap
-> ```
-
-And finally, you can generate the [PDF files](../../README.md#create_pdfpy) for the deck to print so that you can play at the table!
+Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
 
 ## CLI Options
 

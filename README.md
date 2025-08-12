@@ -135,6 +135,8 @@ The [Gundam plugin](plugins/gundam/README.md) supports **DeckPlanet**, **Limitle
 
 The [Grand Archive plugin](plugins/grand_archive/README.md) supports **Omnideck** format.
 
+The [Digimon plugin](plugins/digimon/README.md) supports **Tabletop Simulator**, **Digimoncard.io**, **Digimoncard.dev**, **Digimoncard.app**, **DigimonMeta**, and **Untap** formats.
+
 ### Double-Sided Cards
 
 To create double-sided cards, put front images in the `game/front/` folder and back images in the `game/double_sided/` folder. The filenames (and file extensions) must match for each pair.
