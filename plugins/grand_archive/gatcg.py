@@ -6,6 +6,8 @@ from time import sleep
 CARD_URL_TEMPLATE = 'https://api.gatcg.com/cards/{name}'
 CARD_ART_URL_TEMPLATE = 'https://api.gatcg.com/{card_art_suffix}'
 
+OUTPUT_CARD_ART_FILE_TEMPLATE = '{deck_index}{card_name}{quantity_counter}.png'
+
 def request_gatcg(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
@@ -35,7 +37,7 @@ def fetch_card(
         if card_art is not None:
             # Save image based on quantity
             for counter in range(quantity):
-                image_path = path.join(front_img_dir, f'{str(index)}{card_name}{str(counter + 1)}.png')
+                image_path = path.join(front_img_dir, OUTPUT_CARD_ART_FILE_TEMPLATE.format(deck_index=str(index), card_name=card_name, quantity_counter=str(counter + 1)))
 
                 with open(image_path, 'wb') as f:
                     f.write(card_art)
