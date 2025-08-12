@@ -16,3 +16,4 @@ The following plugins are currently available:
 * [Netrunner]({{% ref "netrunner.md" %}})
 * [Gundam]({{% ref "gundam.md" %}})
 * [Grand Archive]({{% ref "grand_archive.md" %}})
+* [Digimon]({{% ref "digimon.md" %}})
