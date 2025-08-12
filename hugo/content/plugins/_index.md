@@ -14,3 +14,4 @@ The following plugins are currently available:
 * [Riftbound]({{% ref "riftbound.md" %}})
 * [Altered]({{% ref "altered.md" %}})
 * [Netrunner]({{% ref "netrunner.md" %}})
+* [Gundam]({{% ref "gundam.md" %}})
