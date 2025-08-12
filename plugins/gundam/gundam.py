@@ -2,6 +2,10 @@ from os import path
 from requests import Response, get
 from time import sleep
 
+CARD_ART_URL_TEMPLATE = 'https://www.gundam-gcg.com/en/images/cards/card/{card_number}.webp'
+
+OUTPUT_CARD_ART_FILE_TEMPLATE = '{deck_index}{card_number}{quantity_counter}.png'
+
 def request_deckplanet(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
@@ -18,7 +22,7 @@ def fetch_card(
 ):
 
     # Query for card info
-    card_art = request_deckplanet(f'https://multi-deckplanet.us-southeast-1.linodeobjects.com/gundam/{card_number}.webp').content
+    card_art = request_deckplanet(CARD_ART_URL_TEMPLATE.format(card_number=card_number)).content
     
     if card_art is not None:
         # Save image based on quantity

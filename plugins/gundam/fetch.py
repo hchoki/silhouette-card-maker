@@ -2,7 +2,7 @@ from os import path
 from click import command, argument, Choice
 
 from deck_formats import DeckFormat, parse_deck
-from deckplanet import get_handle_card
+from gundam import get_handle_card
 
 front_directory = path.join('game', 'front')
 double_sided_directory = path.join('game', 'double_sided')
