@@ -9,7 +9,7 @@ This plugin supports many decklist formats such as, `tts`, `digimonmeta`, and `u
 
 ## Basic Instructions
 
-Navigate to the [root directory](../..) as plugins are not meant to be run in the [plugin directory](.).
+Navigate to the root directory as plugins are not meant to be run in the plugins directory.
 
 If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **PowerShell**.
 
