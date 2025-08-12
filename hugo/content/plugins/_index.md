@@ -17,3 +17,4 @@ The following plugins are currently available:
 * [Gundam]({{% ref "gundam.md" %}})
 * [Grand Archive]({{% ref "grand_archive.md" %}})
 * [Digimon]({{% ref "digimon.md" %}})
+* [One Piece]({{% ref "one_piece.md" %}})
