@@ -20,7 +20,6 @@ def fetch_card(
     card_number: str,
     front_img_dir: str,
 ):
-
     # Query for card info
     card_art = request_bandai(CARD_ART_URL_TEMPLATE.format(card_number=card_number)).content
     

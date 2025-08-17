@@ -35,7 +35,7 @@ Options:
 
 ### `deckplanet`
 
-The format for `DeckPlanet`.
+DeckPlanet format.
 
 ```
 2 Guntank [GD01-008]
@@ -63,7 +63,7 @@ The format for `DeckPlanet`.
 
 ### `limitless`
 
-The format for `Limitless TCG`.
+Limitless TCG format.
 
 ```
 4 Dopp GD01-039
@@ -78,17 +78,14 @@ The format for `Limitless TCG`.
 2 Gouf ST03-009
 4 Char's Gelgoog GD01-023
 3 Gundam ST01-001
-
 4 Char Aznable ST03-011
 4 Amuro Ray ST01-010
-
-
 3 Falmel ST03-016
 ```
 
 ### `egman`
 
-The format for `Egman Events`.
+Egman Events format.
 
 ```
 4 GD01-039 Dopp
@@ -110,7 +107,7 @@ The format for `Egman Events`.
 
 ### `exburst`
 
-The format for `ExBurst`.
+ExBurst format.
 
 ```
 4 x ST04-008
@@ -129,5 +126,4 @@ The format for `ExBurst`.
 2 x GD01-111
 2 x ST03-013
 4 x GD01-100
-
 ```

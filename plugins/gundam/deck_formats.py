@@ -2,7 +2,7 @@ from re import compile
 from enum import Enum
 from typing import Callable, Tuple
 
-card_data_tuple = Tuple[str, int] # Card Number, Quantity
+card_data_tuple = Tuple[str, int, str]  # Card Number, Quantity, Name
 
 def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple]) -> None:
     error_lines = []
@@ -12,9 +12,9 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
         if is_card_line(line):
             index = index + 1
 
-            card_number, quantity = extract_card_data(line)
+            card_number, quantity, name = extract_card_data(line)
 
-            print(f'Index: {index}, quantity: {quantity}, card number: {card_number}')
+            print(f'Index: {index}, quantity: {quantity}, card number: {card_number}, name: {name}')
             try:
                 handle_card(index, card_number, quantity)
             except Exception as e:
@@ -28,7 +28,7 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
         print(f'Errors: {error_lines}')
 
 def parse_deckplanet(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)\s+.+\s+\[(.+)\]$') # '{Quantity} {Name} [{Card Number}]'
+    pattern = compile(r'^(\d+)\s+(.+)\s+\[(.+)\]$')  # '{Quantity} {Name} [{Card Number}]'
 
     def is_deckplanet_line(line) -> bool:
         return bool(pattern.match(line))
@@ -36,15 +36,15 @@ def parse_deckplanet(deck_text: str, handle_card: Callable) -> None:
     def extract_deckplanet_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
-            card_number = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
-
-            return (card_number, quantity)
+            card_number = match.group(3).strip()
+            quantity = int(match.group(1).strip())
+            name = match.group(2).strip()
+            return (card_number, quantity, name)
         
     parse_deck_helper(deck_text, handle_card, is_deckplanet_line, extract_deckplanet_card_data)
 
 def parse_limitless(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)\s+.+\s+([A-Z0-9]+-\d+)$') # '{Quantity} {Name} {Card Number}'
+    pattern = compile(r'^(\d+)\s+(.+)\s+([A-Z0-9]+-\d+)$')  # '{Quantity} {Name} {Card Number}'
 
     def is_limitless_line(line) -> bool:
         return bool(pattern.match(line))
@@ -52,15 +52,15 @@ def parse_limitless(deck_text: str, handle_card: Callable) -> None:
     def extract_limitless_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
-            card_number = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
-
-            return (card_number, quantity)
+            card_number = match.group(3).strip()
+            quantity = int(match.group(1).strip())
+            name = match.group(2).strip()
+            return (card_number, quantity, name)
         
     parse_deck_helper(deck_text, handle_card, is_limitless_line, extract_limitless_card_data)
 
 def parse_egman(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)\s+([A-Z0-9]+-\d+)\s+.+$') # '{Quantity} {Card Number} {Name}'
+    pattern = compile(r'^(\d+)\s+([A-Z0-9]+-\d+)\s+([^|]+)')  # '{Quantity} {Card Number} {Name}'
 
     def is_egman_line(line) -> bool:
         return bool(pattern.match(line))
@@ -69,9 +69,9 @@ def parse_egman(deck_text: str, handle_card: Callable) -> None:
         match = pattern.match(line)
         if match:
             card_number = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
-
-            return (card_number, quantity)
+            quantity = int(match.group(1).strip())
+            name = match.group(3).strip()
+            return (card_number, quantity, name)
         
     parse_deck_helper(deck_text, handle_card, is_egman_line, extract_egman_card_data)
 
@@ -85,9 +85,8 @@ def parse_exburst(deck_text: str, handle_card: Callable) -> None:
         match = pattern.match(line)
         if match:
             card_number = match.group(2).strip()
-            quantity = int( match.group(1).strip() )
-
-            return (card_number, quantity)
+            quantity = int(match.group(1).strip())
+            return (card_number, quantity, '')
         
     parse_deck_helper(deck_text, handle_card, is_exburst_line, extract_exburst_card_data)
 
@@ -108,6 +107,3 @@ def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> Non
         return parse_exburst(deck_text, handle_card)
     else:
         raise ValueError('Unrecognized deck format.')
-
-if __name__ == '__main__':
-    parse_deck()
