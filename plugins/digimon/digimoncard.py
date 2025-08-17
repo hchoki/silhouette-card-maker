@@ -9,13 +9,13 @@ def request_digimon(query: str) -> Response:
 
     r.raise_for_status()
     sleep(0.15)
-    
+
     return r
 
 def fetch_card_art(index: int, card_number: str, quantity: int, front_img_dir: str):
 
     card_art = request_digimon(CARD_ART_URL_TEMPLATE.format(card_number=card_number)).content
-    
+
     if card_art is not None:
         # Save image based on quantity
         for counter in range(quantity):
@@ -24,9 +24,6 @@ def fetch_card_art(index: int, card_number: str, quantity: int, front_img_dir: s
             with open(image_path, 'wb') as f:
                 f.write(card_art)
 
-            print(f'{image_path}')
-
-            
 def get_handle_card(
     front_img_dir: str
 ):
