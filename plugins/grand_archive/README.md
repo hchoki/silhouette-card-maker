@@ -2,7 +2,7 @@
 
 This plugin reads a decklist, fetches the card image from the [Grand Archive website](https://gatcg.com), and puts the card images into the proper `game/` directories.
 
-This plugin supports decklist exports from [Silvie](https://build-v2.silvie.org/). To learn more, see [here](#formats).
+This plugin supports the `omnideck` format. To learn more, see [here](#formats).
 
 ## Basic Instructions
 
@@ -12,12 +12,12 @@ If you're on macOS or Linux, open **Terminal**. If you're on Windows, open **Pow
 
 Create and start your virtual Python environment and install Python dependencies if you have not done so already. See [here](../../README.md#basic-usage) for more information.
 
-Put your decklist into a text file in [game/decklist](../game/decklist/). In this example, the filename is `deck.txt` and the decklist format is Silvie (`silvie`).
+Put your decklist into a text file in [game/decklist](../game/decklist/). In this example, the filename is `deck.txt` and the decklist format is Omnideck (`omnideck`).
 
 Run the script.
 
 ```sh
-python plugins/grand_archive/fetch.py game/decklist/deck.txt silvie
+python plugins/grand_archive/fetch.py game/decklist/deck.txt omnideck
 ```
 
 Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy).
@@ -25,7 +25,7 @@ Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy)
 ## CLI Options
 
 ```
-Usage: fetch.py [OPTIONS] DECK_PATH {silvie}
+Usage: fetch.py [OPTIONS] DECK_PATH {omnideck}
 
 Options:
   --help  Show this message and exit.
@@ -33,10 +33,9 @@ Options:
 
 ## Formats
 
-### `silvie`
+### `omnideck`
 
-The format for ``Silvie``.
-
+Omnideck format.
 ```
 # Main Deck
 3 Incapacitate

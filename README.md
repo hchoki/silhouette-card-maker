@@ -133,7 +133,7 @@ The [Netrunner plugin](plugins/netrunner/README.md) supports **text*, **bbCode**
 
 The [Gundam plugin](plugins/gundam/README.md) supports **DeckPlanet**, **Limitless TCG**, **Egman Events**, and **ExBurst** formats.
 
-The [Grand Archive plugin](plugins/grand_archive/README.md) supports **Silvie** format.
+The [Grand Archive plugin](plugins/grand_archive/README.md) supports **Omnideck** format.
 
 ### Double-Sided Cards
 
