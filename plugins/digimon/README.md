@@ -25,7 +25,8 @@ Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy)
 ## CLI Options
 
 ```
-Usage: fetch.py [OPTIONS] DECK_PATH {tts|untap|digimonmeta}
+Usage: fetch.py [OPTIONS] DECK_PATH {tts|digimoncardio|digimoncarddev|digimonc
+                ardapp|digimonmeta|untap}
 
 Options:
   --help  Show this message and exit.
