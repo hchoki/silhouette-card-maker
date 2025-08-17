@@ -22,7 +22,6 @@ def fetch_card(
     card_name: str,
     front_img_dir: str,
 ):
-
     # Query for card info    
     sanitized = sub(r'[^A-Za-z0-9 \-]+', '', card_name)
     slugified = sub(r'\s+', '-', sanitized).lower()
