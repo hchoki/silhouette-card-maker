@@ -11,9 +11,10 @@ OUTPUT_CARD_ART_FILE_TEMPLATE = '{deck_index}{card_name}{quantity_counter}.png'
 def request_fabtcg(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
 
-    print(r.url)
-
+    # Check for 2XX response code
     r.raise_for_status()
+
+    # Sleep for 150 milliseconds
     sleep(0.15)
 
     return r
@@ -25,7 +26,6 @@ def fetch_card(
     pitch: PitchOption,
     front_img_dir: str,
 ):
-
     # Query for card info
     sanitized = sub(r'[^A-Za-z0-9 ]+', '', name)
     slugified = sub(r'\s+', '+', sanitized).lower()
@@ -36,7 +36,7 @@ def fetch_card(
 
     card_art_url = card_response.json().get('results')[0].get('image').get('normal')
     card_art_response = request_fabtcg(card_art_url)
-    
+
     if card_art_response is not None:
         card_art = card_art_response.content
 
@@ -61,4 +61,3 @@ def get_handle_card(
         )
 
     return configured_fetch_card
-    

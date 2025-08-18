@@ -20,7 +20,7 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
 
             name, pitch, quantity = extract_card_data(line)
 
-            print(f'Index: {index}, quantity: {quantity}, name: {name}, pitch: {pitch}')
+            print(f'Index: {index}, quantity: {quantity}, name: {name}, pitch: {pitch.name.lower()}')
             try:
                 handle_card(index, name, pitch, quantity)
             except Exception as e:
@@ -38,7 +38,7 @@ def parse_fabrary(deck_text: str, handle_card: Callable) -> None:
 
     def is_fabrary_line(line) -> bool:
         return bool(pattern.match(line))
-    
+
     def extract_fabrary_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
@@ -55,7 +55,7 @@ def parse_fabrary(deck_text: str, handle_card: Callable) -> None:
                 pitch = PitchOption.NONE
 
             return (name, pitch, quantity)
-        
+
     parse_deck_helper(deck_text, handle_card, is_fabrary_line, extract_fabrary_card_data)
 
 class DeckFormat(str, Enum):

@@ -35,7 +35,7 @@ Options:
 
 ### `fabrary`
 
-The format for ``Fabrary``.
+Fabrary format`.
 
 ```
 Name: Sweden National Championship 2025 1st 🇸🇪
