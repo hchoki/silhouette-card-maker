@@ -2,7 +2,7 @@ from os import path
 from requests import Response, get
 from time import sleep
 from re import sub
-from deck_formats import PitchOption
+from deck_formats import Pitch
 
 CARD_URL_TEMPLATE = 'https://cards.fabtcg.com/api/search/v1/cards/?name={card_name}{pitch}'
 
@@ -23,13 +23,13 @@ def fetch_card(
     index: int,
     quantity: int,
     name: str,
-    pitch: PitchOption,
+    pitch: Pitch,
     front_img_dir: str,
 ):
     # Query for card info
     sanitized = sub(r'[^A-Za-z0-9 ]+', '', name)
     slugified = sub(r'\s+', '+', sanitized).lower()
-    pitch_argument = f'&pitch_lookup=exact&pitch={pitch.value}' if pitch != PitchOption.NONE else ''
+    pitch_argument = f'&pitch_lookup=exact&pitch={pitch.value}' if pitch != Pitch.NONE else ''
 
     url = CARD_URL_TEMPLATE.format(card_name=slugified,pitch=pitch_argument)
     card_response = request_fabtcg(url)
@@ -51,7 +51,7 @@ def fetch_card(
 def get_handle_card(
     front_img_dir: str,
 ):
-    def configured_fetch_card(index: int, name: str, pitch: PitchOption, quantity: int = 1):
+    def configured_fetch_card(index: int, name: str, pitch: Pitch, quantity: int = 1):
         fetch_card(
             index,
             quantity,

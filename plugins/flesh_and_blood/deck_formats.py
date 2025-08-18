@@ -2,13 +2,13 @@ from re import compile
 from enum import Enum
 from typing import Callable, Tuple
 
-class PitchOption(str, Enum):
+class Pitch(str, Enum):
     RED = '1'
     YELLOW = '2'
     BLUE = '3'
     NONE = ''
 
-card_data_tuple = Tuple[str, PitchOption, int] # name, pitch, quantity
+card_data_tuple = Tuple[str, Pitch, int] # name, pitch, quantity
 
 def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple]) -> None:
     error_lines = []
@@ -34,7 +34,7 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
         print(f'Errors: {error_lines}')
 
 def parse_fabrary(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'(\d+)x\s+([^(]+?)(?:\s+\((red|yellow|blue)\))?$') # '{Quantity}x {Card Name} {Pitch?}' where pitch is necessary
+    pattern = compile(r'(\d+)x\s+([^(]+?)(?:\s+\((red|yellow|blue)\))?$') # '{quantity}x {name} {pitch?}' where pitch is optional
 
     def is_fabrary_line(line) -> bool:
         return bool(pattern.match(line))
@@ -46,13 +46,13 @@ def parse_fabrary(deck_text: str, handle_card: Callable) -> None:
             name = match.group(2).strip()
             pitch_extract = '' if match.group(3) is None else match.group(3).strip()
             if pitch_extract == 'red':
-                pitch = PitchOption.RED
+                pitch = Pitch.RED
             elif pitch_extract == 'yellow':
-                pitch = PitchOption.YELLOW
+                pitch = Pitch.YELLOW
             elif pitch_extract == 'blue':
-                pitch = PitchOption.BLUE
+                pitch = Pitch.BLUE
             else:
-                pitch = PitchOption.NONE
+                pitch = Pitch.NONE
 
             return (name, pitch, quantity)
 
