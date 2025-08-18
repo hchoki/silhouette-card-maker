@@ -5,7 +5,7 @@ weight: 40
 
 This plugin reads a decklist, automatically fetches card art, and puts them in the proper `game/` directories.
 
-This plugin supports many decklist formats such as, `optcgsim` and `egman`. To learn more, see [here](#formats).
+This plugin supports many decklist formats such as `optcgsim` and `egman`. To learn more, see [here](#formats).
 
 ## Basic Instructions
 

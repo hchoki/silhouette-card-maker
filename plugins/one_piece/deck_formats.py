@@ -2,7 +2,7 @@ from re import compile
 from enum import Enum
 from typing import Callable, Tuple
 
-card_data_tuple = Tuple[str, int] # Card Number, Quantity
+card_data_tuple = Tuple[str, int, str] # card number, quantity, name
 
 def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple]) -> None:
     error_lines = []
@@ -12,11 +12,11 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
         if is_card_line(line):
             index = index + 1
 
-            card_number, quantity = extract_card_data(line)
+            card_code, quantity, name = extract_card_data(line)
 
-            print(f'Index: {index}, quantity: {quantity}, card number: {card_number}')
+            print(f'Index: {index}, quantity: {quantity}, card code: {card_code}, name: {name}')
             try:
-                handle_card(index, card_number, quantity)
+                handle_card(index, card_code, quantity)
             except Exception as e:
                 print(f'Error: {e}')
                 error_lines.append((line, e))
@@ -28,7 +28,7 @@ def parse_deck_helper(deck_text: str, handle_card: Callable, is_card_line: Calla
         print(f'Errors: {error_lines}')
 
 def parse_optcgsim(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d{1})x([A-Z0-9]+-\d+)$') # '{Quantity}x{Card Number}'
+    pattern = compile(r'^(\d{1})x([A-Z0-9]+-\d+)$') # '{quantity}x{card number}'
 
     def is_optcgsim_line(line) -> bool:
         return bool(pattern.match(line))
@@ -36,15 +36,15 @@ def parse_optcgsim(deck_text: str, handle_card: Callable) -> None:
     def extract_optcgsim_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
-            card_number = match.group(2).strip()
             quantity = int(match.group(1).strip())
+            card_code = match.group(2).strip()
 
-            return (card_number, quantity)
+            return (card_code, quantity, '')
 
     parse_deck_helper(deck_text, handle_card, is_optcgsim_line, extract_optcgsim_card_data)
 
 def parse_egman(deck_text: str, handle_card: Callable) -> None:
-    pattern = compile(r'^(\d+)\s+([A-Z0-9]+-\d+).*$') # '{Quantity} {Card Number} {Name}'
+    pattern = compile(r'^\s*(\d+)\s+([A-Z0-9]+-\d+)\s+(.+?)\s*$') # '{quantity} {card number} {name}'
 
     def is_egman_line(line) -> bool:
         return bool(pattern.match(line))
@@ -52,10 +52,11 @@ def parse_egman(deck_text: str, handle_card: Callable) -> None:
     def extract_egman_card_data(line) -> card_data_tuple:
         match = pattern.match(line)
         if match:
-            card_number = match.group(2).strip()
             quantity = int(match.group(1).strip())
+            card_code = match.group(2).strip()
+            name = match.group(3).strip()
 
-            return (card_number, quantity)
+            return (card_code, quantity, name)
 
     parse_deck_helper(deck_text, handle_card, is_egman_line, extract_egman_card_data)
 
