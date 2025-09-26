@@ -47,7 +47,7 @@ The format for ``Tabletop Simulator``.
 
 ### `digimoncardio`
 
-[digimoncard.io](digimoncard.io) format.
+[digimoncard.io](https://digimoncard.io) format.
 
 ```
 // Digimon Deck List 
@@ -75,7 +75,7 @@ The format for ``Tabletop Simulator``.
 
 ### `digimoncarddev`
 
-[digimoncard.dev](digimoncard.dev) format.
+[digimoncard.dev](https://digimoncard.dev) format.
 
 ```
 // Digimon DeckList
@@ -106,7 +106,7 @@ The format for ``Tabletop Simulator``.
 
 ### `digimoncardapp`
 
-[digimoncard.app](digimoncard.app) format.
+[digimoncard.app](https://digimoncard.app) format.
 
 ```
 // Digimon DeckList
