@@ -162,6 +162,11 @@ Open the `letter_standard_<version>.studio3` cutting template in Silhouette Stud
 
 ![Cutting template](/images/cutting_template_standard.png)
 
+Make sure that your machine is selected.
+
+![Select machine](/images/select_machine.png)
+![Select machine](/images/select_machine2.png)
+
 Put a sheet on the cutting mat. The position of the sheet must match the cutting template. Note that for this template, the sheet must be in the **top left of the cutting mat grid**. Note that the **black square registration mark is the top left** as well.
 
 ![Notice the grid](/images/sheet_placement.jpg)
