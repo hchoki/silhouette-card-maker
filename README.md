@@ -197,6 +197,7 @@ Options:
                                   The desired card size.  [default: standard]
   --paper_size [letter|tabloid|a4|a3|archb]
                                   The desired paper size.  [default: letter]
+  --registration [3|4]            The desired registration.  [default: 3]
   --only_fronts                   Only use the card fronts, exclude the card
                                   backs.
   --crop TEXT                     Crop the outer portion of front and double-

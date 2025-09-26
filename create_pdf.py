@@ -2,7 +2,7 @@ import os
 import re
 
 import click
-from utilities import CardSize, PaperSize, generate_pdf
+from utilities import Registration, CardSize, PaperSize, generate_pdf
 
 front_directory = os.path.join('game', 'front')
 back_directory = os.path.join('game', 'back')
@@ -19,6 +19,7 @@ default_output_path = os.path.join(output_directory, 'game.pdf')
 @click.option("--output_images", default=False, is_flag=True, help="Create images instead of a PDF.")
 @click.option("--card_size", default=CardSize.STANDARD.value, type=click.Choice([t.value for t in CardSize], case_sensitive=False), show_default=True, help="The desired card size.")
 @click.option("--paper_size", default=PaperSize.LETTER.value, type=click.Choice([t.value for t in PaperSize], case_sensitive=False), show_default=True, help="The desired paper size.")
+@click.option("--registration", default=Registration.THREE.value, type=click.Choice([t.value for t in Registration], case_sensitive=False), show_default=True, help="The desired registration.")
 @click.option("--only_fronts", default=False, is_flag=True, help="Only use the card fronts, exclude the card backs.")
 @click.option("--crop", help="Crop the outer portion of front and double-sided images. Examples: 3mm, 0.125in, 6.5.")
 @click.option("--extend_corners", default=0, type=click.IntRange(min=0), show_default=True, help="Reduce artifacts produced by rounded corners in card images.")
@@ -37,6 +38,7 @@ def cli(
     output_images,
     card_size,
     paper_size,
+    registration,
     only_fronts,
     crop,
     extend_corners,
@@ -54,6 +56,7 @@ def cli(
         output_images,
         card_size,
         paper_size,
+        registration,
         only_fronts,
         crop,
         extend_corners,

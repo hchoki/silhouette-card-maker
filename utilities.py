@@ -36,6 +36,10 @@ class PaperSize(str, Enum):
     A4 = "a4"
     A3 = "a3"
     ARCHB = "archb"
+    
+class Registration(str, Enum):
+    THREE = "3"
+    FOUR = "4"
 
 class CardLayoutSize(BaseModel):
     width: int
@@ -281,7 +285,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if name is not None:
         label = f'name: {name}, {label}'
 
-    draw.text((math.floor((page_width - 180) * ppi_ratio), math.floor((page_height - 140) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ra", font=font)
+    draw.text((math.floor((page_width / 2) * ppi_ratio), math.floor((page_height - 140) * ppi_ratio)), label, fill = (0, 0, 0), anchor="ma", font=font)
 
     # Add a back page for every front page template
     pages.append(front_page)
@@ -296,6 +300,7 @@ def generate_pdf(
     output_images: bool,
     card_size: CardSize,
     paper_size: PaperSize,
+    registration: Registration,
     only_fronts: bool,
     crop_string: str | None,
     extend_corners: int,
@@ -394,7 +399,7 @@ def generate_pdf(
         if len(clean_skip_indices) == num_cards:
             raise Exception(f'You cannot skip all cards per page')
 
-        registration_filename =  f'{paper_size}_registration.jpg'
+        registration_filename =  f'{paper_size}_registration_{registration}.jpg'
         registration_path = os.path.join(asset_directory, registration_filename)
 
         # The baseline PPI is 300
