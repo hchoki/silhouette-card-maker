@@ -182,8 +182,8 @@
             }
         },
         "tabloid": {
-            "width": 4960,
-            "height": 3508,
+            "width": 3300,
+            "height": 5100,
             "card_layouts": {
                 "standard": {
                     "x_pos": [
