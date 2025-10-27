@@ -4,7 +4,7 @@ import re
 import requests
 import time
 
-double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token']
+double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
 
 def request_scryfall(
     query: str,
