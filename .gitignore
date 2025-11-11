@@ -18,5 +18,7 @@ data
 
 images/*.xcf
 
+# Waifu2x AI upscaling binaries
+waifu2x-minimal/
+
 hugo/public/
-Waifu2x-Extension-GUI-v3.130.01-Win64

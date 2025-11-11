@@ -855,9 +855,7 @@ def upscale_image_with_waifu2x(
     if waifu2x_path is None:
         waifu2x_path = os.path.join(
             os.path.dirname(__file__),
-            "Waifu2x-Extension-GUI-v3.130.01-Win64",
-            "waifu2x-extension-gui",
-            "waifu2x-ncnn-vulkan",
+            "waifu2x-minimal",
             "waifu2x-ncnn-vulkan_waifu2xEX.exe"
         )
     
