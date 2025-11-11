@@ -1,4 +1,5 @@
 import os
+import sys
 
 import click
 from deck_formats import DeckFormat, parse_deck
@@ -6,9 +7,14 @@ from scryfall import get_handle_card
 
 from typing import Set
 
+# Add the plugins directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from shared_upscaling import add_upscale_options
+
 front_directory = os.path.join('game', 'front')
 double_sided_directory = os.path.join('game', 'double_sided')
 
+@add_upscale_options
 @click.command()
 @click.argument('deck_path')
 @click.argument('format', type=click.Choice([t.value for t in DeckFormat], case_sensitive=False))
@@ -26,7 +32,10 @@ def cli(
     prefer_set: Set[str],
 
     prefer_showcase: bool,
-    prefer_extra_art: bool
+    prefer_extra_art: bool,
+    upscale: bool,
+    upscale_factor: int,
+    noise_level: int
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
@@ -46,6 +55,10 @@ def cli(
                 
                 prefer_showcase,
                 prefer_extra_art,
+
+                upscale,
+                upscale_factor,
+                noise_level,
 
                 front_directory,
                 double_sided_directory

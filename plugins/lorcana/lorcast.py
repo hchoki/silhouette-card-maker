@@ -1,10 +1,15 @@
 import os
 import re
 import requests
+import sys
 import time
 from io import BytesIO
 
 from PIL import Image
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from utilities import upscale_image_with_waifu2x
 
 def request_lorcast(
     query: str,
@@ -31,6 +36,9 @@ def fetch_card(
     name: str,
     enchanted: bool,
     front_img_dir: str,
+    upscale: bool = False,
+    upscale_factor: int = 2,
+    noise_level: int = 1
 ):
     # Filter out symbols from card names
     clean_card_name = remove_nonalphanumeric(name)
@@ -61,9 +69,16 @@ def fetch_card(
             image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
 
             card_art.save(image_path, format="PNG")
+            
+            # Upscale the image if requested
+            if upscale:
+                upscale_image_with_waifu2x(image_path, upscale_factor, noise_level)
 
 def get_handle_card(
     front_img_dir: str,
+    upscale: bool = False,
+    upscale_factor: int = 2,
+    noise_level: int = 1
 ):
     def configured_fetch_card(index: int, name: str, enchanted: bool, quantity: int = 1):
         fetch_card(
@@ -72,6 +87,9 @@ def get_handle_card(
             name,
             enchanted,
             front_img_dir,
+            upscale,
+            upscale_factor,
+            noise_level
         )
 
     return configured_fetch_card

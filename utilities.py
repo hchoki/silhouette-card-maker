@@ -5,6 +5,9 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
+import subprocess
+import tempfile
 from typing import Dict, List
 from xml.dom import ValidationErr
 
@@ -826,3 +829,96 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
             y_border_max = 100000
 
     return (x_border_max, y_border_max)
+
+def upscale_image_with_waifu2x(
+    image_path: str,
+    scale: int = 2,
+    noise_level: int = 1,
+    waifu2x_path: str = None
+) -> bool:
+    """
+    Upscale an image using waifu2x-ncnn-vulkan.
+    
+    Args:
+        image_path: Path to the image file to upscale
+        scale: Upscale ratio (1/2/4/8/16/32, default=2)
+        noise_level: Denoise level (-1/0/1/2/3, default=1)
+        waifu2x_path: Custom path to waifu2x executable (optional)
+    
+    Returns:
+        bool: True if upscaling was successful, False otherwise
+    """
+    import subprocess
+    import tempfile
+    
+    # Default waifu2x path relative to project root
+    if waifu2x_path is None:
+        waifu2x_path = os.path.join(
+            os.path.dirname(__file__),
+            "Waifu2x-Extension-GUI-v3.130.01-Win64",
+            "waifu2x-extension-gui",
+            "waifu2x-ncnn-vulkan",
+            "waifu2x-ncnn-vulkan_waifu2xEX.exe"
+        )
+    
+    # Check if waifu2x executable exists
+    if not os.path.exists(waifu2x_path):
+        print(f"Warning: Waifu2x executable not found at {waifu2x_path}")
+        return False
+    
+    # Check if input image exists
+    if not os.path.exists(image_path):
+        print(f"Warning: Input image not found at {image_path}")
+        return False
+    
+    try:
+        # Create a temporary file for the upscaled output
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
+            temp_output_path = temp_file.name
+        
+        # Build the waifu2x command
+        cmd = [
+            waifu2x_path,
+            "-i", image_path,
+            "-o", temp_output_path,
+            "-s", str(scale),
+            "-n", str(noise_level),
+            "-f", "png"
+        ]
+        
+        # Run waifu2x
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout
+        )
+        
+        if result.returncode == 0:
+            # Replace original image with upscaled version
+            if os.path.exists(temp_output_path):
+                shutil.move(temp_output_path, image_path)
+                print(f"Successfully upscaled image: {os.path.basename(image_path)}")
+                return True
+            else:
+                print(f"Warning: Upscaled image was not created at {temp_output_path}")
+                return False
+        else:
+            print(f"Warning: Waifu2x failed with return code {result.returncode}")
+            if result.stderr:
+                print(f"Error: {result.stderr}")
+            return False
+            
+    except subprocess.TimeoutExpired:
+        print("Warning: Waifu2x upscaling timed out")
+        return False
+    except Exception as e:
+        print(f"Warning: Error during upscaling: {e}")
+        return False
+    finally:
+        # Clean up temporary file if it still exists
+        if 'temp_output_path' in locals() and os.path.exists(temp_output_path):
+            try:
+                os.unlink(temp_output_path)
+            except:
+                pass

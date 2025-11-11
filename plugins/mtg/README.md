@@ -26,7 +26,7 @@ Now you can create the PDF using [`create_pdf.py`](../../README.md#create_pdfpy)
 
 ```
 Usage: fetch.py [OPTIONS] DECK_PATH
-                {simple|mtga|mtgo|archidekt|deckstats|moxfield}
+                {simple|mtga|mtgo|archidekt|deckstats|moxfield|scryfall_json}
 
 Options:
   -i, --ignore_set_and_collector_number
@@ -40,8 +40,15 @@ Options:
                                   preferred sets.
   --prefer_showcase               Prefer fetching cards with showcase
                                   treatment
-  --prefer_extra_art               Prefer fetching cards with full art,
+  --prefer_extra_art              Prefer fetching cards with full art,
                                   borderless, or extended art.
+  --upscale                       Upscale downloaded images using Waifu2x AI
+                                  upscaling.
+  --upscale_factor INTEGER RANGE  Upscale factor for Waifu2x (1=no scaling,
+                                  2=2x, 4=4x).  [default: 2; 1<=x<=4]
+  --noise_level INTEGER RANGE     Waifu2x noise reduction level (-1=no effect,
+                                  0=no denoise, 1=low, 2=medium, 3=high).
+                                  [default: 1; -1<=x<=3]
   --help                          Show this message and exit.
 ```
 
@@ -58,6 +65,52 @@ Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets
 ```sh
 python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield -i
 ```
+
+Fetch cards and upscale them using Waifu2x AI upscaling for higher quality images.
+
+```sh
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield --upscale
+```
+
+Fetch cards with 4x upscaling and high noise reduction for maximum quality enhancement.
+
+```sh
+python plugins/mtg/fetch.py game/decklist/my_decklist.txt moxfield --upscale --upscale_factor 4 --noise_level 3
+```
+
+## AI Image Upscaling
+
+This plugin supports AI-powered image upscaling using Waifu2x, which can significantly improve the quality and resolution of downloaded card images. This is especially useful for:
+
+- Creating higher quality prints
+- Enlarging images without pixelation
+- Reducing compression artifacts
+- Enhancing fine details in card art
+
+### Requirements
+
+Make sure you have the Waifu2x-Extension-GUI installed in the project root directory. The plugin will automatically detect and use the waifu2x executable.
+
+### Upscaling Options
+
+- `--upscale`: Enable AI upscaling (disabled by default)
+- `--upscale_factor`: Choose the upscaling factor:
+  - `1`: No scaling (original size)
+  - `2`: Double the resolution (default)
+  - `4`: Quadruple the resolution (highest quality)
+- `--noise_level`: Control noise reduction:
+  - `-1`: No effect
+  - `0`: No denoising
+  - `1`: Low noise reduction (default)
+  - `2`: Medium noise reduction
+  - `3`: High noise reduction (best for heavily compressed images)
+
+### Performance Notes
+
+- Upscaling takes additional time (typically 10-30 seconds per image)
+- Higher upscale factors and noise levels take longer to process
+- Upscaled images will be significantly larger in file size
+- The process uses GPU acceleration when available
 
 Use a Moxfield decklist named `my_decklist.txt` and ignore all the provided sets and collector numbers. Instead, get the latest full, borderless, or extended art for all cards when possible.
 
