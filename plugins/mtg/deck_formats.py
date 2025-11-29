@@ -9,6 +9,63 @@ from scryfall import remove_nonalphanumeric
 
 card_data_tuple = Tuple[str, str, int, int]
 
+# MTGA pattern definitions
+_mtga_pattern = re.compile(r'(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+)', re.IGNORECASE)
+_mtga_fallback_pattern = re.compile(r'(\d+)x?\s+(.+)')
+
+def is_mtga_card_line(line) -> bool:
+    return bool(_mtga_pattern.match(line) or _mtga_fallback_pattern.match(line))
+
+def extract_mtga_card_data(line) -> card_data_tuple:
+    match = _mtga_pattern.match(line)
+    if match:
+        quantity = int(match.group(1))
+        name = match.group(2).strip()
+        set_code = match.group(3).strip()
+        collector_number = match.group(4).strip()
+        return (name, set_code, collector_number, quantity)
+    else:
+        # Handle simpler "1x Mountain" lines
+        fallback_match = _mtga_fallback_pattern.match(line)
+        quantity = int(fallback_match.group(1))
+        name = fallback_match.group(2).strip()
+        return (name, "", "", quantity)
+
+# Simple list functions
+def is_simple_card_line(line) -> bool:
+    return bool(line.strip())
+
+def extract_simple_list_card_data(line) -> card_data_tuple:
+    return (line.strip(), "", "", 1)
+
+# Moxfield functions
+_moxfield_pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([\w\-]+)')
+
+def is_moxfield_card_line(line: str) -> bool:
+    return bool(_moxfield_pattern.match(line))
+
+def extract_moxfield_card_data(line: str) -> card_data_tuple:
+    match = _moxfield_pattern.match(line)
+    quantity = int(match.group(1))
+    name = match.group(2).strip()
+    set_code = match.group(3).strip()
+    collector_number = match.group(4).strip()
+    return (name, set_code, collector_number, quantity)
+
+# Archidekt functions
+_archidekt_pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+([\w\-]+).*')
+
+def is_archidekt_card_line(line: str) -> bool:
+    return bool(_archidekt_pattern.match(line))
+
+def extract_archidekt_card_data(line: str) -> card_data_tuple:
+    match = _archidekt_pattern.match(line)
+    quantity = int(match.group(1))
+    name = match.group(2).strip()
+    set_code = match.group(3).strip()
+    collector_number = match.group(4).strip()
+    return (name, set_code, collector_number, quantity)
+
 def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple], handle_card: Callable) -> None:
     error_lines = []
 
@@ -39,13 +96,7 @@ def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extra
 # Blightstep Pathway
 # Blood Crypt
 def parse_simple_list(deck_text, handle_card: Callable) -> None:
-    def is_simple_card_line(line) -> bool:
-        return bool(line.strip())
-
-    def extract_simple_card_data(line) -> card_data_tuple:
-        return (line.strip(), "", "", 1)
-
-    parse_deck_helper(deck_text, is_simple_card_line, extract_simple_card_data, handle_card)
+    parse_deck_helper(deck_text, is_simple_card_line, extract_simple_list_card_data, handle_card)
 
 # About
 # Name Death & Taxes
@@ -62,29 +113,6 @@ def parse_simple_list(deck_text, handle_card: Callable) -> None:
 # Sideboard
 # 1 Containment Priest
 def parse_mtga(deck_text, handle_card: Callable) -> None:
-    pattern = re.compile(r'(\d+)x?\s+(.+?)\s+\((\w+)\)\s+(\d+)', re.IGNORECASE)
-    fallback_pattern = re.compile(r'(\d+)x?\s+(.+)')
-
-    def is_mtga_card_line(line) -> bool:
-        return bool(pattern.match(line) or fallback_pattern.match(line))
-
-    def extract_mtga_card_data(line) -> card_data_tuple:
-        match = pattern.match(line)
-        if match:
-            quantity = int(match.group(1))
-            name = match.group(2).strip()
-            set_code = match.group(3).strip()
-            collector_number = match.group(4).strip()
-
-            return (name, set_code, collector_number, quantity)
-        else:
-            # Handle simpler "1x Mountain" lines
-            fallback_match = fallback_pattern.match(line)
-            quantity = int(fallback_match.group(1))
-            name = fallback_match.group(2).strip()
-
-            return (name, "", "", quantity)
-
     parse_deck_helper(deck_text, is_mtga_card_line, extract_mtga_card_data, handle_card)
 
 # 1 Abzan Battle Priest
@@ -118,19 +146,6 @@ def parse_mtgo(deck_text, handle_card: Callable) -> None:
 # 1x Assassin's Trophy (sld) 139 [Targeted Disruption]
 # 2x Boseiju Reaches Skyward // Branch of Boseiju (neo) 177 [Ramp] ^Have,#37d67a^
 def parse_archidekt(deck_text, handle_card: Callable) -> None:
-    pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+([\w\-]+).*')
-    def is_archidekt_card_line(line: str) -> bool:
-        return bool(pattern.match(line))
-
-    def extract_archidekt_card_data(line: str) -> card_data_tuple:
-        match = pattern.match(line)
-        quantity = int(match.group(1))
-        name = match.group(2).strip()
-        set_code = match.group(3).strip()
-        collector_number = match.group(4).strip()
-
-        return (name, set_code, collector_number, quantity)
-
     parse_deck_helper(deck_text, is_archidekt_card_line, extract_archidekt_card_data, handle_card)
 
 # //Main
@@ -175,41 +190,29 @@ def parse_deckstats(deck_text, handle_card: Callable) -> None:
 # 1 Deafening Silence (MB2) 9
 # 1 Disruptor Flute (MH3) 209
 def parse_moxfield(deck_text, handle_card: Callable) -> None:
-    pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([\w\-]+)')
-    def is_moxfield_card_line(line: str) -> bool:
-        return bool(pattern.match(line))
-
-    def extract_moxfield_card_data(line: str) -> card_data_tuple:
-        match = pattern.match(line)
-        quantity = int(match.group(1))
-        name = match.group(2).strip()
-        set_code = match.group(3).strip()
-        collector_number = match.group(4).strip()
-
-        return (name, set_code, collector_number, quantity)
-
     parse_deck_helper(deck_text, is_moxfield_card_line, extract_moxfield_card_data, handle_card)
 
 # Scryfall deck builder JSON
 def parse_scryfall_json(deck_text, handle_card: Callable) -> None:
     data = json.loads(deck_text)
     entries = data.get("entries", {})
-    for entry in entries.values():
-        for index, item in enumerate(entry, start=1):
-            card_digest = item.get("card_digest", {})
-            if card_digest is None:
-                continue
+    items = entries.get("mainboard", []) + entries.get("sideboard", []) + entries.get("maybeboard", [])
 
-            name = card_digest.get("name", "")
-            set_code = card_digest.get("set", "")
-            collector_number = card_digest.get("collector_number", "")
-            quantity = item.get("count", 1)
+    for index, item in enumerate(items, start=1):
+        card_digest = item.get("card_digest", {})
+        if card_digest is None:
+            continue
 
-            print(f'Index: {index}, quantity: {quantity}, set code: {set_code}, collector number: {collector_number}, name: {name}')
-            handle_card(index, name, set_code, collector_number, quantity)
+        name = card_digest.get("name", "")
+        set_code = card_digest.get("set", "")
+        collector_number = card_digest.get("collector_number", "")
+        quantity = item.get("count", 1)
 
-# MPCFill XML
-def parse_mpcfill_xml(deck_text, handle_card: Callable) -> None:
+        print(f'Index: {index}, quantity: {quantity}, set code: {set_code}, collector number: {collector_number}, name: {name}')
+        handle_card(index, name, set_code, collector_number, quantity)
+
+# MPCFill XML parser
+def parse_mpcfill(deck_text, handle_card: Callable) -> None:
     # We need to convert this into a more usable format for sanity
     # The back field will only exist if the back of a card exists
     # {
@@ -257,6 +260,32 @@ class DeckFormat(str, Enum):
     SCRYFALL_JSON = "scryfall_json"
     MPCFILL_XML = "mpcfill_xml"
 
+def get_format_functions(format: DeckFormat) -> Tuple[Callable, Callable]:
+    """
+    Get the is_card_line and extract_card_data functions for a given format.
+    
+    Returns:
+        Tuple of (is_card_line_function, extract_card_data_function)
+    """
+    if format == DeckFormat.SIMPLE:
+        return is_simple_card_line, extract_simple_list_card_data
+    elif format == DeckFormat.MTGA:
+        return is_mtga_card_line, extract_mtga_card_data
+    elif format == DeckFormat.MTGO:
+        return is_mtgo_card_line, extract_mtgo_card_data
+    elif format == DeckFormat.ARCHIDEKT:
+        return is_archidekt_card_line, extract_archidekt_card_data
+    elif format == DeckFormat.DECKSTATS:
+        return is_deckstats_card_line, extract_deckstats_card_data
+    elif format == DeckFormat.MOXFIELD:
+        return is_moxfield_card_line, extract_moxfield_card_data
+    elif format == DeckFormat.SCRYFALL_JSON:
+        # JSON format needs special handling, not supported in parallel mode yet
+        raise ValueError("Scryfall JSON format not supported in parallel mode")
+    else:
+        raise ValueError("Unrecognized deck format")
+
+
 def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
     if format == DeckFormat.SIMPLE:
         parse_simple_list(deck_text, handle_card)
@@ -273,6 +302,6 @@ def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> Non
     elif format == DeckFormat.SCRYFALL_JSON:
         parse_scryfall_json(deck_text, handle_card)
     elif format == DeckFormat.MPCFILL_XML:
-        parse_mpcfill_xml(deck_text, handle_card)
+        parse_mpcfill(deck_text, handle_card)
     else:
         raise ValueError("Unrecognized deck format")

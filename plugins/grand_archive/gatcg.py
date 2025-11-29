@@ -1,7 +1,12 @@
+import os
+import sys
 from re import sub
 from os import path
 from requests import Response, get
 from time import sleep
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 CARD_URL_TEMPLATE = 'https://api.gatcg.com/cards/{name}'
 CARD_ART_URL_TEMPLATE = 'https://api.gatcg.com/{card_art_suffix}'
@@ -20,7 +25,7 @@ def fetch_card(
     index: int,
     quantity: int,
     card_name: str,
-    front_img_dir: str,
+    front_img_dir: str
 ):
     # Query for card info    
     sanitized = sub(r'[^A-Za-z0-9 \-]+', '', card_name)
@@ -42,7 +47,7 @@ def fetch_card(
                     f.write(card_art)
 
 def get_handle_card(
-    front_img_dir: str,
+    front_img_dir: str
 ):
     def configured_fetch_card(index: int, card_name: str, quantity: int = 1):
         fetch_card(

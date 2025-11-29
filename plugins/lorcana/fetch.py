@@ -1,8 +1,12 @@
 import os
+import sys
 
 import click
 from deck_formats import DeckFormat, parse_deck
 from lorcast import get_handle_card
+
+# Add the plugins directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 front_directory = os.path.join('game', 'front')
 
@@ -12,7 +16,7 @@ front_directory = os.path.join('game', 'front')
 
 def cli(
     deck_path: str,
-    format: DeckFormat,
+    format: DeckFormat
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')

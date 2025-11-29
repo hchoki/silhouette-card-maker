@@ -1,6 +1,11 @@
 import os
 import requests
+import sys
 import time
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from utilities import upscale_image_with_waifu2x
 
 def request_api(query: str) -> requests.Response:
     r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})

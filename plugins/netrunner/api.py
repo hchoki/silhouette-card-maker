@@ -1,8 +1,13 @@
+import os
+import sys
 from os import path
 from requests import Response, get
 from time import sleep
 from re import sub
 from unicodedata import normalize, category
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 NETRUNNERDB_SET_URL_TEMPLATE = 'https://api-preview.netrunnerdb.com/api/v3/public/card_sets/{set_name}'
 NETRUNNERDB_URL_TEMPLATE = 'https://api-preview.netrunnerdb.com/api/v3/public/cards/{card_name}'
@@ -22,7 +27,7 @@ def fetch_card(
     index: int,
     quantity: int,
     name: str,
-    front_img_dir: str,
+    front_img_dir: str
 ):
     # Query for card info
     # Query for a normalized name of Latin scripts
@@ -61,7 +66,7 @@ def is_valid_set(set_name: str) -> bool:
         return False
 
 def get_handle_card(
-    front_img_dir: str,
+    front_img_dir: str
 ):
     def configured_fetch_card(index: int, name: str, quantity: int = 1):
         fetch_card(

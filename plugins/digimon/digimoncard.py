@@ -1,6 +1,11 @@
+import os
+import sys
 from os import path
 from requests import Response, get
 from time import sleep
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 CARD_ART_URL_TEMPLATE = 'https://world.digimoncard.com/images/cardlist/card/{card_number}.png'
 
@@ -12,7 +17,12 @@ def request_digimon(query: str) -> Response:
 
     return r
 
-def fetch_card_art(index: int, card_number: str, quantity: int, front_img_dir: str):
+def fetch_card_art(
+    index: int, 
+    card_number: str, 
+    quantity: int, 
+    front_img_dir: str
+):
 
     card_art = request_digimon(CARD_ART_URL_TEMPLATE.format(card_number=card_number)).content
 

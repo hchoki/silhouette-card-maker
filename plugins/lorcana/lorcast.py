@@ -1,10 +1,15 @@
 import os
 import re
 import requests
+import sys
 import time
 from io import BytesIO
 
 from PIL import Image
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 
 def request_lorcast(
     query: str,
@@ -30,7 +35,7 @@ def fetch_card(
     quantity: int,
     name: str,
     enchanted: bool,
-    front_img_dir: str,
+    front_img_dir: str
 ):
     # Filter out symbols from card names
     clean_card_name = remove_nonalphanumeric(name)
@@ -63,7 +68,7 @@ def fetch_card(
             card_art.save(image_path, format="PNG")
 
 def get_handle_card(
-    front_img_dir: str,
+    front_img_dir: str
 ):
     def configured_fetch_card(index: int, name: str, enchanted: bool, quantity: int = 1):
         fetch_card(
@@ -71,7 +76,7 @@ def get_handle_card(
             quantity,
             name,
             enchanted,
-            front_img_dir,
+            front_img_dir
         )
 
     return configured_fetch_card

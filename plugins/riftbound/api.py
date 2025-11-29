@@ -18,7 +18,13 @@ def request_api(query: str) -> requests.Response:
 
     return r
 
-def fetch_card_art(index: int, card_number: str, quantity: int, source: ImageServer, front_img_dir: str):
+def fetch_card_art(
+    index: int, 
+    card_number: str, 
+    quantity: int, 
+    source: ImageServer, 
+    front_img_dir: str
+):
     url_template = PILTOVER_URL_TEMPLATE
     if source == ImageServer.RIFTMANA:
         url_template = RIFTMANA_URL_TEMPLATE

@@ -4,6 +4,7 @@ import requests
 import time
 
 from common import remove_nonalphanumeric
+from frame_detection import detect_card_frame_info, get_frame_summary
 
 double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
 
@@ -30,16 +31,53 @@ def fetch_card_art(
     layout: str,
 
     front_img_dir: str,
-    double_sided_dir: str
+    double_sided_dir: str,
+    art_crop: bool = False,
+    original_card_name: str = None
 ) -> None:
     # Query for the front side
-    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version=png'
+    # Choose image version based on art_crop parameter
+    image_version = 'art_crop' if art_crop else 'png'
+    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version={image_version}'
     card_art = request_scryfall(card_front_image_query).content
     if card_art is not None:
 
         # Save image based on quantity
         for counter in range(quantity):
-            image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
+            if art_crop:
+                # Get card info for frame detection
+                card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
+                card_json = request_scryfall(card_info_query).json()
+                
+                # Detect frame information
+                frame_info = detect_card_frame_info(card_json)
+                
+                # Create frame-organized folder structure
+                base_art_dir = 'art'
+                frame_folder = frame_info.folder_name
+                art_dir = os.path.join(base_art_dir, frame_folder)
+                os.makedirs(art_dir, exist_ok=True)
+                
+                # Generate Proxyshop filename: CardName [SET] {collector}.jpg
+                display_name = original_card_name or clean_card_name
+                proxyshop_name = ''.join(c for c in display_name if c.isalnum() or c in ' -\'.,').strip()
+                proxyshop_filename = f"{proxyshop_name} [{card_set.upper()}] {{{card_collector_number}}}.jpg"
+                
+                if counter > 0:
+                    # For multiple quantities, add counter
+                    base_name = proxyshop_filename.rsplit('.', 1)[0]
+                    extension = proxyshop_filename.rsplit('.', 1)[1]
+                    proxyshop_filename = f"{base_name} ({counter + 1}).{extension}"
+                
+                image_path = os.path.join(art_dir, proxyshop_filename)
+                
+                # Display frame information
+                frame_summary = get_frame_summary(display_name, frame_info)
+                print(f"🎯 {frame_summary}")
+                print(f"💾 Saving to: {frame_folder}/{proxyshop_filename}")
+            else:
+                # Standard game folder structure
+                image_path = os.path.join(front_img_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
 
             with open(image_path, 'wb') as f:
                 f.write(card_art)
@@ -52,7 +90,31 @@ def fetch_card_art(
 
             # Save image based on quantity
             for counter in range(quantity):
-                image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
+                if art_crop:
+                    # Use the same frame detection as front face (card_json already fetched above)
+                    frame_info = detect_card_frame_info(card_json)
+                    
+                    # Create frame-organized folder structure for back face
+                    base_art_dir = 'art'
+                    frame_folder = frame_info.folder_name
+                    art_dir = os.path.join(base_art_dir, frame_folder)
+                    os.makedirs(art_dir, exist_ok=True)
+                    
+                    # Generate Proxyshop filename for back face
+                    display_name = original_card_name or clean_card_name
+                    proxyshop_name = ''.join(c for c in display_name if c.isalnum() or c in " -'.,").strip()
+                    proxyshop_filename = f"{proxyshop_name} [{card_set.upper()}] {{{card_collector_number}}} (Back).jpg"
+                    
+                    if counter > 0:
+                        base_name = proxyshop_filename.rsplit('.', 1)[0]
+                        extension = proxyshop_filename.rsplit('.', 1)[1]
+                        proxyshop_filename = f"{base_name} ({counter + 1}).{extension}"
+                    
+                    image_path = os.path.join(art_dir, proxyshop_filename)
+                    print(f"💾 Saving back face to: {frame_folder}/{proxyshop_filename}")
+                else:
+                    # Standard game folder structure
+                    image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
 
                 with open(image_path, 'wb') as f:
                     f.write(card_art)
@@ -100,6 +162,7 @@ def fetch_card(
     prefer_showcase: bool,
     prefer_extra_art: bool,
     tokens: bool,
+    art_crop: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -110,7 +173,16 @@ def fetch_card(
         # Query for card info
         card_json = request_scryfall(card_info_query).json()
 
-        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir)
+        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir, art_crop, card_json['name'])
+
+        # Fetch tokens
+        if tokens:
+            if all_parts := card_json.get("all_parts"):
+                for related in all_parts:
+                    if related["component"] == "token":
+                        card_info_query = related["uri"]
+                        card_json = request_scryfall(card_info_query).json()
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
 
         # Fetch tokens
         if tokens:
@@ -175,7 +247,9 @@ def fetch_card(
             collector_number,
             card_json['layout'],
             front_img_dir,
-            double_sided_dir
+            double_sided_dir,
+            art_crop,
+            card_json['name']
         )
 
         # Fetch tokens
@@ -185,7 +259,7 @@ def fetch_card(
                     if related["component"] == "token":
                         card_info_query = related["uri"]
                         card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir)
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
 
 def get_handle_card(
     ignore_set_and_collector_number: bool,
@@ -196,6 +270,7 @@ def get_handle_card(
     prefer_showcase: bool,
     prefer_extra_art: bool,
     tokens: bool,
+    art_crop: bool,
 
     front_img_dir: str,
     double_sided_dir: str
@@ -217,8 +292,11 @@ def get_handle_card(
             prefer_showcase,
             prefer_extra_art,
             tokens,
+            art_crop,
 
             front_img_dir,
             double_sided_dir
         )
     return configured_fetch_card
+
+

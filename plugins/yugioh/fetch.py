@@ -1,8 +1,12 @@
 import os
+import sys
 import click
 
 from deck_formats import DeckFormat, parse_deck
 from ygoprodeck import fetch_card_art
+
+# Add the plugins directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 front_directory = os.path.join('game', 'front')
 double_sided_directory = os.path.join('game', 'double_sided')

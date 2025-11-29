@@ -19,6 +19,7 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--prefer_showcase', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with showcase treatment")
 @click.option('--prefer_extra_art', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with full art, borderless, or extended art.")
 @click.option('--tokens', default=False, is_flag=True, show_default=True, help="Fetch related tokens when fetching cards")
+@click.option('--art_crop', default=False, is_flag=True, show_default=True, help="Download cropped card artwork instead of full card images")
 
 def cli(
     deck_path: str,
@@ -30,7 +31,8 @@ def cli(
 
     prefer_showcase: bool,
     prefer_extra_art: bool,
-    tokens: bool
+    tokens: bool,
+    art_crop: bool
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
@@ -51,6 +53,7 @@ def cli(
             prefer_showcase,
             prefer_extra_art,
             tokens,
+            art_crop,
 
             front_directory,
             double_sided_directory

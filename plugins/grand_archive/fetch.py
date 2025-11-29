@@ -1,8 +1,13 @@
+import os
+import sys
 from os import path
 from click import command, argument, Choice
 
 from deck_formats import DeckFormat, parse_deck
 from gatcg  import get_handle_card
+
+# Add the plugins directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 front_directory = path.join('game', 'front')
 double_sided_directory = path.join('game', 'double_sided')
@@ -11,7 +16,10 @@ double_sided_directory = path.join('game', 'double_sided')
 @argument('deck_path')
 @argument('format', type=Choice([t.value for t in DeckFormat], case_sensitive=False))
 
-def cli(deck_path: str, format: DeckFormat):
+def cli(
+    deck_path: str, 
+    format: DeckFormat
+):
     if not path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
         return
@@ -19,7 +27,13 @@ def cli(deck_path: str, format: DeckFormat):
     with open(deck_path, 'r') as deck_file:
         deck_text = deck_file.read()
 
-        parse_deck(deck_text, format, get_handle_card( front_directory ))
+        parse_deck(
+            deck_text, 
+            format, 
+            get_handle_card(
+                front_directory
+            )
+        )
 
 if __name__ == '__main__':
     cli()

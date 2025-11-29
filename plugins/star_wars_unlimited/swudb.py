@@ -1,9 +1,14 @@
+import os
+import sys
 from os import path
 from requests import Response, get
 from time import sleep
 from re import sub, compile
 from PIL import Image
 from typing import Tuple
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 SWUDB_CARD_NUMBER_URL_TEMPLATE = 'https://api.swu-db.com/cards/{set_id}/{set_number}?format=json'
 SWUDB_NAME_URL_TEMPLATE = 'https://swudb.com/api/search/{name}{title}?grouping=cards&sortorder=setno&sortdir=asc'
@@ -51,7 +56,7 @@ def fetch_card(
     name: str,
     title: str,
     front_img_dir: str,
-    back_img_dir: str,
+    back_img_dir: str
 ):
     # Fetch card art by querying name and title
     title_query = '' if title == '' else f' title:"{title}"'
@@ -97,7 +102,7 @@ def fetch_card(
 
 def get_handle_card(
     front_img_dir: str,
-    back_img_dir: str,
+    back_img_dir: str
 ):
     def configured_fetch_card(index: int, name: str, title: str, quantity: int = 1):
         fetch_card(

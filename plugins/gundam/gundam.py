@@ -1,6 +1,11 @@
+import os
+import sys
 from os import path
 from requests import Response, get
 from time import sleep
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 CARD_ART_URL_TEMPLATE = 'https://www.gundam-gcg.com/en/images/cards/card/{card_number}.webp'
 
@@ -18,7 +23,7 @@ def fetch_card(
     index: int,
     quantity: int,
     card_number: str,
-    front_img_dir: str,
+    front_img_dir: str
 ):
     # Query for card info
     card_art = request_bandai(CARD_ART_URL_TEMPLATE.format(card_number=card_number)).content
@@ -32,7 +37,7 @@ def fetch_card(
                 f.write(card_art)
 
 def get_handle_card(
-    front_img_dir: str,
+    front_img_dir: str
 ):
     def configured_fetch_card(index: int, card_number: str, quantity: int = 1):
         fetch_card(

@@ -1,6 +1,11 @@
+import os
+import sys
 from os import path
 from requests import Response, get
 from time import sleep
+
+# Add the root directory to the path to import utilities
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 def request_altered(query: str) -> Response:
     r = get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
@@ -14,7 +19,7 @@ def fetch_card(
     index: int,
     quantity: int,
     qr: str,
-    front_img_dir: str,
+    front_img_dir: str
 ):
     # Query for card info
     json = request_altered(f'https://api.altered.gg/cards/{qr}').json()
@@ -27,7 +32,7 @@ def fetch_card(
             f.write(card_art)
 
 def get_handle_card(
-    front_img_dir: str,
+    front_img_dir: str
 ):
     def configured_fetch_card(index: int, qr: str, quantity: int = 1):
         fetch_card(
