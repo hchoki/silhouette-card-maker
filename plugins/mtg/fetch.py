@@ -22,7 +22,7 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--art_crop', default=False, is_flag=True, show_default=True, help="Download cropped card artwork instead of full card images")
 @click.option('--parallel/--no-parallel', default=True, show_default=True, help="Enable/disable parallel downloads")
 @click.option('--max_workers', default=6, type=int, show_default=True, help="Maximum number of parallel download threads (1-20)")
-@click.option('--api_delay', default=0.075, type=float, show_default=True, help="Minimum delay between API requests in seconds (Scryfall recommends 0.05-0.10)")
+@click.option('--api_delay', default=0.05, type=float, show_default=True, help="Delay between API requests in seconds (default: 0.05 = ~20 req/s, Scryfall limit: ~10 req/s)")
 
 def cli(
     deck_path: str,

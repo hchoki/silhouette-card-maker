@@ -2,6 +2,7 @@ import os
 from typing import List, Set, Tuple
 import requests
 import time
+import threading
 
 from common import remove_nonalphanumeric
 from frame_detection import detect_card_frame_info, get_frame_summary
@@ -9,19 +10,32 @@ from download_manager import RateLimitedDownloader, DownloadTask, DownloadQueue
 
 double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
 
-# Global API delay setting (will be set by get_handle_card)
-_api_delay = 0.075
+# Global API delay setting and lock for thread-safe rate limiting
+_api_delay = 0.05
+_api_lock = threading.Lock()
+_last_api_call = 0
 
 def request_scryfall(
     query: str,
 ) -> requests.Response:
-    r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
-
+    global _last_api_call
+    
+    # Thread-safe rate limiting for API calls
+    with _api_lock:
+        current_time = time.time()
+        time_since_last = current_time - _last_api_call
+        
+        if time_since_last < _api_delay:
+            sleep_time = _api_delay - time_since_last
+            time.sleep(sleep_time)
+        
+        r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
+        
+        # Update last call time after request
+        _last_api_call = time.time()
+    
     # Check for 2XX response code
     r.raise_for_status()
-
-    # Sleep based on configured API delay (Scryfall recommends 50-100ms)
-    time.sleep(_api_delay)
 
     return r
 
@@ -37,11 +51,13 @@ def fetch_card_art(
     front_img_dir: str,
     double_sided_dir: str,
     art_crop: bool = False,
-    original_card_name: str = None
+    original_card_name: str = None,
+    card_json: dict = None
 ) -> None:
-    # First, get card data from API (rate-limited endpoint)
-    card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
-    card_json = request_scryfall(card_info_query).json()
+    # If card_json not provided, fetch it from API
+    if card_json is None:
+        card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
+        card_json = request_scryfall(card_info_query).json()
     
     # Get the direct CDN URL for the image (not rate-limited)
     image_version = 'art_crop' if art_crop else 'png'
@@ -197,7 +213,7 @@ def fetch_card(
         # Query for card info
         card_json = request_scryfall(card_info_query).json()
 
-        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir, art_crop, card_json['name'])
+        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir, art_crop, card_json['name'], card_json)
 
         # Fetch tokens
         if tokens:
@@ -205,17 +221,8 @@ def fetch_card(
                 for related in all_parts:
                     if related["component"] == "token":
                         card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
-
-        # Fetch tokens
-        if tokens:
-            if all_parts := card_json.get("all_parts"):
-                for related in all_parts:
-                    if related["component"] == "token":
-                        card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir)
+                        token_json = request_scryfall(card_info_query).json()
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), token_json["set"], token_json["collector_number"], token_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"], token_json)
 
     else:
         if name == "":
@@ -273,7 +280,8 @@ def fetch_card(
             front_img_dir,
             double_sided_dir,
             art_crop,
-            card_json['name']
+            card_json['name'],
+            card_json
         )
 
         # Fetch tokens
@@ -282,8 +290,8 @@ def fetch_card(
                 for related in all_parts:
                     if related["component"] == "token":
                         card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
+                        token_json = request_scryfall(card_info_query).json()
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), token_json["set"], token_json["collector_number"], token_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"], token_json)
 
 def get_handle_card(
     ignore_set_and_collector_number: bool,
