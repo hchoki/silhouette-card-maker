@@ -5,6 +5,7 @@ import time
 
 from common import remove_nonalphanumeric
 from frame_detection import detect_card_frame_info, get_frame_summary
+from download_manager import RateLimitedDownloader, DownloadTask, DownloadQueue
 
 double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
 
@@ -271,32 +272,82 @@ def get_handle_card(
     prefer_extra_art: bool,
     tokens: bool,
     art_crop: bool,
+    parallel: bool,
+    max_workers: int,
 
     front_img_dir: str,
     double_sided_dir: str
 ):
+    # Initialize download queue for parallel processing
+    download_queue = DownloadQueue() if parallel else None
+    downloader = RateLimitedDownloader(max_workers=max_workers, min_delay=0.075) if parallel else None
+    
     def configured_fetch_card(index: int, name: str, card_set: str = None, card_collector_number: int = None, quantity: int = 1):
-        fetch_card(
-            index,
-            quantity,
+        if parallel:
+            # For parallel mode, queue the task instead of fetching immediately
+            # We'll need to resolve set/collector info first if not provided
+            if card_set and card_collector_number:
+                task = DownloadTask(
+                    index=index,
+                    card_name=remove_nonalphanumeric(name),
+                    card_set=card_set,
+                    collector_number=card_collector_number,
+                    quantity=quantity,
+                    layout='normal',  # Will be determined during fetch
+                    original_name=name
+                )
+                download_queue.add_task(task)
+            else:
+                # For cards without set/collector, fetch immediately to resolve them
+                fetch_card(
+                    index,
+                    quantity,
+                    card_set,
+                    card_collector_number,
+                    ignore_set_and_collector_number,
+                    name,
+                    prefer_older_sets,
+                    preferred_sets,
+                    prefer_showcase,
+                    prefer_extra_art,
+                    tokens,
+                    art_crop,
+                    front_img_dir,
+                    double_sided_dir
+                )
+        else:
+            # Sequential mode - fetch immediately
+            fetch_card(
+                index,
+                quantity,
 
-            card_set,
-            card_collector_number,
-            ignore_set_and_collector_number,
+                card_set,
+                card_collector_number,
+                ignore_set_and_collector_number,
 
-            name,
+                name,
 
-            prefer_older_sets,
-            preferred_sets,
+                prefer_older_sets,
+                preferred_sets,
 
-            prefer_showcase,
-            prefer_extra_art,
-            tokens,
-            art_crop,
+                prefer_showcase,
+                prefer_extra_art,
+                tokens,
+                art_crop,
 
-            front_img_dir,
-            double_sided_dir
-        )
+                front_img_dir,
+                double_sided_dir
+            )
+    
+    # Return both the configured function and the download queue/downloader for parallel processing
+    if parallel:
+        configured_fetch_card.download_queue = download_queue
+        configured_fetch_card.downloader = downloader
+        configured_fetch_card.fetch_card_art = fetch_card_art
+        configured_fetch_card.front_img_dir = front_img_dir
+        configured_fetch_card.double_sided_dir = double_sided_dir
+        configured_fetch_card.art_crop = art_crop
+    
     return configured_fetch_card
 
 

@@ -20,6 +20,8 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--prefer_extra_art', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with full art, borderless, or extended art.")
 @click.option('--tokens', default=False, is_flag=True, show_default=True, help="Fetch related tokens when fetching cards")
 @click.option('--art_crop', default=False, is_flag=True, show_default=True, help="Download cropped card artwork instead of full card images")
+@click.option('--parallel', default=False, is_flag=True, show_default=True, help="Enable parallel downloads with rate limiting")
+@click.option('--max-workers', default=6, type=int, show_default=True, help="Maximum number of parallel download threads (1-10)")
 
 def cli(
     deck_path: str,
@@ -32,7 +34,9 @@ def cli(
     prefer_showcase: bool,
     prefer_extra_art: bool,
     tokens: bool,
-    art_crop: bool
+    art_crop: bool,
+    parallel: bool,
+    max_workers: int
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
@@ -54,6 +58,8 @@ def cli(
             prefer_extra_art,
             tokens,
             art_crop,
+            parallel,
+            max_workers,
 
             front_directory,
             double_sided_directory
@@ -67,6 +73,20 @@ def cli(
             format,
             get_handle_card,
         )
+    
+    # If parallel mode is enabled and we have queued downloads, process them now
+    if parallel and hasattr(get_handle_card, 'download_queue'):
+        queue = get_handle_card.download_queue
+        if queue.size() > 0:
+            print(f"\n📋 Processing {queue.size()} queued downloads in parallel...")
+            downloader = get_handle_card.downloader
+            downloader.download_cards_parallel(
+                tasks=queue.get_all_tasks(),
+                fetch_function=get_handle_card.fetch_card_art,
+                front_dir=get_handle_card.front_img_dir,
+                double_sided_dir=get_handle_card.double_sided_dir,
+                art_crop=get_handle_card.art_crop
+            )
 
 if __name__ == '__main__':
     cli()
