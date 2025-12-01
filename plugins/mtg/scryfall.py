@@ -280,7 +280,7 @@ def get_handle_card(
 ):
     # Initialize download queue for parallel processing
     download_queue = DownloadQueue() if parallel else None
-    downloader = RateLimitedDownloader(max_workers=max_workers, min_delay=0.075) if parallel else None
+    downloader = RateLimitedDownloader(max_workers=max_workers, min_delay=0.0) if parallel else None
     
     def configured_fetch_card(index: int, name: str, card_set: str = None, card_collector_number: int = None, quantity: int = 1):
         if parallel:

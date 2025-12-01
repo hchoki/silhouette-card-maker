@@ -35,13 +35,13 @@ class RateLimitedDownloader:
     - ~10 requests per second average
     """
     
-    def __init__(self, max_workers: int = 6, min_delay: float = 0.075):
+    def __init__(self, max_workers: int = 6, min_delay: float = 0.0):
         """
-        Initialize the rate-limited downloader.
+        Initialize the downloader.
         
         Args:
             max_workers: Maximum number of concurrent download threads (default: 6)
-            min_delay: Minimum delay between requests in seconds (default: 75ms)
+            min_delay: Minimum delay between requests in seconds (default: 0 - no limit for image endpoints)
         """
         self.max_workers = max_workers
         self.min_delay = min_delay
@@ -140,7 +140,7 @@ class RateLimitedDownloader:
         errors = []
         
         print(f"\n🚀 Starting parallel download of {len(tasks)} cards...")
-        print(f"⚙️  Workers: {self.max_workers} | Rate limit: {int(self.min_delay * 1000)}ms between requests")
+        print(f"⚙️  Workers: {self.max_workers} | No rate limiting (image endpoints)")
         
         start_time = time.time()
         

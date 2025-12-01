@@ -20,7 +20,7 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--prefer_extra_art', default=False, is_flag=True, show_default=True, help="Prefer fetching cards with full art, borderless, or extended art.")
 @click.option('--tokens', default=False, is_flag=True, show_default=True, help="Fetch related tokens when fetching cards")
 @click.option('--art_crop', default=False, is_flag=True, show_default=True, help="Download cropped card artwork instead of full card images")
-@click.option('--parallel', default=False, is_flag=True, show_default=True, help="Enable parallel downloads with rate limiting")
+@click.option('--parallel/--no-parallel', default=True, show_default=True, help="Enable/disable parallel downloads")
 @click.option('--max-workers', default=6, type=int, show_default=True, help="Maximum number of parallel download threads (1-10)")
 
 def cli(
