@@ -1,8 +1,7 @@
 """
-Thread-safe download manager with rate limiting for Scryfall API.
+Thread-safe download manager for Scryfall API.
 
-This module implements concurrent downloads while respecting Scryfall's
-rate limit guidelines (50-100ms between requests, ~10 requests/second).
+This module implements concurrent downloads for fetching card images.
 """
 
 import os
@@ -28,20 +27,16 @@ class DownloadTask:
 
 class RateLimitedDownloader:
     """
-    Manages concurrent downloads with rate limiting.
-    
-    Ensures compliance with Scryfall's rate limit guidelines:
-    - 50-100ms delay between requests
-    - ~10 requests per second average
+    Manages concurrent downloads.
     """
     
-    def __init__(self, max_workers: int = 6, min_delay: float = 0.0):
+    def __init__(self, max_workers: int = 6, min_delay: float = 0.075):
         """
         Initialize the downloader.
         
         Args:
             max_workers: Maximum number of concurrent download threads (default: 6)
-            min_delay: Minimum delay between requests in seconds (default: 0 - no limit for image endpoints)
+            min_delay: Minimum delay between requests in seconds (default: 0.075 = 75ms)
         """
         self.max_workers = max_workers
         self.min_delay = min_delay
@@ -52,7 +47,7 @@ class RateLimitedDownloader:
         self.failed_downloads = 0
         
     def _wait_for_rate_limit(self):
-        """Enforce rate limiting by waiting if necessary."""
+        """Wait between requests if minimum delay is configured."""
         with self.lock:
             current_time = time.time()
             time_since_last = current_time - self.last_request_time
@@ -72,7 +67,7 @@ class RateLimitedDownloader:
         art_crop: bool
     ) -> Tuple[bool, Optional[str]]:
         """
-        Download a single card with rate limiting.
+        Download a single card.
         
         Args:
             task: DownloadTask containing card information
@@ -120,7 +115,7 @@ class RateLimitedDownloader:
         progress_callback: Optional[Callable[[int, int], None]] = None
     ) -> dict:
         """
-        Download multiple cards in parallel with rate limiting.
+        Download multiple cards in parallel.
         
         Args:
             tasks: List of DownloadTask objects
@@ -140,9 +135,10 @@ class RateLimitedDownloader:
         errors = []
         
         print(f"\n🚀 Starting parallel download of {len(tasks)} cards...")
-        print(f"⚙️  Workers: {self.max_workers} | No rate limiting (image endpoints)")
+        print(f"⚙️  Workers: {self.max_workers}")
         
         start_time = time.time()
+        last_progress_print = 0
         
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             # Submit all tasks
@@ -172,9 +168,10 @@ class RateLimitedDownloader:
                     errors.append(f"Card '{task.original_name or task.card_name}': {error}")
                     print(f"❌ Failed: {task.original_name or task.card_name}")
                 else:
-                    # Simple progress indicator
-                    if completed % 10 == 0 or completed == len(tasks):
+                    # Show progress every 5 cards or when complete
+                    if completed - last_progress_print >= 5 or completed == len(tasks):
                         print(f"📦 Progress: {completed}/{len(tasks)} cards downloaded")
+                        last_progress_print = completed
         
         elapsed_time = time.time() - start_time
         

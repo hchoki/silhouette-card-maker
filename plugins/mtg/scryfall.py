@@ -36,20 +36,31 @@ def fetch_card_art(
     art_crop: bool = False,
     original_card_name: str = None
 ) -> None:
-    # Query for the front side
-    # Choose image version based on art_crop parameter
+    # First, get card data from API (rate-limited endpoint)
+    card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
+    card_json = request_scryfall(card_info_query).json()
+    
+    # Get the direct CDN URL for the image (not rate-limited)
     image_version = 'art_crop' if art_crop else 'png'
-    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version={image_version}'
-    card_art = request_scryfall(card_front_image_query).content
+    
+    # Extract image URL from card data
+    if 'image_uris' in card_json:
+        card_front_image_url = card_json['image_uris'].get(image_version)
+    else:
+        # For double-faced cards, get the front face
+        card_front_image_url = card_json['card_faces'][0]['image_uris'].get(image_version)
+    
+    if card_front_image_url:
+        # Download from CDN (no rate limiting needed)
+        card_art = requests.get(card_front_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+    else:
+        card_art = None
+    
     if card_art is not None:
 
         # Save image based on quantity
         for counter in range(quantity):
             if art_crop:
-                # Get card info for frame detection
-                card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
-                card_json = request_scryfall(card_info_query).json()
-                
                 # Detect frame information
                 frame_info = detect_card_frame_info(card_json)
                 
@@ -85,14 +96,23 @@ def fetch_card_art(
 
     # Get backside of card, if it exists
     if layout in double_sided_layouts:
-        card_back_image_query = f'{card_front_image_query}&face=back'
-        card_art = request_scryfall(card_back_image_query).content
+        # Extract back face image URL from card data (already fetched above)
+        if 'card_faces' in card_json and len(card_json['card_faces']) > 1:
+            card_back_image_url = card_json['card_faces'][1]['image_uris'].get(image_version)
+            if card_back_image_url:
+                # Download from CDN (no rate limiting needed)
+                card_art = requests.get(card_back_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+            else:
+                card_art = None
+        else:
+            card_art = None
+            
         if card_art is not None:
 
             # Save image based on quantity
             for counter in range(quantity):
                 if art_crop:
-                    # Use the same frame detection as front face (card_json already fetched above)
+                    # Use the same frame detection as front face
                     frame_info = detect_card_frame_info(card_json)
                     
                     # Create frame-organized folder structure for back face
