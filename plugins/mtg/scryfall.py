@@ -9,6 +9,9 @@ from download_manager import RateLimitedDownloader, DownloadTask, DownloadQueue
 
 double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
 
+# Global API delay setting (will be set by get_handle_card)
+_api_delay = 0.075
+
 def request_scryfall(
     query: str,
 ) -> requests.Response:
@@ -17,8 +20,8 @@ def request_scryfall(
     # Check for 2XX response code
     r.raise_for_status()
 
-    # Sleep for 150 milliseconds, greater than the 100ms requested by Scryfall API documentation
-    time.sleep(0.15)
+    # Sleep based on configured API delay (Scryfall recommends 50-100ms)
+    time.sleep(_api_delay)
 
     return r
 
@@ -294,13 +297,18 @@ def get_handle_card(
     art_crop: bool,
     parallel: bool,
     max_workers: int,
+    api_delay: float,
 
     front_img_dir: str,
     double_sided_dir: str
 ):
+    # Set global API delay
+    global _api_delay
+    _api_delay = api_delay
+    
     # Initialize download queue for parallel processing
     download_queue = DownloadQueue() if parallel else None
-    downloader = RateLimitedDownloader(max_workers=max_workers, min_delay=0.0) if parallel else None
+    downloader = RateLimitedDownloader(max_workers=max_workers) if parallel else None
     
     def configured_fetch_card(index: int, name: str, card_set: str = None, card_collector_number: int = None, quantity: int = 1):
         if parallel:

@@ -21,7 +21,8 @@ double_sided_directory = os.path.join('game', 'double_sided')
 @click.option('--tokens', default=False, is_flag=True, show_default=True, help="Fetch related tokens when fetching cards")
 @click.option('--art_crop', default=False, is_flag=True, show_default=True, help="Download cropped card artwork instead of full card images")
 @click.option('--parallel/--no-parallel', default=True, show_default=True, help="Enable/disable parallel downloads")
-@click.option('--max-workers', default=6, type=int, show_default=True, help="Maximum number of parallel download threads (1-10)")
+@click.option('--max_workers', default=6, type=int, show_default=True, help="Maximum number of parallel download threads (1-20)")
+@click.option('--api_delay', default=0.075, type=float, show_default=True, help="Minimum delay between API requests in seconds (Scryfall recommends 0.05-0.10)")
 
 def cli(
     deck_path: str,
@@ -36,7 +37,8 @@ def cli(
     tokens: bool,
     art_crop: bool,
     parallel: bool,
-    max_workers: int
+    max_workers: int,
+    api_delay: float
 ):
     if not os.path.isfile(deck_path):
         print(f'{deck_path} is not a valid file.')
@@ -60,6 +62,7 @@ def cli(
             art_crop,
             parallel,
             max_workers,
+            api_delay,
 
             front_directory,
             double_sided_directory

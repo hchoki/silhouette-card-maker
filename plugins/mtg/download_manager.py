@@ -30,33 +30,18 @@ class RateLimitedDownloader:
     Manages concurrent downloads.
     """
     
-    def __init__(self, max_workers: int = 6, min_delay: float = 0.075):
+    def __init__(self, max_workers: int = 6):
         """
         Initialize the downloader.
         
         Args:
             max_workers: Maximum number of concurrent download threads (default: 6)
-            min_delay: Minimum delay between requests in seconds (default: 0.075 = 75ms)
         """
         self.max_workers = max_workers
-        self.min_delay = min_delay
-        self.last_request_time = 0
         self.lock = threading.Lock()
         self.total_downloads = 0
         self.successful_downloads = 0
         self.failed_downloads = 0
-        
-    def _wait_for_rate_limit(self):
-        """Wait between requests if minimum delay is configured."""
-        with self.lock:
-            current_time = time.time()
-            time_since_last = current_time - self.last_request_time
-            
-            if time_since_last < self.min_delay:
-                sleep_time = self.min_delay - time_since_last
-                time.sleep(sleep_time)
-            
-            self.last_request_time = time.time()
     
     def download_card(
         self,
@@ -80,8 +65,6 @@ class RateLimitedDownloader:
             Tuple of (success: bool, error_message: Optional[str])
         """
         try:
-            self._wait_for_rate_limit()
-            
             fetch_function(
                 task.index,
                 task.quantity,
