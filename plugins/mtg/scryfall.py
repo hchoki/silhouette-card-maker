@@ -2,22 +2,40 @@ import os
 from typing import List, Set, Tuple
 import requests
 import time
+import threading
 
 from common import remove_nonalphanumeric
 from frame_detection import detect_card_frame_info, get_frame_summary
+from download_manager import RateLimitedDownloader, DownloadTask, DownloadQueue
 
 double_sided_layouts = ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
+
+# Global API delay setting and lock for thread-safe rate limiting
+_api_delay = 0.05
+_api_lock = threading.Lock()
+_last_api_call = 0
 
 def request_scryfall(
     query: str,
 ) -> requests.Response:
-    r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
-
+    global _last_api_call
+    
+    # Thread-safe rate limiting for API calls
+    with _api_lock:
+        current_time = time.time()
+        time_since_last = current_time - _last_api_call
+        
+        if time_since_last < _api_delay:
+            sleep_time = _api_delay - time_since_last
+            time.sleep(sleep_time)
+        
+        r = requests.get(query, headers = {'user-agent': 'silhouette-card-maker/0.1', 'accept': '*/*'})
+        
+        # Update last call time after request
+        _last_api_call = time.time()
+    
     # Check for 2XX response code
     r.raise_for_status()
-
-    # Sleep for 150 milliseconds, greater than the 100ms requested by Scryfall API documentation
-    time.sleep(0.15)
 
     return r
 
@@ -33,22 +51,35 @@ def fetch_card_art(
     front_img_dir: str,
     double_sided_dir: str,
     art_crop: bool = False,
-    original_card_name: str = None
+    original_card_name: str = None,
+    card_json: dict = None
 ) -> None:
-    # Query for the front side
-    # Choose image version based on art_crop parameter
+    # If card_json not provided, fetch it from API
+    if card_json is None:
+        card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
+        card_json = request_scryfall(card_info_query).json()
+    
+    # Get the direct CDN URL for the image (not rate-limited)
     image_version = 'art_crop' if art_crop else 'png'
-    card_front_image_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}/?format=image&version={image_version}'
-    card_art = request_scryfall(card_front_image_query).content
+    
+    # Extract image URL from card data
+    if 'image_uris' in card_json:
+        card_front_image_url = card_json['image_uris'].get(image_version)
+    else:
+        # For double-faced cards, get the front face
+        card_front_image_url = card_json['card_faces'][0]['image_uris'].get(image_version)
+    
+    if card_front_image_url:
+        # Download from CDN (no rate limiting needed)
+        card_art = requests.get(card_front_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+    else:
+        card_art = None
+    
     if card_art is not None:
 
         # Save image based on quantity
         for counter in range(quantity):
             if art_crop:
-                # Get card info for frame detection
-                card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
-                card_json = request_scryfall(card_info_query).json()
-                
                 # Detect frame information
                 frame_info = detect_card_frame_info(card_json)
                 
@@ -84,14 +115,23 @@ def fetch_card_art(
 
     # Get backside of card, if it exists
     if layout in double_sided_layouts:
-        card_back_image_query = f'{card_front_image_query}&face=back'
-        card_art = request_scryfall(card_back_image_query).content
+        # Extract back face image URL from card data (already fetched above)
+        if 'card_faces' in card_json and len(card_json['card_faces']) > 1:
+            card_back_image_url = card_json['card_faces'][1]['image_uris'].get(image_version)
+            if card_back_image_url:
+                # Download from CDN (no rate limiting needed)
+                card_art = requests.get(card_back_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+            else:
+                card_art = None
+        else:
+            card_art = None
+            
         if card_art is not None:
 
             # Save image based on quantity
             for counter in range(quantity):
                 if art_crop:
-                    # Use the same frame detection as front face (card_json already fetched above)
+                    # Use the same frame detection as front face
                     frame_info = detect_card_frame_info(card_json)
                     
                     # Create frame-organized folder structure for back face
@@ -173,7 +213,7 @@ def fetch_card(
         # Query for card info
         card_json = request_scryfall(card_info_query).json()
 
-        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir, art_crop, card_json['name'])
+        fetch_card_art(index, quantity, remove_nonalphanumeric(card_json['name']), card_set, card_collector_number, card_json['layout'], front_img_dir, double_sided_dir, art_crop, card_json['name'], card_json)
 
         # Fetch tokens
         if tokens:
@@ -181,17 +221,8 @@ def fetch_card(
                 for related in all_parts:
                     if related["component"] == "token":
                         card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
-
-        # Fetch tokens
-        if tokens:
-            if all_parts := card_json.get("all_parts"):
-                for related in all_parts:
-                    if related["component"] == "token":
-                        card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir)
+                        token_json = request_scryfall(card_info_query).json()
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), token_json["set"], token_json["collector_number"], token_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"], token_json)
 
     else:
         if name == "":
@@ -249,7 +280,8 @@ def fetch_card(
             front_img_dir,
             double_sided_dir,
             art_crop,
-            card_json['name']
+            card_json['name'],
+            card_json
         )
 
         # Fetch tokens
@@ -258,8 +290,8 @@ def fetch_card(
                 for related in all_parts:
                     if related["component"] == "token":
                         card_info_query = related["uri"]
-                        card_json = request_scryfall(card_info_query).json()
-                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), card_json["set"], card_json["collector_number"], card_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"])
+                        token_json = request_scryfall(card_info_query).json()
+                        fetch_card_art(index, quantity, remove_nonalphanumeric(related["name"]), token_json["set"], token_json["collector_number"], token_json["layout"], front_img_dir, double_sided_dir, art_crop, related["name"], token_json)
 
 def get_handle_card(
     ignore_set_and_collector_number: bool,
@@ -271,32 +303,87 @@ def get_handle_card(
     prefer_extra_art: bool,
     tokens: bool,
     art_crop: bool,
+    parallel: bool,
+    max_workers: int,
+    api_delay: float,
 
     front_img_dir: str,
     double_sided_dir: str
 ):
+    # Set global API delay
+    global _api_delay
+    _api_delay = api_delay
+    
+    # Initialize download queue for parallel processing
+    download_queue = DownloadQueue() if parallel else None
+    downloader = RateLimitedDownloader(max_workers=max_workers) if parallel else None
+    
     def configured_fetch_card(index: int, name: str, card_set: str = None, card_collector_number: int = None, quantity: int = 1):
-        fetch_card(
-            index,
-            quantity,
+        if parallel:
+            # For parallel mode, queue the task instead of fetching immediately
+            # We'll need to resolve set/collector info first if not provided
+            if card_set and card_collector_number:
+                task = DownloadTask(
+                    index=index,
+                    card_name=remove_nonalphanumeric(name),
+                    card_set=card_set,
+                    collector_number=card_collector_number,
+                    quantity=quantity,
+                    layout='normal',  # Will be determined during fetch
+                    original_name=name
+                )
+                download_queue.add_task(task)
+            else:
+                # For cards without set/collector, fetch immediately to resolve them
+                fetch_card(
+                    index,
+                    quantity,
+                    card_set,
+                    card_collector_number,
+                    ignore_set_and_collector_number,
+                    name,
+                    prefer_older_sets,
+                    preferred_sets,
+                    prefer_showcase,
+                    prefer_extra_art,
+                    tokens,
+                    art_crop,
+                    front_img_dir,
+                    double_sided_dir
+                )
+        else:
+            # Sequential mode - fetch immediately
+            fetch_card(
+                index,
+                quantity,
 
-            card_set,
-            card_collector_number,
-            ignore_set_and_collector_number,
+                card_set,
+                card_collector_number,
+                ignore_set_and_collector_number,
 
-            name,
+                name,
 
-            prefer_older_sets,
-            preferred_sets,
+                prefer_older_sets,
+                preferred_sets,
 
-            prefer_showcase,
-            prefer_extra_art,
-            tokens,
-            art_crop,
+                prefer_showcase,
+                prefer_extra_art,
+                tokens,
+                art_crop,
 
-            front_img_dir,
-            double_sided_dir
-        )
+                front_img_dir,
+                double_sided_dir
+            )
+    
+    # Return both the configured function and the download queue/downloader for parallel processing
+    if parallel:
+        configured_fetch_card.download_queue = download_queue
+        configured_fetch_card.downloader = downloader
+        configured_fetch_card.fetch_card_art = fetch_card_art
+        configured_fetch_card.front_img_dir = front_img_dir
+        configured_fetch_card.double_sided_dir = double_sided_dir
+        configured_fetch_card.art_crop = art_crop
+    
     return configured_fetch_card
 
 
