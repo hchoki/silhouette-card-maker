@@ -18,7 +18,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'plugins', 'mtg'))
 from deck_formats import DeckFormat
 from scryfall import get_handle_card as scryfall_get_handle_card
 from deck_formats import parse_deck
-from utilities import Registration, CardSize, PaperSize, generate_pdf, load_saved_offset, save_offset
+from utilities import (
+    Registration, CardSize, PaperSize, generate_pdf, 
+    load_saved_offset, save_offset,
+    load_offset_profiles, load_offset_profile, save_offset_profile,
+    list_offset_profiles, delete_offset_profile, set_default_offset_profile
+)
 
 
 class MTGCardFetcherGUI:
@@ -66,7 +71,10 @@ class MTGCardFetcherGUI:
         # Offset variables
         self.x_offset = tk.IntVar(value=0)
         self.y_offset = tk.IntVar(value=0)
-        self.save_offset_flag = tk.BooleanVar(value=False)
+        self.selected_profile = tk.StringVar(value="")
+        self.profile_name = tk.StringVar(value="")
+        self.profile_description = tk.StringVar(value="")
+        self.profile_paper_size = tk.StringVar(value=PaperSize.LETTER.value)
         
         self.is_fetching = False
         self.is_creating_pdf = False
@@ -521,19 +529,74 @@ class MTGCardFetcherGUI:
         self.create_pdf_btn.pack(pady=5, ipadx=30, ipady=5)
     
     def setup_offset_tab(self, parent):
-        """Setup the PDF offset tab"""
+        """Setup the PDF offset tab with profile management"""
         parent.columnconfigure(0, weight=1)
-        parent.rowconfigure(3, weight=1)
+        parent.rowconfigure(4, weight=1)
         
-        # Load saved offset on startup
-        saved = load_saved_offset()
-        if saved:
-            self.x_offset.set(saved.x_offset)
-            self.y_offset.set(saved.y_offset)
+        # Load saved offset or default profile on startup
+        profiles = load_offset_profiles()
+        if profiles.default_profile and profiles.default_profile in profiles.profiles:
+            default_prof = profiles.profiles[profiles.default_profile]
+            self.x_offset.set(default_prof.x_offset)
+            self.y_offset.set(default_prof.y_offset)
+            self.selected_profile.set(profiles.default_profile)
+        else:
+            saved = load_saved_offset()
+            if saved:
+                self.x_offset.set(saved.x_offset)
+                self.y_offset.set(saved.y_offset)
+        
+        # Profile management section
+        profile_frame = ttk.LabelFrame(parent, text="  📋 Offset Profiles  ", padding="12", style='TLabelframe')
+        profile_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
+        profile_frame.columnconfigure(1, weight=1)
+        
+        # Profile selection
+        ttk.Label(profile_frame, text="Select Profile:", style='Card.TLabel').grid(row=0, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        self.profile_combo = ttk.Combobox(profile_frame, textvariable=self.selected_profile, 
+                                         state='readonly', style='TCombobox')
+        self.profile_combo.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
+        self.profile_combo.bind('<<ComboboxSelected>>', self.load_selected_profile)
+        self.refresh_profile_list()
+        
+        # Profile action buttons
+        btn_frame = ttk.Frame(profile_frame, style='TFrame')
+        btn_frame.grid(row=0, column=2, pady=5)
+        ttk.Button(btn_frame, text="Load Default", command=self.load_default_profile, 
+                  style='TButton').pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame, text="Set as Default", command=self.set_as_default_profile, 
+                  style='TButton').pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame, text="Delete", command=self.delete_current_profile, 
+                  style='TButton').pack(side=tk.LEFT, padx=2)
+        
+        # Profile info display
+        self.profile_info_label = ttk.Label(profile_frame, text="No profile selected", 
+                                           style='Card.TLabel', font=('Segoe UI', 9), 
+                                           foreground='#808080')
+        self.profile_info_label.grid(row=1, column=0, columnspan=3, sticky=tk.W, pady=(5, 0))
+        
+        # New profile section
+        new_profile_frame = ttk.LabelFrame(parent, text="  ➕ Save New Profile  ", padding="12", style='TLabelframe')
+        new_profile_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
+        new_profile_frame.columnconfigure(1, weight=1)
+        
+        ttk.Label(new_profile_frame, text="Profile Name:", style='Card.TLabel').grid(row=0, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Entry(new_profile_frame, textvariable=self.profile_name, style='TEntry').grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
+        
+        ttk.Label(new_profile_frame, text="Description:", style='Card.TLabel').grid(row=1, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Entry(new_profile_frame, textvariable=self.profile_description, style='TEntry').grid(row=1, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
+        
+        ttk.Label(new_profile_frame, text="Paper Size:", style='Card.TLabel').grid(row=2, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        paper_combo = ttk.Combobox(new_profile_frame, textvariable=self.profile_paper_size, 
+                                   values=[p.value for p in PaperSize], state='readonly', style='TCombobox')
+        paper_combo.grid(row=2, column=1, sticky=tk.W, pady=5)
+        
+        ttk.Button(new_profile_frame, text="💾 Save Current Settings as Profile", 
+                  command=self.save_current_as_profile, style='Accent.TButton').grid(row=3, column=0, columnspan=2, pady=(10, 0))
         
         # Offset settings
         offset_frame = ttk.LabelFrame(parent, text="  ⚙️ Offset Settings  ", padding="12", style='TLabelframe')
-        offset_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
+        offset_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
         offset_frame.columnconfigure(1, weight=1)
         
         ttk.Label(offset_frame, text="Input PDF:", style='Card.TLabel').grid(row=0, column=0, sticky=tk.W, padx=(0, 10), pady=5)
@@ -561,26 +624,24 @@ class MTGCardFetcherGUI:
         ttk.Spinbox(offset_frame, from_=72, to=600, textvariable=self.offset_ppi, 
                    width=10, style='TSpinbox').grid(row=5, column=1, sticky=tk.W, pady=5)
         
-        ttk.Checkbutton(offset_frame, text="Save these offset values for future use", 
-                       variable=self.save_offset_flag).grid(row=6, column=0, columnspan=2, sticky=tk.W, pady=(10, 2))
-        
         # Info panel
         info_frame = ttk.LabelFrame(parent, text="  ℹ️ Information  ", padding="12", style='TLabelframe')
-        info_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
+        info_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=(0, 12))
         
-        info_text = ("Offset your PDF if your printer has registration issues.\n\n"
-                    "• Positive X offset moves cards right\n"
-                    "• Negative X offset moves cards left\n"
-                    "• Positive Y offset moves cards down\n"
-                    "• Negative Y offset moves cards up\n\n"
-                    "Saved offsets are automatically loaded and can be applied during PDF creation.")
+        info_text = ("Offset Profiles let you save multiple printer configurations for different paper sizes.\n\n"
+                    "• Create profiles for each printer/paper combination\n"
+                    "• Load profiles quickly to apply saved offsets\n"
+                    "• Set a default profile for automatic use\n\n"
+                    "Offset directions:\n"
+                    "• Positive X moves cards right, Negative X moves left\n"
+                    "• Positive Y moves cards down, Negative Y moves up")
         ttk.Label(info_frame, text=info_text, style='Card.TLabel', 
                  font=('Segoe UI', 9), foreground='#a0a0a0', justify=tk.LEFT).pack(anchor=tk.W)
         
         # Progress area
         progress_frame = ttk.LabelFrame(parent, text="  📊 Progress  ", padding="12", style='TLabelframe')
-        progress_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 12))
-        parent.rowconfigure(2, weight=1)
+        progress_frame.grid(row=4, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 12))
+        parent.rowconfigure(4, weight=1)
         progress_frame.columnconfigure(0, weight=1)
         progress_frame.rowconfigure(0, weight=1)
         
@@ -599,7 +660,7 @@ class MTGCardFetcherGUI:
         
         # Apply button
         button_frame = ttk.Frame(parent, style='TFrame')
-        button_frame.grid(row=3, column=0, pady=(12, 0))
+        button_frame.grid(row=5, column=0, pady=(12, 0))
         
         self.apply_offset_btn = ttk.Button(button_frame, text="⚙️ Apply Offset", 
                                           command=self.start_apply_offset, style='Accent.TButton')
@@ -651,6 +712,115 @@ class MTGCardFetcherGUI:
         )
         if filename:
             self.deck_path.set(filename)
+    
+    def refresh_profile_list(self):
+        """Refresh the profile dropdown list"""
+        profiles = list_offset_profiles()
+        self.profile_combo['values'] = profiles
+        if self.selected_profile.get() not in profiles:
+            self.selected_profile.set("")
+        # Only update profile info if the label has been created
+        if hasattr(self, 'profile_info_label'):
+            self.update_profile_info()
+    
+    def load_selected_profile(self, event=None):
+        """Load the selected profile from dropdown"""
+        profile_name = self.selected_profile.get()
+        if not profile_name:
+            return
+        
+        profile = load_offset_profile(profile_name)
+        if profile:
+            self.x_offset.set(profile.x_offset)
+            self.y_offset.set(profile.y_offset)
+            self.update_profile_info()
+            self.offset_log_message(f"📋 Loaded profile: {profile_name}")
+    
+    def load_default_profile(self):
+        """Load the default offset profile"""
+        profiles = load_offset_profiles()
+        if not profiles.default_profile:
+            messagebox.showinfo("No Default", "No default profile is set.")
+            return
+        
+        if profiles.default_profile in profiles.profiles:
+            self.selected_profile.set(profiles.default_profile)
+            self.load_selected_profile()
+        else:
+            messagebox.showerror("Error", "Default profile not found!")
+    
+    def set_as_default_profile(self):
+        """Set the currently selected profile as default"""
+        profile_name = self.selected_profile.get()
+        if not profile_name:
+            messagebox.showwarning("No Selection", "Please select a profile first.")
+            return
+        
+        if set_default_offset_profile(profile_name):
+            self.update_profile_info()
+            messagebox.showinfo("Success", f"'{profile_name}' set as default profile!")
+    
+    def delete_current_profile(self):
+        """Delete the currently selected profile"""
+        profile_name = self.selected_profile.get()
+        if not profile_name:
+            messagebox.showwarning("No Selection", "Please select a profile to delete.")
+            return
+        
+        if messagebox.askyesno("Confirm Delete", f"Delete profile '{profile_name}'?"):
+            if delete_offset_profile(profile_name):
+                self.refresh_profile_list()
+                messagebox.showinfo("Deleted", f"Profile '{profile_name}' deleted.")
+    
+    def save_current_as_profile(self):
+        """Save current offset settings as a new profile"""
+        name = self.profile_name.get().strip()
+        if not name:
+            messagebox.showwarning("Missing Name", "Please enter a profile name.")
+            return
+        
+        description = self.profile_description.get().strip()
+        paper_size = self.profile_paper_size.get()
+        
+        save_offset_profile(
+            name=name,
+            x_offset=self.x_offset.get(),
+            y_offset=self.y_offset.get(),
+            paper_size=paper_size,
+            description=description
+        )
+        
+        # Clear form and refresh list
+        self.profile_name.set("")
+        self.profile_description.set("")
+        self.refresh_profile_list()
+        self.selected_profile.set(name)
+        self.update_profile_info()
+        
+        messagebox.showinfo("Success", f"Profile '{name}' saved!")
+    
+    def update_profile_info(self):
+        """Update the profile information label"""
+        profile_name = self.selected_profile.get()
+        if not profile_name:
+            self.profile_info_label.config(text="No profile selected", foreground='#808080')
+            return
+        
+        profile = load_offset_profile(profile_name)
+        if not profile:
+            self.profile_info_label.config(text="Profile not found", foreground='#f48771')
+            return
+        
+        profiles = load_offset_profiles()
+        is_default = profiles.default_profile == profile_name
+        default_text = " [DEFAULT]" if is_default else ""
+        
+        info_text = (f"{profile.description} | "
+                    f"Paper: {profile.paper_size} | "
+                    f"Offset: ({profile.x_offset}, {profile.y_offset})"
+                    f"{default_text}")
+        
+        self.profile_info_label.config(text=info_text, foreground='#4ec9b0')
     
     def check_message_queue(self):
         """Check for messages from worker thread and update GUI"""
@@ -1074,14 +1244,13 @@ class MTGCardFetcherGUI:
                 self.offset_log_message(f"📄 Input PDF: {self.input_pdf_path.get()}")
                 self.offset_log_message(f"⚙️ X Offset: {self.x_offset.get()}")
                 self.offset_log_message(f"⚙️ Y Offset: {self.y_offset.get()}")
+                
+                # Show profile info if one is selected
+                if self.selected_profile.get():
+                    self.offset_log_message(f"📋 Using profile: {self.selected_profile.get()}")
+                
                 self.offset_log_message("═" * 70)
                 self.offset_log_message("")
-                
-                # Save offset if requested
-                if self.save_offset_flag.get():
-                    save_offset(self.x_offset.get(), self.y_offset.get())
-                    self.offset_log_message("💾 Offset values saved for future use")
-                    self.offset_log_message("")
                 
                 # Load PDF
                 pdf = pdfium.PdfDocument(self.input_pdf_path.get())
