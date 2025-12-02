@@ -3,9 +3,8 @@ import itertools
 import json
 import math
 import os
-import re
-from glob import glob
 from pathlib import Path
+import re
 from typing import Dict, List
 from xml.dom import ValidationErr
 
@@ -293,38 +292,6 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if not only_fronts:
         pages.append(back_page)
 
-def check_paths_subset(subset: set[str], mainset: set[str]) -> set[str]:
-    """Return the items in `subset` whose basenames do NOT appear in `mainset`,
-    ignoring extensions."""
-    subset_stems = {Path(p).stem: p for p in subset}
-    mainset_stems = {Path(p).stem for p in mainset}
-
-    return {orig for stem, orig in subset_stems.items() if stem not in mainset_stems}
-
-def resolve_image_with_any_extension(path: str) -> str:
-    """
-    If the exact path exists, return it.
-    Otherwise search for files with the same stem (basename)
-    but any extension. Returns the resolved path or raises.
-    """
-    p = Path(path)
-
-    # Case 1: exact file exists
-    if p.exists():
-        return str(p)
-
-    # Case 2: try to find any file with the same stem
-    pattern = str(p.with_suffix('')) + ".*"   # e.g. "card1.*"
-    matches = glob(pattern)
-
-    if len(matches) == 0:
-        raise FileNotFoundError(f"Missing image: {pattern}")
-
-    if len(matches) > 1:
-        raise ValueError(f"Ambiguous image match: {matches}")
-
-    return matches[0]
-
 def generate_pdf(
     front_dir_path: str,
     back_dir_path: str,
@@ -341,6 +308,7 @@ def generate_pdf(
     quality: int,
     skip_indices: List[int],
     load_offset: bool,
+    offset_profile: str,
     name: str
 ):
     # Sanity checks for the different directories
@@ -383,8 +351,7 @@ def generate_pdf(
     # Check if double-sided back images has matching front images
     front_set = set(front_image_filenames)
     ds_set = set(ds_image_filenames)
-    diff = check_paths_subset(ds_set, front_set)
-    if len(diff) > 0:
+    if not ds_set.issubset(front_set):
         raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".')
 
     if only_fronts:
@@ -478,7 +445,7 @@ def generate_pdf(
 
             # Create single-sided card layout
             num_image = 1
-            it = iter(natsorted(list(check_paths_subset(front_set, ds_set))))
+            it = iter(natsorted(list(front_set - ds_set)))
             while True:
                 file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
                 if not file_group:
@@ -562,8 +529,6 @@ def generate_pdf(
                     num_image = num_image + 1
 
                     front_image_path = os.path.join(front_dir_path, file)
-                    # Handle fronts having different extensions than back
-                    front_image_path = resolve_image_with_any_extension(front_image_path)
                     front_image = Image.open(front_image_path)
                     front_image = ImageOps.exif_transpose(front_image)
                     front_card_images.append(front_image)
@@ -628,13 +593,39 @@ def generate_pdf(
                 return
 
             # Load saved offset if available
-            if load_offset:
+            offset_applied = False
+            
+            # Try to load offset profile first (new system)
+            if offset_profile:
+                if offset_profile == "default":
+                    profiles = load_offset_profiles()
+                    if profiles.default_profile:
+                        profile = load_offset_profile(profiles.default_profile)
+                        if profile:
+                            print(f'Loaded default offset profile "{profiles.default_profile}": x={profile.x_offset}, y={profile.y_offset}')
+                            pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                            offset_applied = True
+                        else:
+                            print(f'Default profile "{profiles.default_profile}" not found')
+                    else:
+                        print('No default offset profile set')
+                else:
+                    profile = load_offset_profile(offset_profile)
+                    if profile:
+                        print(f'Loaded offset profile "{offset_profile}": x={profile.x_offset}, y={profile.y_offset}')
+                        pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                        offset_applied = True
+                    else:
+                        print(f'Offset profile "{offset_profile}" not found')
+            
+            # Fallback to legacy offset system if no profile was applied
+            elif load_offset and not offset_applied:
                 saved_offset = load_saved_offset()
 
                 if saved_offset is None:
-                    print('Offset cannot be applied')
+                    print('Legacy offset cannot be applied')
                 else:
-                    print(f'Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}')
+                    print(f'Loaded legacy offset: x={saved_offset.x_offset}, y={saved_offset.y_offset}')
                     pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset, ppi)
 
             # Save the pages array as a PDF
@@ -652,7 +643,20 @@ class OffsetData(BaseModel):
     x_offset: int
     y_offset: int
 
+class OffsetProfile(BaseModel):
+    name: str
+    description: str
+    x_offset: int
+    y_offset: int
+    paper_size: str
+    created_at: str
+
+class OffsetProfiles(BaseModel):
+    profiles: Dict[str, OffsetProfile] = {}
+    default_profile: str = ""
+
 def save_offset(x_offset, y_offset) -> None:
+    """Save offset using the legacy single-profile system for backwards compatibility"""
     # Create the directory if it doesn't exist
     os.makedirs('data', exist_ok=True)
 
@@ -662,7 +666,63 @@ def save_offset(x_offset, y_offset) -> None:
 
     print('Offset data saved!')
 
+def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "") -> None:
+    """Save a named offset profile"""
+    # Create the directory if it doesn't exist
+    os.makedirs('data', exist_ok=True)
+    
+    # Load existing profiles or create new structure
+    profiles = load_offset_profiles()
+    
+    # Create new profile with timestamp
+    from datetime import datetime
+    profile = OffsetProfile(
+        name=name,
+        description=description or f"Offset profile for {paper_size or 'custom setup'}",
+        x_offset=x_offset,
+        y_offset=y_offset,
+        paper_size=paper_size,
+        created_at=datetime.now().isoformat()
+    )
+    
+    # Add to profiles
+    profiles.profiles[name] = profile
+    
+    # Set as default if it's the first profile
+    if not profiles.default_profile:
+        profiles.default_profile = name
+    
+    # Save profiles
+    with open('data/offset_profiles.json', 'w') as profiles_file:
+        profiles_file.write(profiles.model_dump_json(indent=4))
+    
+    print(f'Offset profile "{name}" saved!')
+
+def load_offset_profiles() -> OffsetProfiles:
+    """Load all offset profiles"""
+    if os.path.exists('data/offset_profiles.json'):
+        with open('data/offset_profiles.json', 'r') as profiles_file:
+            try:
+                data = json.load(profiles_file)
+                return OffsetProfiles(**data)
+            except json.JSONDecodeError as e:
+                print(f'Cannot decode offset profiles JSON: {e}')
+            except ValidationErr as e:
+                print(f'Cannot validate offset profiles data: {e}')
+    
+    return OffsetProfiles()
+
+def load_offset_profile(profile_name: str) -> OffsetProfile:
+    """Load a specific offset profile by name"""
+    profiles = load_offset_profiles()
+    
+    if profile_name in profiles.profiles:
+        return profiles.profiles[profile_name]
+    
+    return None
+
 def load_saved_offset() -> OffsetData:
+    """Load offset using the legacy single-profile system for backwards compatibility"""
     if os.path.exists('data/offset_data.json'):
         with open('data/offset_data.json', 'r') as offset_file:
             try:
@@ -676,6 +736,52 @@ def load_saved_offset() -> OffsetData:
                 print(f'Cannot validate offset data: {e}.')
 
     return None
+
+def list_offset_profiles() -> List[str]:
+    """List all available offset profile names"""
+    profiles = load_offset_profiles()
+    return list(profiles.profiles.keys())
+
+def delete_offset_profile(profile_name: str) -> bool:
+    """Delete an offset profile"""
+    profiles = load_offset_profiles()
+    
+    if profile_name in profiles.profiles:
+        del profiles.profiles[profile_name]
+        
+        # If this was the default, clear the default
+        if profiles.default_profile == profile_name:
+            profiles.default_profile = ""
+            # Set new default to the first available profile
+            if profiles.profiles:
+                profiles.default_profile = next(iter(profiles.profiles))
+        
+        # Save updated profiles
+        with open('data/offset_profiles.json', 'w') as profiles_file:
+            profiles_file.write(profiles.model_dump_json(indent=4))
+        
+        print(f'Offset profile "{profile_name}" deleted!')
+        return True
+    
+    print(f'Offset profile "{profile_name}" not found!')
+    return False
+
+def set_default_offset_profile(profile_name: str) -> bool:
+    """Set the default offset profile"""
+    profiles = load_offset_profiles()
+    
+    if profile_name in profiles.profiles:
+        profiles.default_profile = profile_name
+        
+        # Save updated profiles
+        with open('data/offset_profiles.json', 'w') as profiles_file:
+            profiles_file.write(profiles.model_dump_json(indent=4))
+        
+        print(f'Default offset profile set to "{profile_name}"!')
+        return True
+    
+    print(f'Offset profile "{profile_name}" not found!')
+    return False
 
 def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int) -> List[Image.Image]:
     offset_images = []
