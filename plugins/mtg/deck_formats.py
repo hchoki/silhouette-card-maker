@@ -23,6 +23,8 @@ def extract_mtga_card_data(line) -> card_data_tuple:
         name = match.group(2).strip()
         set_code = match.group(3).strip()
         collector_number = match.group(4).strip()
+        # Strip any non-alphanumeric characters except hyphens from collector number
+        collector_number = ''.join(c for c in collector_number if c.isalnum() or c == '-')
         return (name, set_code, collector_number, quantity)
     else:
         # Handle simpler "1x Mountain" lines
@@ -39,7 +41,8 @@ def extract_simple_list_card_data(line) -> card_data_tuple:
     return (line.strip(), "", "", 1)
 
 # Moxfield functions
-_moxfield_pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([\w\-]+)')
+# Example: 1 Llanowar Elves (P30H) 5★ *F*
+_moxfield_pattern = re.compile(r'^(\d+)\s+(.+?)\s+\((\w+)\)\s+([0-9a-zA-Z\-]+)')
 
 def is_moxfield_card_line(line: str) -> bool:
     return bool(_moxfield_pattern.match(line))
@@ -50,10 +53,13 @@ def extract_moxfield_card_data(line: str) -> card_data_tuple:
     name = match.group(2).strip()
     set_code = match.group(3).strip()
     collector_number = match.group(4).strip()
+    # Strip any non-alphanumeric characters except hyphens from collector number
+    collector_number = ''.join(c for c in collector_number if c.isalnum() or c == '-')
     return (name, set_code, collector_number, quantity)
 
 # Archidekt functions
-_archidekt_pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+([\w\-]+).*')
+# Example: 1x Agadeem's Awakening // Agadeem, the Undercrypt (znr) 90 [Resilience,Land]
+_archidekt_pattern = re.compile(r'^(\d+)x?\s+(.+?)\s+\((\w+)\)\s+([0-9a-zA-Z\-]+).*')
 
 def is_archidekt_card_line(line: str) -> bool:
     return bool(_archidekt_pattern.match(line))
@@ -64,6 +70,8 @@ def extract_archidekt_card_data(line: str) -> card_data_tuple:
     name = match.group(2).strip()
     set_code = match.group(3).strip()
     collector_number = match.group(4).strip()
+    # Strip any non-alphanumeric characters except hyphens from collector number
+    collector_number = ''.join(c for c in collector_number if c.isalnum() or c == '-')
     return (name, set_code, collector_number, quantity)
 
 def parse_deck_helper(deck_text: str, is_card_line: Callable[[str], bool], extract_card_data: Callable[[str], card_data_tuple], handle_card: Callable) -> None:
@@ -170,6 +178,9 @@ def parse_deckstats(deck_text, handle_card: Callable) -> None:
         quantity = int(match.group(1))
         set_code = match.group(2) or ""
         collector_number = match.group(3) or ""
+        # Strip any non-alphanumeric characters except hyphens from collector number
+        if collector_number:
+            collector_number = ''.join(c for c in collector_number if c.isalnum() or c == '-')
         name = match.group(4).strip()
 
         return (name, set_code, collector_number, quantity)

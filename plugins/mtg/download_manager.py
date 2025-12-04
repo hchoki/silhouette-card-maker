@@ -114,11 +114,11 @@ class RateLimitedDownloader:
         self.total_downloads = len(tasks)
         self.successful_downloads = 0
         self.failed_downloads = 0
+        double_sided_count = 0
         
         errors = []
         
-        print(f"\n🚀 Starting parallel download of {len(tasks)} cards...")
-        print(f"⚙️  Workers: {self.max_workers}")
+        print(f"\nDownloading {len(tasks)} cards (workers: {self.max_workers})...")
         
         start_time = time.time()
         last_progress_print = 0
@@ -149,23 +149,34 @@ class RateLimitedDownloader:
                 
                 if not success:
                     errors.append(f"Card '{task.original_name or task.card_name}': {error}")
-                    print(f"❌ Failed: {task.original_name or task.card_name}")
+                    print(f"  ❌ {task.original_name or task.card_name}")
                 else:
-                    # Show progress every 5 cards or when complete
-                    if completed - last_progress_print >= 5 or completed == len(tasks):
-                        print(f"📦 Progress: {completed}/{len(tasks)} cards downloaded")
-                        last_progress_print = completed
+                    # Show each successful download with set/collector info
+                    card_info = f"[{task.card_set.upper()}] #{task.collector_number}"
+                    # Indicate if it's a double-sided card
+                    is_double_sided = task.layout in ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
+                    if is_double_sided:
+                        double_sided_count += 1
+                        layout_note = " (double-sided)"
+                    else:
+                        layout_note = ""
+                    print(f"  ✓ {task.original_name or task.card_name} {card_info}{layout_note}")
         
         elapsed_time = time.time() - start_time
         
-        # Print summary
-        print(f"\n✅ Download complete!")
-        print(f"📊 Statistics:")
-        print(f"   • Total: {self.total_downloads}")
-        print(f"   • Successful: {self.successful_downloads}")
-        print(f"   • Failed: {self.failed_downloads}")
-        print(f"   • Time: {elapsed_time:.1f}s")
-        print(f"   • Rate: {self.total_downloads / elapsed_time:.1f} cards/sec")
+        # Print detailed summary
+        print(f"\n" + "="*60)
+        print(f"Download Complete!")
+        print(f"="*60)
+        print(f"Total cards:       {self.total_downloads}")
+        print(f"Successful:        {self.successful_downloads}")
+        print(f"Failed:            {self.failed_downloads}")
+        print(f"Double-sided:      {double_sided_count}")
+        print(f"-" * 60)
+        print(f"Time elapsed:      {elapsed_time:.1f}s")
+        if elapsed_time > 0:
+            print(f"Download rate:     {self.total_downloads / elapsed_time:.1f} cards/sec")
+        print(f"="*60)
         
         if errors:
             print(f"\n⚠️  Errors encountered:")
@@ -178,6 +189,7 @@ class RateLimitedDownloader:
             'total': self.total_downloads,
             'successful': self.successful_downloads,
             'failed': self.failed_downloads,
+            'double_sided': double_sided_count,
             'elapsed_time': elapsed_time,
             'rate': self.total_downloads / elapsed_time if elapsed_time > 0 else 0,
             'errors': errors

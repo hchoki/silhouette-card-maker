@@ -58,6 +58,8 @@ def fetch_card_art(
     if card_json is None:
         card_info_query = f'https://api.scryfall.com/cards/{card_set}/{card_collector_number}'
         card_json = request_scryfall(card_info_query).json()
+        # Update layout from actual card data (important for parallel downloads)
+        layout = card_json.get('layout', layout)
     
     # Get the direct CDN URL for the image (not rate-limited)
     image_version = 'art_crop' if art_crop else 'png'
@@ -115,12 +117,20 @@ def fetch_card_art(
 
     # Get backside of card, if it exists
     if layout in double_sided_layouts:
+        # Ensure double_sided directory exists
+        os.makedirs(double_sided_dir, exist_ok=True)
+        
         # Extract back face image URL from card data (already fetched above)
         if 'card_faces' in card_json and len(card_json['card_faces']) > 1:
-            card_back_image_url = card_json['card_faces'][1]['image_uris'].get(image_version)
-            if card_back_image_url:
-                # Download from CDN (no rate limiting needed)
-                card_art = requests.get(card_back_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+            back_face = card_json['card_faces'][1]
+            # Check if back face has image_uris
+            if 'image_uris' in back_face:
+                card_back_image_url = back_face['image_uris'].get(image_version)
+                if card_back_image_url:
+                    # Download from CDN (no rate limiting needed)
+                    card_art = requests.get(card_back_image_url, headers={'user-agent': 'silhouette-card-maker/0.1'}).content
+                else:
+                    card_art = None
             else:
                 card_art = None
         else:
@@ -152,12 +162,20 @@ def fetch_card_art(
                     
                     image_path = os.path.join(art_dir, proxyshop_filename)
                     print(f"💾 Saving back face to: {frame_folder}/{proxyshop_filename}")
+                    
+                    with open(image_path, 'wb') as f:
+                        f.write(card_art)
+                    
+                    # ALSO save to double_sided folder for standard workflow
+                    double_sided_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
+                    with open(double_sided_path, 'wb') as f:
+                        f.write(card_art)
                 else:
                     # Standard game folder structure
                     image_path = os.path.join(double_sided_dir, f'{str(index)}{clean_card_name}{str(counter + 1)}.png')
-
-                with open(image_path, 'wb') as f:
-                    f.write(card_art)
+                    
+                    with open(image_path, 'wb') as f:
+                        f.write(card_art)
 
 def partition_printings(printings: List, condition: List) -> Tuple[List, List]:
     matches = []
