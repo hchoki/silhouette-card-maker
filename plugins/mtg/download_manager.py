@@ -23,6 +23,7 @@ class DownloadTask:
     quantity: int
     layout: str
     original_name: str = None
+    card_json: dict = None  # Cache card metadata to avoid redundant API calls
 
 
 class RateLimitedDownloader:
@@ -75,7 +76,8 @@ class RateLimitedDownloader:
                 front_dir,
                 double_sided_dir,
                 art_crop,
-                task.original_name
+                task.original_name,
+                task.card_json  # Pass cached card_json to avoid redundant API call
             )
             
             with self.lock:

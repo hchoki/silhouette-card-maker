@@ -1418,6 +1418,8 @@ class MTGCardFetcherGUI:
                     
                     # Read and parse deck
                     self.log_message("📖 Reading deck list...", 'info')
+                    if self.parallel.get():
+                        self.log_message("📊 Building download queue (fetching card metadata)...", 'info')
                     with open(self.deck_path.get(), 'r', encoding='utf-8') as deck_file:
                         deck_text = deck_file.read()
                         parse_deck(deck_text, format_enum, get_handle_card)
@@ -1427,6 +1429,7 @@ class MTGCardFetcherGUI:
                         from plugins.mtg.download_manager import DownloadQueue
                         dl_queue = get_handle_card.download_queue
                         if dl_queue.size() > 0:
+                            self.log_message(f"✅ Queued {dl_queue.size()} cards for download")
                             self.log_message("")
                             downloader = get_handle_card.downloader
                             downloader.download_cards_parallel(

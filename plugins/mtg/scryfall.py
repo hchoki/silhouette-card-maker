@@ -341,14 +341,19 @@ def get_handle_card(
             # For parallel mode, queue the task instead of fetching immediately
             # We'll need to resolve set/collector info first if not provided
             if card_set and card_collector_number:
+                # Fetch card metadata to get the layout (needed for double-sided detection)
+                card_info_query = f"https://api.scryfall.com/cards/{card_set}/{card_collector_number}"
+                card_json = request_scryfall(card_info_query).json()
+                
                 task = DownloadTask(
                     index=index,
-                    card_name=remove_nonalphanumeric(name),
+                    card_name=remove_nonalphanumeric(card_json['name']),
                     card_set=card_set,
                     collector_number=card_collector_number,
                     quantity=quantity,
-                    layout='normal',  # Will be determined during fetch
-                    original_name=name
+                    layout=card_json['layout'],  # Use actual layout from API
+                    original_name=card_json['name'],
+                    card_json=card_json  # Cache the metadata to avoid re-fetching
                 )
                 download_queue.add_task(task)
             else:
