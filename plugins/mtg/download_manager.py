@@ -24,6 +24,7 @@ class DownloadTask:
     layout: str
     original_name: str = None
     card_json: dict = None  # Cache card metadata to avoid redundant API calls
+    is_token: bool = False  # Flag to identify token downloads
 
 
 class RateLimitedDownloader:
@@ -97,7 +98,9 @@ class RateLimitedDownloader:
         front_dir: str,
         double_sided_dir: str,
         art_crop: bool,
-        progress_callback: Optional[Callable[[int, int], None]] = None
+        progress_callback: Optional[Callable[[int, int], None]] = None,
+        fetch_time: float = 0.0,  # Time spent fetching/queuing cards
+        cancel_check: Optional[Callable[[], bool]] = None  # Function to check if operation should be canceled
     ) -> dict:
         """
         Download multiple cards in parallel.
@@ -117,6 +120,7 @@ class RateLimitedDownloader:
         self.successful_downloads = 0
         self.failed_downloads = 0
         double_sided_count = 0
+        token_count = 0
         
         errors = []
         
@@ -141,6 +145,14 @@ class RateLimitedDownloader:
             # Process completed tasks
             completed = 0
             for future in as_completed(future_to_task):
+                # Check if operation was canceled
+                if cancel_check and cancel_check():
+                    print("\n⚠️  Download canceled by user")
+                    # Cancel remaining futures
+                    for f in future_to_task:
+                        f.cancel()
+                    break
+                
                 task = future_to_task[future]
                 success, error = future.result()
                 
@@ -155,16 +167,21 @@ class RateLimitedDownloader:
                 else:
                     # Show each successful download with set/collector info
                     card_info = f"[{task.card_set.upper()}] #{task.collector_number}"
-                    # Indicate if it's a double-sided card
+                    # Indicate if it's a double-sided card or token
                     is_double_sided = task.layout in ['transform', 'modal_dfc', 'double_faced_token', 'reversible_card']
                     if is_double_sided:
                         double_sided_count += 1
+                    if task.is_token:
+                        token_count += 1
+                        layout_note = " (token)"
+                    elif is_double_sided:
                         layout_note = " (double-sided)"
                     else:
                         layout_note = ""
                     print(f"  ✓ {task.original_name or task.card_name} {card_info}{layout_note}")
         
         elapsed_time = time.time() - start_time
+        total_time = fetch_time + elapsed_time
         
         # Print detailed summary
         print(f"\n" + "="*60)
@@ -174,10 +191,14 @@ class RateLimitedDownloader:
         print(f"Successful:        {self.successful_downloads}")
         print(f"Failed:            {self.failed_downloads}")
         print(f"Double-sided:      {double_sided_count}")
+        print(f"Tokens:            {token_count}")
         print(f"-" * 60)
-        print(f"Time elapsed:      {elapsed_time:.1f}s")
-        if elapsed_time > 0:
-            print(f"Download rate:     {self.total_downloads / elapsed_time:.1f} cards/sec")
+        if fetch_time > 0:
+            print(f"Fetch time:        {fetch_time:.1f}s")
+        print(f"Download time:     {elapsed_time:.1f}s")
+        print(f"Total time:        {total_time:.1f}s")
+        if total_time > 0:
+            print(f"Overall rate:      {self.total_downloads / total_time:.1f} cards/sec")
         print(f"="*60)
         
         if errors:
@@ -192,6 +213,7 @@ class RateLimitedDownloader:
             'successful': self.successful_downloads,
             'failed': self.failed_downloads,
             'double_sided': double_sided_count,
+            'tokens': token_count,
             'elapsed_time': elapsed_time,
             'rate': self.total_downloads / elapsed_time if elapsed_time > 0 else 0,
             'errors': errors

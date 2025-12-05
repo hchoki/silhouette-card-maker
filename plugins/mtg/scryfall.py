@@ -267,15 +267,20 @@ def fetch_card(
             if prefer_older_sets:
                 card_printings.reverse()
 
-            # Define filters in order of preference
+            # Build filters list based on what's enabled
             filters = [
                 lambda c: c['nonfoil'],
                 lambda c: not c['digital'],
-                lambda c: not c['promo'],
-                lambda c: c['set'] in preferred_sets,
-                lambda c: not prefer_showcase ^ ('frame_effects' in c and 'showcase' in c['frame_effects']),
-                lambda c: not prefer_extra_art ^ (c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
+                lambda c: not c['promo']
             ]
+            
+            # Add optional filters only if enabled
+            if len(preferred_sets) > 0:
+                filters.append(lambda c: c['set'] in preferred_sets)
+            if prefer_showcase:
+                filters.append(lambda c: 'frame_effects' in c and 'showcase' in c['frame_effects'])
+            if prefer_extra_art:
+                filters.append(lambda c: c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
 
             # Apply progressive filtering
             filtered_printings = progressive_filtering(card_printings, filters)
@@ -326,7 +331,8 @@ def get_handle_card(
     api_delay: float,
 
     front_img_dir: str,
-    double_sided_dir: str
+    double_sided_dir: str,
+    cancel_check: callable = None  # Optional function to check if operation should be canceled
 ):
     # Set global API delay
     global _api_delay
@@ -337,10 +343,15 @@ def get_handle_card(
     downloader = RateLimitedDownloader(max_workers=max_workers) if parallel else None
     
     def configured_fetch_card(index: int, name: str, card_set: str = None, card_collector_number: int = None, quantity: int = 1):
+        # Check if operation was canceled
+        if cancel_check and cancel_check():
+            print("\n⚠️  Fetch canceled by user")
+            return
+        
         if parallel:
             # For parallel mode, queue the task instead of fetching immediately
-            # We'll need to resolve set/collector info first if not provided
-            if card_set and card_collector_number:
+            # Check if we should use set/collector or apply preferences
+            if not ignore_set_and_collector_number and card_set and card_collector_number:
                 # Fetch card metadata to get the layout (needed for double-sided detection)
                 card_info_query = f"https://api.scryfall.com/cards/{card_set}/{card_collector_number}"
                 card_json = request_scryfall(card_info_query).json()
@@ -356,24 +367,112 @@ def get_handle_card(
                     card_json=card_json  # Cache the metadata to avoid re-fetching
                 )
                 download_queue.add_task(task)
+                
+                # Fetch tokens if enabled
+                if tokens:
+                    if all_parts := card_json.get("all_parts"):
+                        for related in all_parts:
+                            if related["component"] == "token":
+                                token_uri = related["uri"]
+                                token_json = request_scryfall(token_uri).json()
+                                token_task = DownloadTask(
+                                    index=index,
+                                    card_name=remove_nonalphanumeric(related["name"]),
+                                    card_set=token_json["set"],
+                                    collector_number=token_json["collector_number"],
+                                    quantity=quantity,
+                                    layout=token_json['layout'],
+                                    original_name=related["name"],
+                                    card_json=token_json,
+                                    is_token=True  # Mark as token
+                                )
+                                download_queue.add_task(token_task)
             else:
-                # For cards without set/collector, fetch immediately to resolve them
-                fetch_card(
-                    index,
-                    quantity,
-                    card_set,
-                    card_collector_number,
-                    ignore_set_and_collector_number,
-                    name,
-                    prefer_older_sets,
-                    preferred_sets,
-                    prefer_showcase,
-                    prefer_extra_art,
-                    tokens,
-                    art_crop,
-                    front_img_dir,
-                    double_sided_dir
+                # For cards without set/collector or when ignoring set/collector,
+                # we need to resolve preferences and find the best printing
+                if name == "":
+                    raise Exception("Card name is required")
+                
+                # Filter out symbols from card names
+                clean_card_name = remove_nonalphanumeric(name)
+                card_info_query = f'https://api.scryfall.com/cards/named?exact={clean_card_name}'
+                
+                # Query for card info
+                card_json = request_scryfall(card_info_query).json()
+                
+                card_set = card_json["set"]
+                collector_number = card_json["collector_number"]
+                
+                # If preferred options are used, filter over prints
+                if prefer_older_sets or len(preferred_sets) > 0 or prefer_showcase or prefer_extra_art:
+                    # Get available printings
+                    prints_search_json = request_scryfall(card_json['prints_search_uri']).json()
+                    card_printings = prints_search_json['data']
+                    
+                    # Optional reverse for older preferences
+                    if prefer_older_sets:
+                        card_printings.reverse()
+                    
+                    # Build filters list based on what's enabled
+                    filters = [
+                        lambda c: c['nonfoil'],
+                        lambda c: not c['digital'],
+                        lambda c: not c['promo']
+                    ]
+                    
+                    # Add optional filters only if enabled
+                    if len(preferred_sets) > 0:
+                        filters.append(lambda c: c['set'] in preferred_sets)
+                    if prefer_showcase:
+                        filters.append(lambda c: 'frame_effects' in c and 'showcase' in c['frame_effects'])
+                    if prefer_extra_art:
+                        filters.append(lambda c: c['full_art'] or c['border_color'] == "borderless" or ('frame_effects' in c and 'extendedart' in c['frame_effects']))
+                    
+                    # Apply progressive filtering
+                    filtered_printings = progressive_filtering(card_printings, filters)
+                    
+                    if len(filtered_printings) == 0:
+                        print(f'No printings found for "{name}" with preferred options. Using default instead.')
+                    else:
+                        best_print = filtered_printings[0]
+                        card_set = best_print["set"]
+                        collector_number = best_print["collector_number"]
+                        # Update card_json to the selected printing
+                        card_info_query = f"https://api.scryfall.com/cards/{card_set}/{collector_number}"
+                        card_json = request_scryfall(card_info_query).json()
+                
+                # Now queue the resolved card
+                task = DownloadTask(
+                    index=index,
+                    card_name=remove_nonalphanumeric(card_json['name']),
+                    card_set=card_set,
+                    collector_number=collector_number,
+                    quantity=quantity,
+                    layout=card_json['layout'],
+                    original_name=card_json['name'],
+                    card_json=card_json
                 )
+                download_queue.add_task(task)
+                
+                # Fetch tokens if enabled
+                if tokens:
+                    if all_parts := card_json.get("all_parts"):
+                        for related in all_parts:
+                            if related["component"] == "token":
+                                token_uri = related["uri"]
+                                token_json = request_scryfall(token_uri).json()
+                                token_task = DownloadTask(
+                                    index=index,
+                                    card_name=remove_nonalphanumeric(related["name"]),
+                                    card_set=token_json["set"],
+                                    collector_number=token_json["collector_number"],
+                                    quantity=quantity,
+                                    layout=token_json['layout'],
+                                    original_name=related["name"],
+                                    card_json=token_json,
+                                    is_token=True
+                                )
+                                download_queue.add_task(token_task)
         else:
             # Sequential mode - fetch immediately
             fetch_card(

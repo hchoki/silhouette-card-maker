@@ -12,6 +12,7 @@ import os
 import sys
 from pathlib import Path
 import queue
+import json
 
 # Add plugins to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'plugins'))
@@ -51,8 +52,9 @@ class MTGCardFetcherGUI:
         # Fetch card variables
         self.selected_game = tk.StringVar(value="mtg")  # Default to MTG
         self.deck_path = tk.StringVar()
+        self.temp_deck_file = None  # Temporary file for pasted text
         self.deck_format = tk.StringVar(value="archidekt")
-        self.art_crop = tk.BooleanVar(value=True)
+        self.art_crop = tk.BooleanVar(value=False)
         self.tokens = tk.BooleanVar(value=False)
         self.parallel = tk.BooleanVar(value=True)
         self.max_workers = tk.IntVar(value=6)
@@ -88,11 +90,27 @@ class MTGCardFetcherGUI:
         
         self.is_fetching = False
         self.is_creating_pdf = False
+        self.cancel_fetch = False  # Flag to cancel fetch operation
         self.total_cards = 0
         self.completed_cards = 0
+        self.is_initializing = True  # Flag to prevent callbacks during setup
+        
+        # Settings file path (store in data folder)
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        os.makedirs(data_dir, exist_ok=True)
+        self.settings_file = os.path.join(data_dir, 'gui_settings.json')
+        
+        # Load saved settings
+        self.load_settings()
         
         self.setup_ui()
         self.check_message_queue()
+        
+        # Mark initialization as complete
+        self.is_initializing = False
+        
+        # Save settings on close
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def setup_styles(self):
         """Configure modern, attractive styles"""
@@ -157,6 +175,28 @@ class MTGCardFetcherGUI:
         style.map('TButton',
                  background=[('active', '#4c4c4c'), ('pressed', '#2c2c2c'), ('!active', '#3c3c3c')],
                  foreground=[('!active', '#ffffff')])
+        
+        # Secondary button (large, same size as Accent)
+        style.configure('Secondary.TButton',
+                       font=('Segoe UI', 12, 'bold'),
+                       padding=10,
+                       background='#3c3c3c',
+                       foreground='#ffffff',
+                       borderwidth=0)
+        style.map('Secondary.TButton',
+                 background=[('active', '#4c4c4c'), ('pressed', '#2c2c2c'), ('!active', '#3c3c3c')],
+                 foreground=[('!active', '#ffffff')])
+        
+        # Cancel button (red)
+        style.configure('Cancel.TButton',
+                       font=('Segoe UI', 12, 'bold'),
+                       padding=10,
+                       background='#d32f2f',
+                       foreground='#ffffff',
+                       borderwidth=0)
+        style.map('Cancel.TButton',
+                 background=[('active', '#b71c1c'), ('pressed', '#d32f2f'), ('!active', '#d32f2f'), ('disabled', '#5c5c5c')],
+                 foreground=[('active', '#ffffff'), ('!active', '#ffffff'), ('disabled', '#808080')])
         
         # Checkbutton styles
         style.configure('TCheckbutton', 
@@ -236,6 +276,134 @@ class MTGCardFetcherGUI:
                  foreground=[('selected', accent_color), ('active', text_color), ('!selected', text_color)],
                  padding=[('selected', [20, 12]), ('!selected', [20, 12])])
     
+    def load_settings(self):
+        """Load saved settings from JSON file"""
+        if not os.path.exists(self.settings_file):
+            return
+        
+        try:
+            with open(self.settings_file, 'r', encoding='utf-8') as f:
+                settings = json.load(f)
+            
+            # Fetch tab settings
+            if 'selected_game' in settings:
+                self.selected_game.set(settings['selected_game'])
+            if 'deck_format' in settings:
+                self.deck_format.set(settings['deck_format'])
+            if 'art_crop' in settings:
+                self.art_crop.set(settings['art_crop'])
+            if 'tokens' in settings:
+                self.tokens.set(settings['tokens'])
+            if 'parallel' in settings:
+                self.parallel.set(settings['parallel'])
+            if 'max_workers' in settings:
+                self.max_workers.set(settings['max_workers'])
+            if 'api_delay' in settings:
+                self.api_delay.set(settings['api_delay'])
+            if 'prefer_showcase' in settings:
+                self.prefer_showcase.set(settings['prefer_showcase'])
+            if 'prefer_extra_art' in settings:
+                self.prefer_extra_art.set(settings['prefer_extra_art'])
+            if 'prefer_older_sets' in settings:
+                self.prefer_older_sets.set(settings['prefer_older_sets'])
+            if 'ignore_set_collector' in settings:
+                self.ignore_set_collector.set(settings['ignore_set_collector'])
+            
+            # PDF tab settings
+            if 'front_dir' in settings:
+                self.front_dir.set(settings['front_dir'])
+            if 'back_dir' in settings:
+                self.back_dir.set(settings['back_dir'])
+            if 'double_sided_dir' in settings:
+                self.double_sided_dir.set(settings['double_sided_dir'])
+            if 'output_pdf_path' in settings:
+                self.output_pdf_path.set(settings['output_pdf_path'])
+            if 'card_size' in settings:
+                self.card_size.set(settings['card_size'])
+            if 'paper_size' in settings:
+                self.paper_size.set(settings['paper_size'])
+            if 'registration' in settings:
+                self.registration.set(settings['registration'])
+            if 'only_fronts' in settings:
+                self.only_fronts.set(settings['only_fronts'])
+            if 'crop_amount' in settings:
+                self.crop_amount.set(settings['crop_amount'])
+            if 'extend_corners' in settings:
+                self.extend_corners.set(settings['extend_corners'])
+            if 'ppi' in settings:
+                self.ppi.set(settings['ppi'])
+            if 'pdf_quality' in settings:
+                self.pdf_quality.set(settings['pdf_quality'])
+            if 'pdf_selected_profile' in settings:
+                self.pdf_selected_profile.set(settings['pdf_selected_profile'])
+            
+            # Offset tab settings
+            if 'x_offset' in settings:
+                self.x_offset.set(settings['x_offset'])
+            if 'y_offset' in settings:
+                self.y_offset.set(settings['y_offset'])
+            if 'profile_paper_size' in settings:
+                self.profile_paper_size.set(settings['profile_paper_size'])
+                
+        except Exception as e:
+            # If settings file is corrupted, just ignore and use defaults
+            print(f"Warning: Could not load settings: {e}")
+    
+    def save_settings(self):
+        """Save current settings to JSON file"""
+        try:
+            settings = {
+                # Fetch tab settings
+                'selected_game': self.selected_game.get(),
+                'deck_format': self.deck_format.get(),
+                'art_crop': self.art_crop.get(),
+                'tokens': self.tokens.get(),
+                'parallel': self.parallel.get(),
+                'max_workers': self.max_workers.get(),
+                'api_delay': self.api_delay.get(),
+                'prefer_showcase': self.prefer_showcase.get(),
+                'prefer_extra_art': self.prefer_extra_art.get(),
+                'prefer_older_sets': self.prefer_older_sets.get(),
+                'ignore_set_collector': self.ignore_set_collector.get(),
+                
+                # PDF tab settings
+                'front_dir': self.front_dir.get(),
+                'back_dir': self.back_dir.get(),
+                'double_sided_dir': self.double_sided_dir.get(),
+                'output_pdf_path': self.output_pdf_path.get(),
+                'card_size': self.card_size.get(),
+                'paper_size': self.paper_size.get(),
+                'registration': self.registration.get(),
+                'only_fronts': self.only_fronts.get(),
+                'crop_amount': self.crop_amount.get(),
+                'extend_corners': self.extend_corners.get(),
+                'ppi': self.ppi.get(),
+                'pdf_quality': self.pdf_quality.get(),
+                'pdf_selected_profile': self.pdf_selected_profile.get(),
+                
+                # Offset tab settings
+                'x_offset': self.x_offset.get(),
+                'y_offset': self.y_offset.get(),
+                'profile_paper_size': self.profile_paper_size.get(),
+            }
+            
+            with open(self.settings_file, 'w', encoding='utf-8') as f:
+                json.dump(settings, f, indent=2)
+                
+        except Exception as e:
+            print(f"Warning: Could not save settings: {e}")
+    
+    def on_closing(self):
+        """Handle window close event"""
+        # Save settings
+        self.save_settings()
+        
+        # Clean up temp file
+        self.cleanup_temp_deck_file()
+        
+        # Close window
+        self.root.destroy()
+    
     def setup_ui(self):
         # Main container with padding
         main_frame = ttk.Frame(self.root, padding="20", style='TFrame')
@@ -244,22 +412,6 @@ class MTGCardFetcherGUI:
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
         main_frame.rowconfigure(1, weight=1)
-        
-        # Header
-        header_frame = ttk.Frame(main_frame, style='TFrame')
-        header_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 20))
-        
-        title_label = ttk.Label(header_frame, text="🃏 Card Fetcher & PDF Creator", 
-                               font=('Segoe UI', 20, 'bold'), 
-                               foreground='#ffffff',
-                               style='Card.TLabel')
-        title_label.grid(row=0, column=0, sticky=tk.W)
-        
-        subtitle_label = ttk.Label(header_frame, text="Download card game cards for proxy printing", 
-                                  font=('Segoe UI', 10), 
-                                  foreground='#a0a0a0',
-                                  style='Card.TLabel')
-        subtitle_label.grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
         
         # Create notebook (tabbed interface)
         self.notebook = ttk.Notebook(main_frame, style='TNotebook')
@@ -308,18 +460,25 @@ class MTGCardFetcherGUI:
         def on_fetch_frame_configure(event):
             canvas.configure(scrollregion=canvas.bbox('all'))
             # Show/hide scrollbar based on content size
-            if canvas.bbox('all') and canvas.bbox('all')[3] <= canvas.winfo_height():
-                scrollbar.grid_remove()
-            else:
-                scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+            canvas_height = canvas.winfo_height()
+            if canvas.bbox('all') and canvas_height > 1:  # Ensure canvas is rendered
+                if canvas.bbox('all')[3] <= canvas_height:
+                    scrollbar.grid_remove()
+                else:
+                    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
         left_frame.bind('<Configure>', on_fetch_frame_configure)
+        canvas.bind('<Configure>', lambda e: on_fetch_frame_configure(e))  # Also check on canvas resize
         
         canvas.create_window((0, 0), window=left_frame, anchor='nw')
         canvas.configure(yscrollcommand=scrollbar.set)
         
         canvas.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        scrollbar.grid_remove()  # Hide initially
+        
+        # Force initial check after a short delay to ensure window is rendered
+        self.root.after(100, lambda: on_fetch_frame_configure(None))
         
         # Game selection
         game_frame = ttk.LabelFrame(left_frame, text="  🎮 Card Game  ", padding="8", style='TLabelframe')
@@ -343,13 +502,10 @@ class MTGCardFetcherGUI:
                                        state='readonly', width=30, style='TCombobox')
         self.game_combo.grid(row=0, column=1, sticky=tk.W, pady=5)
         
-        # Set initial value to MTG's display name
+        # Set initial value to MTG's display name (before binding to avoid triggering callback)
         initial_game_id = self.selected_game.get()
         if initial_game_id in self.game_id_to_name:
             self.game_combo.set(self.game_id_to_name[initial_game_id])
-        
-        # Update formats when game changes
-        self.game_combo.bind('<<ComboboxSelected>>', self.on_game_changed)
         
         # Deck file selection
         deck_frame = ttk.LabelFrame(left_frame, text="  📂 Deck File  ", padding="8", style='TLabelframe')
@@ -361,9 +517,17 @@ class MTGCardFetcherGUI:
         deck_entry = ttk.Entry(deck_frame, textvariable=self.deck_path, width=40, style='TEntry')
         deck_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(0, 10))
         
-        browse_btn = ttk.Button(deck_frame, text="Browse...", style='TButton')
+        # Button container for Browse and Paste Text
+        btn_frame = ttk.Frame(deck_frame, style='TFrame')
+        btn_frame.grid(row=0, column=2)
+        
+        browse_btn = ttk.Button(btn_frame, text="Browse...", style='TButton')
         browse_btn.configure(command=self.browse_deck)
-        browse_btn.grid(row=0, column=2)
+        browse_btn.grid(row=0, column=0, padx=(0, 5))
+        
+        paste_btn = ttk.Button(btn_frame, text="Paste Text...", style='TButton')
+        paste_btn.configure(command=self.paste_decklist_text)
+        paste_btn.grid(row=0, column=1)
         
         format_label = ttk.Label(deck_frame, text="Format:", style='Card.TLabel')
         format_label.grid(row=1, column=0, sticky=tk.W, padx=(0, 10), pady=(10, 0))
@@ -402,6 +566,10 @@ class MTGCardFetcherGUI:
                         variable=self.parallel, command=self.toggle_parallel)
         self.parallel_check.grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=2)
         
+        # Initialize formats for the selected game (without overwriting loaded deck_format)
+        # Must be called after all option checkboxes are created
+        self.update_game_formats(preserve_format=True)
+        
         ttk.Label(self.perf_frame, text="Max Workers:", style='Card.TLabel').grid(row=1, column=0, sticky=tk.W, padx=(20, 10), pady=5)
         self.workers_spinbox = ttk.Spinbox(self.perf_frame, from_=1, to=20, textvariable=self.max_workers, 
                                           width=10, style='TSpinbox')
@@ -419,10 +587,15 @@ class MTGCardFetcherGUI:
         button_frame = ttk.Frame(left_frame, style='TFrame')
         button_frame.grid(row=5, column=0, pady=(8, 8), padx=5)
         
-        # Fetch button
+        # Fetch button (will toggle to Cancel during fetching)
         self.fetch_btn = ttk.Button(button_frame, text="🚀 Start Fetching Cards", 
-                                     command=self.start_fetch, style='Accent.TButton')
-        self.fetch_btn.pack(pady=5, ipadx=30, ipady=5)
+                                     command=self.toggle_fetch, style='Accent.TButton', width=22)
+        self.fetch_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        # Cleanup button
+        self.cleanup_btn = ttk.Button(button_frame, text="🧹 Cleanup Images",
+                                      command=self.cleanup_images, style='Secondary.TButton', width=22)
+        self.cleanup_btn.pack(side=tk.LEFT)
         
         # Right column - Progress
         right_frame = ttk.Frame(parent, style='TFrame')
@@ -434,56 +607,39 @@ class MTGCardFetcherGUI:
         progress_frame = ttk.LabelFrame(right_frame, text="  📊 Progress  ", padding="12", style='TLabelframe')
         progress_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         progress_frame.columnconfigure(0, weight=1)
-        progress_frame.rowconfigure(3, weight=1)
-        
-        # Progress bar
-        self.progress_var = tk.DoubleVar(value=0)
-        self.progress_bar = ttk.Progressbar(progress_frame, variable=self.progress_var, 
-                                           maximum=100, mode='determinate', style='TProgressbar')
-        self.progress_bar.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
-        
-        # Progress label
-        self.progress_label = ttk.Label(progress_frame, text="Ready to fetch cards", 
-                                       font=('Segoe UI', 9), foreground='#808080',
-                                       style='Card.TLabel')
-        self.progress_label.grid(row=1, column=0, sticky=tk.W, pady=(0, 10))
-        
-        # Current card preview - make it more prominent
-        preview_container = ttk.Frame(progress_frame, style='TFrame')
-        preview_container.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
-        
-        # Card name label (larger, more visible)
-        self.current_card_label = ttk.Label(preview_container, text="", 
-                                           font=('Segoe UI', 12, 'bold'), 
-                                           foreground='#4ec9b0',
-                                           style='Card.TLabel',
-                                           wraplength=700,
-                                           justify=tk.LEFT)
-        self.current_card_label.pack(anchor=tk.W, pady=(0, 5))
-        
-        # Card details label (set, type, etc.)
-        self.card_details_label = ttk.Label(preview_container, text="", 
-                                           font=('Segoe UI', 9), 
-                                           foreground='#9cdcfe',
-                                           style='Card.TLabel',
-                                           wraplength=700,
-                                           justify=tk.LEFT)
-        self.card_details_label.pack(anchor=tk.W)
+        progress_frame.rowconfigure(0, weight=1)
         
         # Log text area with custom styling
         log_container = ttk.Frame(progress_frame, style='TFrame')
-        log_container.grid(row=3, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        log_container.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         log_container.columnconfigure(0, weight=1)
         log_container.rowconfigure(0, weight=1)
         
-        self.progress_text = scrolledtext.ScrolledText(log_container, height=25, 
-                                                        state='disabled', wrap=tk.WORD,
-                                                        bg='#1e1e1e', fg='#d4d4d4',
-                                                        font=('Consolas', 9),
-                                                        relief='solid', borderwidth=1,
-                                                        padx=10, pady=10,
-                                                        insertbackground='#d4d4d4')
+        # Create scrollbar that only shows when needed
+        progress_scrollbar = ttk.Scrollbar(log_container, orient='vertical')
+        
+        self.progress_text = tk.Text(log_container, height=25, 
+                                     state='disabled', wrap=tk.WORD,
+                                     bg='#1e1e1e', fg='#d4d4d4',
+                                     font=('Consolas', 9),
+                                     relief='solid', borderwidth=1,
+                                     padx=10, pady=10,
+                                     insertbackground='#d4d4d4',
+                                     yscrollcommand=progress_scrollbar.set)
+        progress_scrollbar.config(command=self.progress_text.yview)
+        
         self.progress_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        progress_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        progress_scrollbar.grid_remove()  # Hide initially
+        
+        # Auto-hide scrollbar when not needed
+        def _progress_scrollbar_autohide(*args):
+            progress_scrollbar.set(*args)
+            if float(args[0]) == 0.0 and float(args[1]) == 1.0:
+                progress_scrollbar.grid_remove()
+            else:
+                progress_scrollbar.grid()
+        self.progress_text.config(yscrollcommand=_progress_scrollbar_autohide)
         
         # Configure text tags for colored output
         self.progress_text.tag_config('success', foreground='#4ec9b0')
@@ -491,6 +647,10 @@ class MTGCardFetcherGUI:
         self.progress_text.tag_config('info', foreground='#9cdcfe')
         self.progress_text.tag_config('warning', foreground='#dcdcaa')
         self.progress_text.tag_config('card', foreground='#4ec9b0', font=('Consolas', 9, 'bold'))
+        
+        # Bind game change event AFTER all widgets are created and formats are initialized
+        # This prevents the callback from firing during initial setup
+        self.game_combo.bind('<<ComboboxSelected>>', self.on_game_changed)
     
     def toggle_parallel(self):
         """Enable/disable parallel-related options based on checkbox"""
@@ -499,6 +659,10 @@ class MTGCardFetcherGUI:
     
     def on_game_changed(self, event=None):
         """Update available formats and options when game selection changes"""
+        # Skip if we're still initializing the UI
+        if self.is_initializing:
+            return
+        
         # Get selected game name from combobox display
         game_display = self.game_combo.get()
         
@@ -510,14 +674,26 @@ class MTGCardFetcherGUI:
         # Update the internal game ID variable
         self.selected_game.set(game_id)
         
-        # Get plugin for selected game
+        # Update formats (will reset to default since user manually changed game)
+        self.update_game_formats(preserve_format=False)
+    
+    def update_game_formats(self, preserve_format=False):
+        """Update available deck formats based on selected game"""
+        game_id = self.selected_game.get()
         plugin = self.plugin_manager.get_plugin(game_id)
         if not plugin:
             return
         
+        # Save current format if we want to preserve it
+        current_format = self.deck_format.get() if preserve_format else None
+        
         # Update available formats
         self.format_combo['values'] = plugin.deck_formats
-        if plugin.deck_formats:
+        
+        # Set format: preserve current if valid, otherwise use default
+        if current_format and current_format in plugin.deck_formats:
+            self.deck_format.set(current_format)
+        elif plugin.deck_formats:
             default_format = plugin.metadata.get('default_format', plugin.deck_formats[0])
             self.deck_format.set(default_format)
         
@@ -604,18 +780,25 @@ class MTGCardFetcherGUI:
         def on_pdf_frame_configure(event):
             canvas.configure(scrollregion=canvas.bbox('all'))
             # Show/hide scrollbar based on content size
-            if canvas.bbox('all') and canvas.bbox('all')[3] <= canvas.winfo_height():
-                scrollbar.grid_remove()
-            else:
-                scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+            canvas_height = canvas.winfo_height()
+            if canvas.bbox('all') and canvas_height > 1:  # Ensure canvas is rendered
+                if canvas.bbox('all')[3] <= canvas_height:
+                    scrollbar.grid_remove()
+                else:
+                    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
         left_frame.bind('<Configure>', on_pdf_frame_configure)
+        canvas.bind('<Configure>', lambda e: on_pdf_frame_configure(e))  # Also check on canvas resize
         
         canvas.create_window((0, 0), window=left_frame, anchor='nw')
         canvas.configure(yscrollcommand=scrollbar.set)
         
         canvas.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        scrollbar.grid_remove()  # Hide initially
+        
+        # Force initial check after a short delay to ensure window is rendered
+        self.root.after(100, lambda: on_pdf_frame_configure(None))
         
         # Directory paths
         paths_frame = ttk.LabelFrame(left_frame, text="  📁 Directories  ", padding="8", style='TLabelframe')
@@ -688,12 +871,13 @@ class MTGCardFetcherGUI:
         profile_list.extend(list_offset_profiles())
         self.pdf_profile_combo['values'] = profile_list
         
-        # Try to set default profile
-        profiles = load_offset_profiles()
-        if profiles.default_profile and profiles.default_profile in profiles.profiles:
-            self.pdf_selected_profile.set(profiles.default_profile)
-        else:
-            self.pdf_selected_profile.set("(None - No Offset)")
+        # Only set default profile if no saved setting was loaded
+        if not self.pdf_selected_profile.get() or self.pdf_selected_profile.get() not in profile_list:
+            profiles = load_offset_profiles()
+            if profiles.default_profile and profiles.default_profile in profiles.profiles:
+                self.pdf_selected_profile.set(profiles.default_profile)
+            else:
+                self.pdf_selected_profile.set("(None - No Offset)")
         
         # Profile info display
         self.pdf_profile_info_label = ttk.Label(options_frame, text="No offset will be applied", 
@@ -753,13 +937,30 @@ class MTGCardFetcherGUI:
         log_container.columnconfigure(0, weight=1)
         log_container.rowconfigure(0, weight=1)
         
-        self.pdf_progress_text = scrolledtext.ScrolledText(log_container, 
-                                                          state='disabled', wrap=tk.WORD,
-                                                          bg='#1e1e1e', fg='#d4d4d4',
-                                                          font=('Consolas', 9),
-                                                          relief='solid', borderwidth=1,
-                                                          padx=10, pady=10)
+        # Create scrollbar that only shows when needed
+        pdf_progress_scrollbar = ttk.Scrollbar(log_container, orient='vertical')
+        
+        self.pdf_progress_text = tk.Text(log_container, 
+                                         state='disabled', wrap=tk.WORD,
+                                         bg='#1e1e1e', fg='#d4d4d4',
+                                         font=('Consolas', 9),
+                                         relief='solid', borderwidth=1,
+                                         padx=10, pady=10,
+                                         yscrollcommand=pdf_progress_scrollbar.set)
+        pdf_progress_scrollbar.config(command=self.pdf_progress_text.yview)
+        
         self.pdf_progress_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        pdf_progress_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        pdf_progress_scrollbar.grid_remove()  # Hide initially
+        
+        # Auto-hide scrollbar when not needed
+        def _pdf_scrollbar_autohide(*args):
+            pdf_progress_scrollbar.set(*args)
+            if float(args[0]) == 0.0 and float(args[1]) == 1.0:
+                pdf_progress_scrollbar.grid_remove()
+            else:
+                pdf_progress_scrollbar.grid()
+        self.pdf_progress_text.config(yscrollcommand=_pdf_scrollbar_autohide)
         
         # Configure text tags
         self.pdf_progress_text.tag_config('success', foreground='#4ec9b0')
@@ -782,18 +983,25 @@ class MTGCardFetcherGUI:
         def on_offset_frame_configure(event):
             canvas.configure(scrollregion=canvas.bbox('all'))
             # Show/hide scrollbar based on content size
-            if canvas.bbox('all') and canvas.bbox('all')[3] <= canvas.winfo_height():
-                scrollbar.grid_remove()
-            else:
-                scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+            canvas_height = canvas.winfo_height()
+            if canvas.bbox('all') and canvas_height > 1:  # Ensure canvas is rendered
+                if canvas.bbox('all')[3] <= canvas_height:
+                    scrollbar.grid_remove()
+                else:
+                    scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
         left_frame.bind('<Configure>', on_offset_frame_configure)
+        canvas.bind('<Configure>', lambda e: on_offset_frame_configure(e))  # Also check on canvas resize
         
         canvas.create_window((0, 0), window=left_frame, anchor='nw')
         canvas.configure(yscrollcommand=scrollbar.set)
         
         canvas.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        scrollbar.grid_remove()  # Hide initially
+        
+        # Force initial check after a short delay to ensure window is rendered
+        self.root.after(100, lambda: on_offset_frame_configure(None))
         
         # Load saved offset or default profile on startup
         profiles = load_offset_profiles()
@@ -936,13 +1144,30 @@ class MTGCardFetcherGUI:
         progress_frame.columnconfigure(0, weight=1)
         progress_frame.rowconfigure(0, weight=1)
         
-        self.offset_progress_text = scrolledtext.ScrolledText(progress_frame, 
-                                                             state='disabled', wrap=tk.WORD,
-                                                             bg='#1e1e1e', fg='#d4d4d4',
-                                                             font=('Consolas', 9),
-                                                             relief='solid', borderwidth=1,
-                                                             padx=10, pady=10)
+        # Create scrollbar that only shows when needed
+        offset_progress_scrollbar = ttk.Scrollbar(progress_frame, orient='vertical')
+        
+        self.offset_progress_text = tk.Text(progress_frame, 
+                                            state='disabled', wrap=tk.WORD,
+                                            bg='#1e1e1e', fg='#d4d4d4',
+                                            font=('Consolas', 9),
+                                            relief='solid', borderwidth=1,
+                                            padx=10, pady=10,
+                                            yscrollcommand=offset_progress_scrollbar.set)
+        offset_progress_scrollbar.config(command=self.offset_progress_text.yview)
+        
         self.offset_progress_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        offset_progress_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        offset_progress_scrollbar.grid_remove()  # Hide initially
+        
+        # Auto-hide scrollbar when not needed
+        def _offset_scrollbar_autohide(*args):
+            offset_progress_scrollbar.set(*args)
+            if float(args[0]) == 0.0 and float(args[1]) == 1.0:
+                offset_progress_scrollbar.grid_remove()
+            else:
+                offset_progress_scrollbar.grid()
+        self.offset_progress_text.config(yscrollcommand=_offset_scrollbar_autohide)
         
         # Configure text tags
         self.offset_progress_text.tag_config('success', foreground='#4ec9b0')
@@ -994,7 +1219,109 @@ class MTGCardFetcherGUI:
             ]
         )
         if filename:
+            # Clean up temp file if switching from pasted text to file
+            self.cleanup_temp_deck_file()
             self.deck_path.set(filename)
+    
+    def paste_decklist_text(self):
+        """Open dialog to paste decklist text"""
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Paste Deck List")
+        dialog.geometry("700x600")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        
+        # Apply dark theme
+        dialog.configure(bg='#1e1e1e')
+        
+        # Main frame with padding
+        main_frame = ttk.Frame(dialog, padding="15", style='TFrame')
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        dialog.columnconfigure(0, weight=1)
+        dialog.rowconfigure(0, weight=1)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(1, weight=1)
+        
+        # Instructions
+        instructions = ttk.Label(main_frame, 
+                                text="Paste your deck list below. Each line should contain a card in your deck format.",
+                                style='Card.TLabel',
+                                wraplength=650)
+        instructions.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
+        
+        # Text area with scrollbar
+        text_frame = ttk.Frame(main_frame, style='TFrame')
+        text_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        text_frame.columnconfigure(0, weight=1)
+        text_frame.rowconfigure(0, weight=1)
+        
+        text_widget = tk.Text(text_frame, 
+                             wrap=tk.WORD,
+                             width=80,
+                             height=25,
+                             bg='#2d2d2d',
+                             fg='#d4d4d4',
+                             insertbackground='#d4d4d4',
+                             selectbackground='#264f78',
+                             selectforeground='#ffffff',
+                             font=('Consolas', 10),
+                             relief=tk.FLAT,
+                             borderwidth=1,
+                             highlightthickness=1,
+                             highlightbackground='#3c3c3c',
+                             highlightcolor='#007acc')
+        text_widget.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=text_widget.yview)
+        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        text_widget.configure(yscrollcommand=scrollbar.set)
+        
+        # Load existing content if we have a temp file
+        if self.temp_deck_file and os.path.exists(self.temp_deck_file):
+            try:
+                with open(self.temp_deck_file, 'r', encoding='utf-8') as f:
+                    text_widget.insert('1.0', f.read())
+            except:
+                pass
+        
+        text_widget.focus_set()
+        
+        # Button frame
+        btn_frame = ttk.Frame(main_frame, style='TFrame')
+        btn_frame.grid(row=2, column=0, sticky=(tk.E), pady=(10, 0))
+        
+        def save_text():
+            content = text_widget.get('1.0', tk.END).strip()
+            if not content:
+                messagebox.showwarning("Empty Content", "Please paste your deck list.", parent=dialog)
+                return
+            
+            # Clean up previous temp file
+            self.cleanup_temp_deck_file()
+            
+            # Create temp file
+            import tempfile
+            fd, temp_path = tempfile.mkstemp(suffix='.txt', prefix='decklist_', text=True)
+            try:
+                with os.fdopen(fd, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                self.temp_deck_file = temp_path
+                self.deck_path.set(f"[Pasted Text - {len(content.splitlines())} lines]")
+                dialog.destroy()
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to save text: {str(e)}", parent=dialog)
+        
+        ttk.Button(btn_frame, text="Cancel", command=dialog.destroy, style='TButton').grid(row=0, column=0, padx=(0, 5))
+        ttk.Button(btn_frame, text="Use This Text", command=save_text, style='TButton').grid(row=0, column=1)
+    
+    def cleanup_temp_deck_file(self):
+        """Remove temporary deck file if it exists"""
+        if self.temp_deck_file and os.path.exists(self.temp_deck_file):
+            try:
+                os.unlink(self.temp_deck_file)
+            except:
+                pass
+            self.temp_deck_file = None
     
     def refresh_profile_list(self, include_legacy=True):
         """Refresh the profile dropdown list"""
@@ -1062,6 +1389,7 @@ class MTGCardFetcherGUI:
         
         if set_default_offset_profile(profile_name):
             self.update_profile_info()
+            self.refresh_pdf_profile_list()  # Update PDF tab to show new default
             messagebox.showinfo("Success", f"'{profile_name}' set as default profile!")
     
     def delete_current_profile(self):
@@ -1074,6 +1402,7 @@ class MTGCardFetcherGUI:
         if messagebox.askyesno("Confirm Delete", f"Delete profile '{profile_name}'?"):
             if delete_offset_profile(profile_name):
                 self.refresh_profile_list()
+                self.refresh_pdf_profile_list()  # Also remove from PDF tab
                 messagebox.showinfo("Deleted", f"Profile '{profile_name}' deleted.")
     
     def save_current_as_profile(self):
@@ -1094,10 +1423,11 @@ class MTGCardFetcherGUI:
             description=description
         )
         
-        # Clear form and refresh list
+        # Clear form and refresh lists in both tabs
         self.profile_name.set("")
         self.profile_description.set("")
         self.refresh_profile_list()
+        self.refresh_pdf_profile_list()  # Also refresh PDF tab profile list
         self.selected_profile.set(name)
         self.update_profile_info()
         
@@ -1136,6 +1466,33 @@ class MTGCardFetcherGUI:
                     f"{default_text}")
         
         self.profile_info_label.config(text=info_text, foreground='#4ec9b0')
+    
+    def refresh_pdf_profile_list(self, include_legacy=True):
+        """Refresh the PDF tab's profile dropdown list"""
+        profile_list = ["(None - No Offset)"]
+        
+        # Check if legacy offset exists and add it if requested
+        if include_legacy:
+            legacy_offset = load_saved_offset()
+            if legacy_offset:
+                profile_list.append("(Legacy Saved Offset)")
+        
+        # Add all saved profiles
+        profile_list.extend(list_offset_profiles())
+        
+        self.pdf_profile_combo['values'] = profile_list
+        
+        # If current selection is not in the list, try to set default or fallback to no offset
+        if self.pdf_selected_profile.get() not in profile_list:
+            profiles = load_offset_profiles()
+            if profiles.default_profile and profiles.default_profile in profiles.profiles:
+                self.pdf_selected_profile.set(profiles.default_profile)
+            else:
+                self.pdf_selected_profile.set("(None - No Offset)")
+        
+        # Update the profile info display
+        if hasattr(self, 'pdf_profile_info_label'):
+            self.update_pdf_profile_info()
     
     def update_pdf_profile_info(self, event=None):
         """Update the PDF profile information label"""
@@ -1186,6 +1543,7 @@ class MTGCardFetcherGUI:
                 elif msg_type == 'card':
                     self._update_current_card_internal(msg['card_name'], msg.get('details'))
                 elif msg_type == 'complete':
+                    print(f"DEBUG: Received completion message - success={msg['success']}, message={msg.get('message')}")
                     self._fetch_complete_internal(msg['success'], msg.get('message'))
                     
         except queue.Empty:
@@ -1209,43 +1567,99 @@ class MTGCardFetcherGUI:
         self.progress_text.configure(state='disabled')
     
     def update_progress(self, current, total, text=None):
-        """Update progress bar (thread-safe)"""
-        self.message_queue.put({'type': 'progress', 'current': current, 'total': total, 'text': text})
+        """Update progress (no-op since we removed the progress bar)"""
+        pass
     
     def update_current_card(self, card_name, details=None):
-        """Update currently processing card (thread-safe)"""
-        self.message_queue.put({'type': 'card', 'card_name': card_name, 'details': details})
-    
-    def _update_current_card_internal(self, card_name, details=None):
-        """Internal method to update current card (must be called from main thread)"""
-        self.current_card_label.config(text=f"📥 Fetching: {card_name}")
-        if details:
-            self.card_details_label.config(text=details)
-        else:
-            self.card_details_label.config(text="")
-    
-    def _update_progress_internal(self, current, total, text=None):
-        """Internal method to update progress (must be called from main thread)"""
-        if total > 0:
-            percentage = (current / total) * 100
-            self.progress_var.set(percentage)
-            
-            if text:
-                self.progress_label.config(text=text)
-            else:
-                self.progress_label.config(text=f"Processing: {current}/{total} cards ({percentage:.1f}%)")
+        """Update currently processing card (no-op since we removed card preview)"""
+        pass
     
     def validate_inputs(self):
         """Validate user inputs before starting fetch"""
         if not self.deck_path.get():
-            messagebox.showerror("Error", "Please select a deck list file.")
+            messagebox.showerror("Error", "Please select a deck list file or paste deck text.")
             return False
         
-        if not os.path.isfile(self.deck_path.get()):
-            messagebox.showerror("Error", f"File not found: {self.deck_path.get()}")
+        # Check if using temp file (pasted text) or regular file
+        deck_file = self.temp_deck_file if self.temp_deck_file else self.deck_path.get()
+        if not os.path.isfile(deck_file):
+            messagebox.showerror("Error", f"File not found: {deck_file}")
             return False
         
         return True
+    
+    def toggle_fetch(self):
+        """Toggle between starting and canceling fetch"""
+        if self.is_fetching:
+            # Cancel fetch
+            if messagebox.askyesno("Cancel Fetch", "Are you sure you want to cancel the current fetch operation?"):
+                self.cancel_fetch = True
+                self.log_message("", 'warning')
+                self.log_message("⚠️ Canceling fetch operation...", 'warning')
+                self.fetch_btn.configure(state='disabled', text="⏳ Canceling...")
+        else:
+            # Start fetch
+            self.start_fetch()
+    
+    def cleanup_images(self):
+        """Clean up downloaded images from game directories"""
+        if self.is_fetching:
+            messagebox.showwarning("Warning", "Cannot cleanup while fetching is in progress.")
+            return
+        
+        # Ask for confirmation
+        if not messagebox.askyesno("Confirm Cleanup", 
+                                   "This will delete all downloaded card images from:\\n\\n" +
+                                   "• game/front/\\n" +
+                                   "• game/double_sided/\\n\\n" +
+                                   "Are you sure?"):
+            return
+        
+        try:
+            root_path = 'game'
+            image_folders = ['front', 'double_sided']
+            deleted_count = 0
+            
+            self.log_message("", 'info')
+            self.log_message("═" * 70, 'info')
+            self.log_message("🧹 Starting cleanup...", 'info')
+            
+            for folder_name in image_folders:
+                working_path = os.path.join(root_path, folder_name)
+                
+                if not os.path.exists(working_path):
+                    continue
+                
+                for item in os.listdir(working_path):
+                    full_path = os.path.join(working_path, item)
+                    
+                    # Skip EMPTY.md files
+                    if os.path.basename(full_path) == 'EMPTY.md':
+                        continue
+                    
+                    try:
+                        if os.path.isfile(full_path):
+                            os.remove(full_path)
+                            self.log_message(f"🗑️  Deleted file: {full_path}", 'info')
+                            deleted_count += 1
+                        elif os.path.isdir(full_path):
+                            import shutil
+                            shutil.rmtree(full_path)
+                            self.log_message(f"🗑️  Deleted directory: {full_path}", 'info')
+                            deleted_count += 1
+                    except Exception as e:
+                        self.log_message(f"❌ Error deleting {full_path}: {e}", 'error')
+            
+            self.log_message("", 'success')
+            self.log_message(f"✅ Cleanup complete! Deleted {deleted_count} item{'s' if deleted_count != 1 else ''}", 'success')
+            self.log_message("═" * 70, 'success')
+            
+            messagebox.showinfo("Cleanup Complete", f"Deleted {deleted_count} item{'s' if deleted_count != 1 else ''}")
+            
+        except Exception as e:
+            error_msg = f"Error during cleanup: {str(e)}"
+            self.log_message(f"❌ {error_msg}", 'error')
+            messagebox.showerror("Cleanup Error", error_msg)
     
     def start_fetch(self):
         """Start the fetch process in a background thread"""
@@ -1260,11 +1674,11 @@ class MTGCardFetcherGUI:
         self.progress_text.configure(state='normal')
         self.progress_text.delete(1.0, tk.END)
         self.progress_text.configure(state='disabled')
-        self.progress_var.set(0)
-        self.progress_label.config(text="Initializing...")
         
-        # Disable fetch button and update text
-        self.fetch_btn.configure(state='disabled', text="⏳ Fetching...")
+        # Reset cancel flag and update button
+        self.cancel_fetch = False
+        self.fetch_btn.configure(text="⏹️ Cancel Fetch", style='Cancel.TButton')
+        self.cleanup_btn.configure(state='disabled')
         self.is_fetching = True
         self.total_cards = 0
         self.completed_cards = 0
@@ -1275,6 +1689,9 @@ class MTGCardFetcherGUI:
     
     def fetch_cards(self):
         """Fetch cards (runs in background thread)"""
+        success = False
+        error_message = None
+        
         try:
             game_id = self.selected_game.get()
             plugin = self.plugin_manager.get_plugin(game_id)
@@ -1282,7 +1699,13 @@ class MTGCardFetcherGUI:
             
             self.log_message("═" * 70, 'info')
             self.log_message(f"🎮 Game: {game_name}", 'info')
-            self.log_message(f"📄 Deck: {os.path.basename(self.deck_path.get())}", 'info')
+            
+            # Display deck source (file or pasted text)
+            if self.temp_deck_file:
+                self.log_message(f"📄 Deck: [Pasted Text]", 'info')
+            else:
+                self.log_message(f"📄 Deck: {os.path.basename(self.deck_path.get())}", 'info')
+            
             self.log_message(f"📋 Format: {self.deck_format.get()}", 'info')
             
             # Only show supported options for this game
@@ -1413,16 +1836,33 @@ class MTGCardFetcherGUI:
                         self.max_workers.get(),
                         self.api_delay.get(),
                         front_directory,
-                        double_sided_directory
+                        double_sided_directory,
+                        cancel_check=lambda: self.cancel_fetch  # Pass cancel check
                     )
                     
                     # Read and parse deck
                     self.log_message("📖 Reading deck list...", 'info')
                     if self.parallel.get():
                         self.log_message("📊 Building download queue (fetching card metadata)...", 'info')
-                    with open(self.deck_path.get(), 'r', encoding='utf-8') as deck_file:
+                    
+                    import time
+                    fetch_start_time = time.time()
+                    
+                    # Use temp file if available (pasted text), otherwise use selected file
+                    deck_file_path = self.temp_deck_file if self.temp_deck_file else self.deck_path.get()
+                    
+                    with open(deck_file_path, 'r', encoding='utf-8') as deck_file:
                         deck_text = deck_file.read()
                         parse_deck(deck_text, format_enum, get_handle_card)
+                    
+                    # Check if user canceled
+                    if self.cancel_fetch:
+                        self.log_message("", 'warning')
+                        self.log_message("⚠️ Fetch canceled by user", 'warning')
+                        error_message = 'Fetch canceled by user'
+                        return
+                    
+                    fetch_elapsed_time = time.time() - fetch_start_time
                     
                     # Process parallel downloads if enabled
                     if self.parallel.get() and hasattr(get_handle_card, 'download_queue'):
@@ -1432,12 +1872,14 @@ class MTGCardFetcherGUI:
                             self.log_message(f"✅ Queued {dl_queue.size()} cards for download")
                             self.log_message("")
                             downloader = get_handle_card.downloader
-                            downloader.download_cards_parallel(
+                            result = downloader.download_cards_parallel(
                                 tasks=dl_queue.get_all_tasks(),
                                 fetch_function=get_handle_card.fetch_card_art,
                                 front_dir=get_handle_card.front_img_dir,
                                 double_sided_dir=get_handle_card.double_sided_dir,
-                                art_crop=get_handle_card.art_crop
+                                art_crop=get_handle_card.art_crop,
+                                fetch_time=fetch_elapsed_time,  # Pass fetch time to include in summary
+                                cancel_check=lambda: self.cancel_fetch  # Pass cancel check function
                             )
                 
                 elif game_id == "lorcana":
@@ -1448,7 +1890,11 @@ class MTGCardFetcherGUI:
                     from plugins.lorcana.lorcast import get_handle_card as lorcast_get_handle_card
                     
                     self.log_message("📖 Reading Lorcana deck list...", 'info')
-                    with open(self.deck_path.get(), 'r', encoding='utf-8') as deck_file:
+                    
+                    # Use temp file if available (pasted text), otherwise use selected file
+                    deck_file_path = self.temp_deck_file if self.temp_deck_file else self.deck_path.get()
+                    
+                    with open(deck_file_path, 'r', encoding='utf-8') as deck_file:
                         deck_text = deck_file.read()
                         parse_dreamborn_list(deck_text, lorcast_get_handle_card(front_directory))
                 
@@ -1461,7 +1907,11 @@ class MTGCardFetcherGUI:
                     format_enum = YugiohDeckFormat(self.deck_format.get())
                     
                     self.log_message("📖 Reading Yu-Gi-Oh! deck list...", 'info')
-                    with open(self.deck_path.get(), 'r', encoding='utf-8') as deck_file:
+                    
+                    # Use temp file if available (pasted text), otherwise use selected file
+                    deck_file_path = self.temp_deck_file if self.temp_deck_file else self.deck_path.get()
+                    
+                    with open(deck_file_path, 'r', encoding='utf-8') as deck_file:
                         deck_text = deck_file.read()
                         yugioh_parse(deck_text, format_enum, yugioh_get_handle_card(front_directory))
                 
@@ -1473,44 +1923,65 @@ class MTGCardFetcherGUI:
                 # Restore original print
                 builtins.print = original_print
             
+            # Check if user canceled after downloads
+            if self.cancel_fetch:
+                self.log_message("", 'warning')
+                self.log_message("═" * 70, 'warning')
+                self.log_message("⚠️ Fetch canceled by user", 'warning')
+                self.log_message("═" * 70, 'warning')
+                error_message = 'Fetch canceled by user'
+                return
+            
             self.log_message("")
             self.log_message("═" * 70, 'success')
             self.log_message("✅ All cards fetched successfully!", 'success')
             self.log_message("═" * 70, 'success')
             
-            self.message_queue.put({'type': 'complete', 'success': True, 
-                                   'message': 'Cards fetched successfully!'})
+            success = True
             
         except Exception as e:
             import traceback
-            error_msg = str(e)
             self.log_message("")
             self.log_message("═" * 70, 'error')
-            self.log_message(f"❌ ERROR: {error_msg}", 'error')
+            self.log_message(f"❌ ERROR: {str(e)}", 'error')
             self.log_message("═" * 70, 'error')
             
             # Log full traceback to console for debugging
             traceback.print_exc()
             
-            self.message_queue.put({'type': 'complete', 'success': False, 'message': error_msg})
+            error_message = str(e)
+        finally:
+            # Always send exactly one completion message to reset UI state
+            print(f"DEBUG: Finally block - success={success}, error_message={error_message}")
+            self.message_queue.put({
+                'type': 'complete', 
+                'success': success, 
+                'message': error_message if error_message else 'Cards fetched successfully!'
+            })
+            print(f"DEBUG: Completion message sent to queue")
     
     def _fetch_complete_internal(self, success, message=None):
         """Called when fetch completes (must be called from main thread)"""
-        # Clear current card preview
-        self.current_card_label.config(text="")
-        self.card_details_label.config(text="")
+        print(f"DEBUG: _fetch_complete_internal called - success={success}, message={message}")
+        print(f"DEBUG: Current state - is_fetching={self.is_fetching}, cancel_fetch={self.cancel_fetch}")
         
-        # Re-enable fetch button
-        self.fetch_btn.configure(state='normal', text='🚀 Start Fetching Cards')
+        # Re-enable buttons and reset state
+        self.fetch_btn.configure(text='🚀 Start Fetching Cards', style='Accent.TButton', state='normal')
+        self.cleanup_btn.configure(state='normal')
         self.is_fetching = False
+        self.cancel_fetch = False
+        
+        print(f"DEBUG: After reset - is_fetching={self.is_fetching}, cancel_fetch={self.cancel_fetch}")
         
         if success:
-            self.progress_var.set(100)
-            self.progress_label.config(text="✅ Completed successfully!")
-            messagebox.showinfo("Success", message or "Cards fetched successfully!")
+            if not message or "cancel" not in message.lower():
+                messagebox.showinfo("Success", message or "Cards fetched successfully!")
         else:
-            self.progress_label.config(text="❌ Error occurred")
-            messagebox.showerror("Error", message or "An error occurred during fetch")
+            if message and "cancel" in message.lower():
+                # Fetch was canceled by user
+                pass  # Don't show error dialog for user cancellation
+            else:
+                messagebox.showerror("Error", message or "An error occurred during fetch")
     
     def start_create_pdf(self):
         """Start PDF creation in background thread"""
