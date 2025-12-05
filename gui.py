@@ -12,11 +12,14 @@ import os
 import sys
 from pathlib import Path
 import queue
-import json
 
 # Add plugins to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'plugins'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'plugins', 'mtg'))
+
+# Import GUI utilities
+from gui.utils.settings_manager import SettingsManager
+from gui.utils.styles import StyleManager
 
 # Import plugin manager
 from plugins.plugin_manager import get_plugin_manager
@@ -43,8 +46,8 @@ class MTGCardFetcherGUI:
         # Message queue for thread-safe GUI updates
         self.message_queue = queue.Queue()
         
-        # Configure modern style
-        self.setup_styles()
+        # Configure modern style using StyleManager
+        StyleManager.setup_styles(root)
         
         # Initialize plugin manager
         self.plugin_manager = get_plugin_manager()
@@ -95,10 +98,10 @@ class MTGCardFetcherGUI:
         self.completed_cards = 0
         self.is_initializing = True  # Flag to prevent callbacks during setup
         
-        # Settings file path (store in data folder)
+        # Initialize settings manager
         data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        os.makedirs(data_dir, exist_ok=True)
-        self.settings_file = os.path.join(data_dir, 'gui_settings.json')
+        settings_file = os.path.join(data_dir, 'gui_settings.json')
+        self.settings_manager = SettingsManager(settings_file)
         
         # Load saved settings
         self.load_settings()
@@ -112,297 +115,64 @@ class MTGCardFetcherGUI:
         # Save settings on close
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
-    def setup_styles(self):
-        """Configure modern, attractive styles"""
-        # Dark mode color scheme
-        bg_color = '#1e1e1e'  # VS Code dark background
-        card_bg = '#252526'  # Slightly lighter for cards
-        text_color = '#d4d4d4'  # Light gray text
-        entry_bg = '#3c3c3c'  # Entry field background
-        entry_fg = '#ffffff'  # Entry field text - WHITE
-        accent_color = '#0e639c'  # Blue accent
-        accent_hover = '#1177bb'  # Lighter blue on hover
-        success_color = '#4ec9b0'  # Teal
-        border_color = '#3e3e42'  # Subtle borders
-        
-        # Configure root background
-        self.root.configure(bg=bg_color)
-        
-        # Use option_add for more reliable styling
-        self.root.option_add('*TCombobox*Listbox.background', entry_bg)
-        self.root.option_add('*TCombobox*Listbox.foreground', entry_fg)
-        self.root.option_add('*TCombobox*Listbox.selectBackground', accent_color)
-        self.root.option_add('*TCombobox*Listbox.selectForeground', entry_fg)
-        
-        style = ttk.Style()
-        
-        # Use a modern theme as base
-        try:
-            style.theme_use('clam')  # Clam works better for customization
-        except:
-            pass
-        
-        # Frame styles
-        style.configure('TFrame', background=bg_color)
-        style.configure('TLabel', background=bg_color, font=('Segoe UI', 10), foreground=text_color)
-        style.configure('Title.TLabel', font=('Segoe UI', 20, 'bold'), foreground='#ffffff', background=bg_color)
-        style.configure('Subtitle.TLabel', font=('Segoe UI', 9), foreground='#808080', background=bg_color)
-        style.configure('Card.TLabel', background=card_bg, font=('Segoe UI', 10), foreground=text_color)
-        
-        # LabelFrame styles
-        style.configure('TLabelframe', background=card_bg, borderwidth=1, relief='solid')
-        style.configure('TLabelframe.Label', background=card_bg, font=('Segoe UI', 10, 'bold'), 
-                       foreground='#ffffff')
-        
-        # Button styles - Accent button
-        style.configure('Accent.TButton', 
-                       font=('Segoe UI', 12, 'bold'), 
-                       padding=10,
-                       background=accent_color,
-                       foreground='#ffffff',
-                       borderwidth=0)
-        style.map('Accent.TButton', 
-                 background=[('active', accent_hover), ('pressed', accent_color), ('!active', accent_color)],
-                 foreground=[('active', '#ffffff'), ('!active', '#ffffff'), ('disabled', '#808080')])
-        
-        # Regular buttons
-        style.configure('TButton', 
-                       background='#3c3c3c', 
-                       foreground='#ffffff',
-                       borderwidth=1,
-                       focuscolor='none',
-                       font=('Segoe UI', 9))
-        style.map('TButton',
-                 background=[('active', '#4c4c4c'), ('pressed', '#2c2c2c'), ('!active', '#3c3c3c')],
-                 foreground=[('!active', '#ffffff')])
-        
-        # Secondary button (large, same size as Accent)
-        style.configure('Secondary.TButton',
-                       font=('Segoe UI', 12, 'bold'),
-                       padding=10,
-                       background='#3c3c3c',
-                       foreground='#ffffff',
-                       borderwidth=0)
-        style.map('Secondary.TButton',
-                 background=[('active', '#4c4c4c'), ('pressed', '#2c2c2c'), ('!active', '#3c3c3c')],
-                 foreground=[('!active', '#ffffff')])
-        
-        # Cancel button (red)
-        style.configure('Cancel.TButton',
-                       font=('Segoe UI', 12, 'bold'),
-                       padding=10,
-                       background='#d32f2f',
-                       foreground='#ffffff',
-                       borderwidth=0)
-        style.map('Cancel.TButton',
-                 background=[('active', '#b71c1c'), ('pressed', '#d32f2f'), ('!active', '#d32f2f'), ('disabled', '#5c5c5c')],
-                 foreground=[('active', '#ffffff'), ('!active', '#ffffff'), ('disabled', '#808080')])
-        
-        # Checkbutton styles
-        style.configure('TCheckbutton', 
-                       background=card_bg, 
-                       font=('Segoe UI', 10), 
-                       foreground=text_color,
-                       focuscolor=card_bg)
-        style.map('TCheckbutton',
-                 background=[('active', card_bg)],
-                 foreground=[('active', text_color)])
-        
-        # Entry - critical for visibility
-        style.configure('TEntry', 
-                       fieldbackground=entry_bg,
-                       background=entry_bg,
-                       foreground=entry_fg,
-                       insertcolor=entry_fg,
-                       bordercolor=border_color,
-                       lightcolor=border_color,
-                       darkcolor=border_color)
-        style.map('TEntry',
-                 fieldbackground=[('readonly', entry_bg), ('disabled', '#2c2c2c')],
-                 foreground=[('readonly', entry_fg), ('disabled', '#808080')])
-        
-        # Combobox - critical for visibility  
-        style.configure('TCombobox',
-                       fieldbackground=entry_bg,
-                       background=entry_bg,
-                       foreground=entry_fg,
-                       arrowcolor=entry_fg,
-                       bordercolor=border_color,
-                       lightcolor=border_color,
-                       darkcolor=border_color,
-                       insertcolor=entry_fg,
-                       selectbackground=accent_color,
-                       selectforeground=entry_fg)
-        style.map('TCombobox',
-                 fieldbackground=[('readonly', entry_bg), ('disabled', '#2c2c2c')],
-                 foreground=[('readonly', entry_fg), ('disabled', '#808080')],
-                 selectbackground=[('readonly', accent_color)])
-        
-        # Spinbox - critical for visibility
-        style.configure('TSpinbox',
-                       fieldbackground=entry_bg,
-                       background=entry_bg,
-                       foreground=entry_fg,
-                       arrowcolor=entry_fg,
-                       bordercolor=border_color,
-                       insertcolor=entry_fg)
-        style.map('TSpinbox',
-                 fieldbackground=[('readonly', entry_bg), ('disabled', '#2c2c2c')],
-                 foreground=[('readonly', entry_fg), ('disabled', '#808080')])
-        
-        # Progressbar
-        style.configure('TProgressbar', 
-                       thickness=25, 
-                       troughcolor='#3c3c3c', 
-                       background=success_color,
-                       bordercolor=border_color,
-                       lightcolor=success_color,
-                       darkcolor=success_color)
-        
-        # Notebook (tabs)
-        style.configure('TNotebook', 
-                       background=bg_color,
-                       borderwidth=0,
-                       tabmargins=0)
-        style.configure('TNotebook.Tab',
-                       background='#2d2d2d',
-                       foreground=text_color,
-                       padding=[20, 12],
-                       font=('Segoe UI', 10),
-                       borderwidth=0,
-                       focuscolor='none')
-        style.map('TNotebook.Tab',
-                 background=[('selected', card_bg), ('active', '#3c3c3c'), ('!selected', '#2d2d2d')],
-                 foreground=[('selected', accent_color), ('active', text_color), ('!selected', text_color)],
-                 padding=[('selected', [20, 12]), ('!selected', [20, 12])])
+    # ============================================================================
+    # SETTINGS MANAGEMENT
+    # ============================================================================
+    
+    def _get_settings_variables(self):
+        """Get dictionary of all settings variables for persistence"""
+        return {
+            # Fetch tab settings
+            'selected_game': self.selected_game,
+            'deck_format': self.deck_format,
+            'art_crop': self.art_crop,
+            'tokens': self.tokens,
+            'parallel': self.parallel,
+            'max_workers': self.max_workers,
+            'api_delay': self.api_delay,
+            'prefer_showcase': self.prefer_showcase,
+            'prefer_extra_art': self.prefer_extra_art,
+            'prefer_older_sets': self.prefer_older_sets,
+            'ignore_set_collector': self.ignore_set_collector,
+            
+            # PDF tab settings
+            'front_dir': self.front_dir,
+            'back_dir': self.back_dir,
+            'double_sided_dir': self.double_sided_dir,
+            'output_pdf_path': self.output_pdf_path,
+            'card_size': self.card_size,
+            'paper_size': self.paper_size,
+            'registration': self.registration,
+            'only_fronts': self.only_fronts,
+            'crop_amount': self.crop_amount,
+            'extend_corners': self.extend_corners,
+            'ppi': self.ppi,
+            'pdf_quality': self.pdf_quality,
+            'pdf_selected_profile': self.pdf_selected_profile,
+            
+            # Offset tab settings
+            'x_offset': self.x_offset,
+            'y_offset': self.y_offset,
+            'profile_paper_size': self.profile_paper_size,
+        }
     
     def load_settings(self):
         """Load saved settings from JSON file"""
-        if not os.path.exists(self.settings_file):
-            return
-        
-        try:
-            with open(self.settings_file, 'r', encoding='utf-8') as f:
-                settings = json.load(f)
-            
-            # Fetch tab settings
-            if 'selected_game' in settings:
-                self.selected_game.set(settings['selected_game'])
-            if 'deck_format' in settings:
-                self.deck_format.set(settings['deck_format'])
-            if 'art_crop' in settings:
-                self.art_crop.set(settings['art_crop'])
-            if 'tokens' in settings:
-                self.tokens.set(settings['tokens'])
-            if 'parallel' in settings:
-                self.parallel.set(settings['parallel'])
-            if 'max_workers' in settings:
-                self.max_workers.set(settings['max_workers'])
-            if 'api_delay' in settings:
-                self.api_delay.set(settings['api_delay'])
-            if 'prefer_showcase' in settings:
-                self.prefer_showcase.set(settings['prefer_showcase'])
-            if 'prefer_extra_art' in settings:
-                self.prefer_extra_art.set(settings['prefer_extra_art'])
-            if 'prefer_older_sets' in settings:
-                self.prefer_older_sets.set(settings['prefer_older_sets'])
-            if 'ignore_set_collector' in settings:
-                self.ignore_set_collector.set(settings['ignore_set_collector'])
-            
-            # PDF tab settings
-            if 'front_dir' in settings:
-                self.front_dir.set(settings['front_dir'])
-            if 'back_dir' in settings:
-                self.back_dir.set(settings['back_dir'])
-            if 'double_sided_dir' in settings:
-                self.double_sided_dir.set(settings['double_sided_dir'])
-            if 'output_pdf_path' in settings:
-                self.output_pdf_path.set(settings['output_pdf_path'])
-            if 'card_size' in settings:
-                self.card_size.set(settings['card_size'])
-            if 'paper_size' in settings:
-                self.paper_size.set(settings['paper_size'])
-            if 'registration' in settings:
-                self.registration.set(settings['registration'])
-            if 'only_fronts' in settings:
-                self.only_fronts.set(settings['only_fronts'])
-            if 'crop_amount' in settings:
-                self.crop_amount.set(settings['crop_amount'])
-            if 'extend_corners' in settings:
-                self.extend_corners.set(settings['extend_corners'])
-            if 'ppi' in settings:
-                self.ppi.set(settings['ppi'])
-            if 'pdf_quality' in settings:
-                self.pdf_quality.set(settings['pdf_quality'])
-            if 'pdf_selected_profile' in settings:
-                self.pdf_selected_profile.set(settings['pdf_selected_profile'])
-            
-            # Offset tab settings
-            if 'x_offset' in settings:
-                self.x_offset.set(settings['x_offset'])
-            if 'y_offset' in settings:
-                self.y_offset.set(settings['y_offset'])
-            if 'profile_paper_size' in settings:
-                self.profile_paper_size.set(settings['profile_paper_size'])
-                
-        except Exception as e:
-            # If settings file is corrupted, just ignore and use defaults
-            print(f"Warning: Could not load settings: {e}")
+        self.settings_manager.load_settings(self._get_settings_variables())
     
     def save_settings(self):
         """Save current settings to JSON file"""
-        try:
-            settings = {
-                # Fetch tab settings
-                'selected_game': self.selected_game.get(),
-                'deck_format': self.deck_format.get(),
-                'art_crop': self.art_crop.get(),
-                'tokens': self.tokens.get(),
-                'parallel': self.parallel.get(),
-                'max_workers': self.max_workers.get(),
-                'api_delay': self.api_delay.get(),
-                'prefer_showcase': self.prefer_showcase.get(),
-                'prefer_extra_art': self.prefer_extra_art.get(),
-                'prefer_older_sets': self.prefer_older_sets.get(),
-                'ignore_set_collector': self.ignore_set_collector.get(),
-                
-                # PDF tab settings
-                'front_dir': self.front_dir.get(),
-                'back_dir': self.back_dir.get(),
-                'double_sided_dir': self.double_sided_dir.get(),
-                'output_pdf_path': self.output_pdf_path.get(),
-                'card_size': self.card_size.get(),
-                'paper_size': self.paper_size.get(),
-                'registration': self.registration.get(),
-                'only_fronts': self.only_fronts.get(),
-                'crop_amount': self.crop_amount.get(),
-                'extend_corners': self.extend_corners.get(),
-                'ppi': self.ppi.get(),
-                'pdf_quality': self.pdf_quality.get(),
-                'pdf_selected_profile': self.pdf_selected_profile.get(),
-                
-                # Offset tab settings
-                'x_offset': self.x_offset.get(),
-                'y_offset': self.y_offset.get(),
-                'profile_paper_size': self.profile_paper_size.get(),
-            }
-            
-            with open(self.settings_file, 'w', encoding='utf-8') as f:
-                json.dump(settings, f, indent=2)
-                
-        except Exception as e:
-            print(f"Warning: Could not save settings: {e}")
+        self.settings_manager.save_settings(self._get_settings_variables())
     
     def on_closing(self):
-        """Handle window close event"""
-        # Save settings
+        """Handle window closing"""
         self.save_settings()
-        
-        # Clean up temp file
         self.cleanup_temp_deck_file()
-        
-        # Close window
         self.root.destroy()
+    
+    # ============================================================================
+    # UI SETUP
+    # ============================================================================
     
     def setup_ui(self):
         # Main container with padding
@@ -1543,7 +1313,6 @@ class MTGCardFetcherGUI:
                 elif msg_type == 'card':
                     self._update_current_card_internal(msg['card_name'], msg.get('details'))
                 elif msg_type == 'complete':
-                    print(f"DEBUG: Received completion message - success={msg['success']}, message={msg.get('message')}")
                     self._fetch_complete_internal(msg['success'], msg.get('message'))
                     
         except queue.Empty:
@@ -1962,16 +1731,11 @@ class MTGCardFetcherGUI:
     
     def _fetch_complete_internal(self, success, message=None):
         """Called when fetch completes (must be called from main thread)"""
-        print(f"DEBUG: _fetch_complete_internal called - success={success}, message={message}")
-        print(f"DEBUG: Current state - is_fetching={self.is_fetching}, cancel_fetch={self.cancel_fetch}")
-        
         # Re-enable buttons and reset state
         self.fetch_btn.configure(text='🚀 Start Fetching Cards', style='Accent.TButton', state='normal')
         self.cleanup_btn.configure(state='normal')
         self.is_fetching = False
         self.cancel_fetch = False
-        
-        print(f"DEBUG: After reset - is_fetching={self.is_fetching}, cancel_fetch={self.cancel_fetch}")
         
         if success:
             if not message or "cancel" not in message.lower():
