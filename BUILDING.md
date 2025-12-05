@@ -35,20 +35,22 @@ The executable will be created in the `dist/` folder.
 
 ### Manual Build
 
-1. Install PyInstaller:
-```bash
-pip install pyinstaller
-```
-
-2. Install project dependencies:
+1. **Install dependencies first:**
 ```bash
 pip install -r requirements.txt
+```
+
+2. Install PyInstaller:
+```bash
+pip install pyinstaller
 ```
 
 3. Build the executable:
 ```bash
 pyinstaller --clean SilhouetteCardMaker.spec
 ```
+
+**Important:** You must install all project dependencies from `requirements.txt` before building, as PyInstaller needs them to bundle into the executable.
 
 ### Customization
 
