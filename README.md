@@ -128,6 +128,8 @@ The [Altered plugin](plugins/altered/README.md) supports **Ajordat** format.
 
 The [Digimon plugin](plugins/digimon/README.md) supports **Tabletop Simulator**, **Digimoncard.io**, **Digimoncard.dev**, **Digimoncard.app**, **DigimonMeta**, and **Untap** formats.
 
+The [Elestrals plugin](plugins/elestrals/README.md) supports **Elestrals** format.
+
 The [Flesh and Blood plugin](plugins/flesh_and_blood/README.md) supports **Fabrary** format.
 
 The [Grand Archive plugin](plugins/grand_archive/README.md) supports **Omnideck** format.
@@ -136,7 +138,7 @@ The [Gundam plugin](plugins/gundam/README.md) supports **DeckPlanet**, **Limitle
 
 The [Lorcana plugin](plugins/lorcana/README.md) supports **Dreamborn** format.
 
-The [Netrunner plugin](plugins/netrunner/README.md) supports **text*, **bbCode**, **markdown**, **plain text**,  and **Jinteki** formats.
+The [Netrunner plugin](plugins/netrunner/README.md) supports **text**, **bbCode**, **markdown**, **plain text**,  and **Jinteki** formats.
 
 The [One Piece plugin](plugins/one_piece/README.md) supports **OPTCG Simulator** and **Egman Events** formats.
 

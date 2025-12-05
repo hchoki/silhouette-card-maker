@@ -7,13 +7,13 @@ weight: 10
 
 ## Equipment
 
-* [Cutting machine (Cameo 5)](https://www.silhouetteamerica.com/cameo-5?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`) / [Amazon alternative](https://amzn.to/3Sua8le)
-* [Thermal laminator](https://amzn.to/3IUPaui)
+* [Cutting machine (Cameo 5 Alpha)](https://www.silhouetteamerica.com/silhouette-cameo-5-alpha?affiliate_code=uKx6VtFWmI&referring_service=link) (coupon code: `DIYBOARDGAMES`) / [Amazon alternative](https://amzn.to/3K7NJtF)
+* [Thermal laminator](https://www.amazon.com/dp/B0F6N8TXFK?ref=t_ac_view_request_product_image&campaignId=amzn1.campaign.1FDU7KAU45M7O&linkCode=tr1&tag=alansmarke01f-20&linkId=amzn1.campaign.1FDU7KAU45M7O_1764700659395)
 * Inkjet printer
 * [Printer cable (USB 2.0)](https://amzn.to/4jeHsrI)
 * Computer
 
-I recommend the Cameo 5 because it's the cutting machine I use and it's the latest and greatest from Silhouette. However, if the cost is too prohibitive, you can consider the Cameo 4. The [Cameo 4 Plus]( https://www.silhouetteamerica.com/cameo-plus?affiliate_code=uKx6VtFWmI&referring_service=link) is still available and it's cheaper than the Cameo 5 but also larger. Another option is the [Portrait 4](https://www.silhouetteamerica.com/portrait-4?affiliate_code=uKx6VtFWmI&referring_service=link), which is compact (only supporting letter and A4 size material) but lacks a dual tool carriage. Regardless of the machine, I'd recommend purchasing the machine only and avoiding the bundles as they're not relevant to making cards and proxies.
+I recommend the Cameo 5 Alpha because it's the latest and greatest from Silhouette. I use the Cameo 5 which is similar to and has been replaced by the Cameo 5 Alpha. However, if the cost is too prohibitive, you can consider the Cameo 4. The [Cameo 4 Plus]( https://www.silhouetteamerica.com/cameo-plus?affiliate_code=uKx6VtFWmI&referring_service=link) is still available and it's cheaper than the Cameo 5 but also larger. Another option is the [Portrait 4](https://www.silhouetteamerica.com/portrait-4?affiliate_code=uKx6VtFWmI&referring_service=link), which is compact (only supporting letter and A4 size material) but lacks a dual tool carriage. Regardless of the machine, I'd recommend purchasing the machine only and avoiding the bundles as they're not relevant to making cards and proxies.
 
 I recommend this laminator for a few reasons. First, it's not particularly expensive compared to others. Second, most laminators support only one or two hot settings (3 and 5 mil). This is the only reasonably priced laminator I've found with 4 hot settings: 3, 4, 5, and 6 mil. Because laminators are built for printer paper and not card stock, it's helpful to have these additional settings to ensure lamination quality. Lastly, this laminator is wide, which makes it easy to feed sheets and finish cards.
 
