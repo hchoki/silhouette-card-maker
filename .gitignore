@@ -24,3 +24,12 @@ test/*/output/*
 hugo/public/
 .vscode/launch.json
 art/
+# Build artifacts (PyInstaller)
+build/
+dist/
+*.spec.bak
+*.exe
+*.app
+*.dmg
+*.tar.gz
+*.log
