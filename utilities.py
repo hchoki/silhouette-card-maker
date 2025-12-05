@@ -5,6 +5,7 @@ import math
 import os
 from pathlib import Path
 import re
+import sys
 from typing import Dict, List
 from xml.dom import ValidationErr
 
@@ -12,11 +13,50 @@ from natsort import natsorted
 from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 from pydantic import BaseModel
 
+def _get_asset_directory() -> str:
+    """
+    Get the assets directory path.
+    For packaged executables, uses PyInstaller's _MEIPASS.
+    For development, uses relative 'assets' path.
+    """
+    if getattr(sys, 'frozen', False):
+        # Packaged executable - use PyInstaller's temp folder
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(base_path, 'assets')
+    else:
+        # Development mode - use relative path
+        return 'assets'
+
 # Specify directory locations
-asset_directory = 'assets'
+asset_directory = _get_asset_directory()
 
 layouts_filename = 'layouts.json'
 layouts_path = os.path.join(asset_directory, layouts_filename)
+
+def _get_data_directory() -> str:
+    """
+    Get the data directory for storing offset profiles and settings.
+    Uses user data config directory for packaged executables, 'data' for development.
+    """
+    is_frozen = getattr(sys, 'frozen', False)
+    
+    if is_frozen:
+        # Packaged executable - use config subdirectory in user data
+        if sys.platform == 'win32':
+            base_dir = os.getenv('APPDATA', os.path.expanduser('~'))
+            data_dir = os.path.join(base_dir, 'SilhouetteCardMaker', 'config')
+        elif sys.platform == 'darwin':
+            data_dir = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'SilhouetteCardMaker', 'config')
+        else:
+            xdg_data_home = os.getenv('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share'))
+            data_dir = os.path.join(xdg_data_home, 'SilhouetteCardMaker', 'config')
+    else:
+        # Development mode - use repository's data directory
+        data_dir = 'data'
+    
+    # Ensure directory exists
+    os.makedirs(data_dir, exist_ok=True)
+    return data_dir
 
 class CardSize(str, Enum):
     STANDARD = "standard"
@@ -657,19 +697,19 @@ class OffsetProfiles(BaseModel):
 
 def save_offset(x_offset, y_offset) -> None:
     """Save offset using the legacy single-profile system for backwards compatibility"""
-    # Create the directory if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    # Get the data directory
+    data_dir = _get_data_directory()
 
     # Save the offset data to a JSON file
-    with open('data/offset_data.json', 'w') as offset_file:
+    with open(os.path.join(data_dir, 'offset_data.json'), 'w') as offset_file:
         offset_file.write(OffsetData(x_offset=x_offset, y_offset=y_offset).model_dump_json(indent=4))
 
     print('Offset data saved!')
 
 def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "") -> None:
     """Save a named offset profile"""
-    # Create the directory if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    # Get the data directory
+    data_dir = _get_data_directory()
     
     # Load existing profiles or create new structure
     profiles = load_offset_profiles()
@@ -693,15 +733,18 @@ def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str
         profiles.default_profile = name
     
     # Save profiles
-    with open('data/offset_profiles.json', 'w') as profiles_file:
+    data_dir = _get_data_directory()
+    with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
         profiles_file.write(profiles.model_dump_json(indent=4))
     
     print(f'Offset profile "{name}" saved!')
 
 def load_offset_profiles() -> OffsetProfiles:
     """Load all offset profiles"""
-    if os.path.exists('data/offset_profiles.json'):
-        with open('data/offset_profiles.json', 'r') as profiles_file:
+    data_dir = _get_data_directory()
+    profiles_path = os.path.join(data_dir, 'offset_profiles.json')
+    if os.path.exists(profiles_path):
+        with open(profiles_path, 'r') as profiles_file:
             try:
                 data = json.load(profiles_file)
                 return OffsetProfiles(**data)
@@ -723,8 +766,10 @@ def load_offset_profile(profile_name: str) -> OffsetProfile:
 
 def load_saved_offset() -> OffsetData:
     """Load offset using the legacy single-profile system for backwards compatibility"""
-    if os.path.exists('data/offset_data.json'):
-        with open('data/offset_data.json', 'r') as offset_file:
+    data_dir = _get_data_directory()
+    offset_path = os.path.join(data_dir, 'offset_data.json')
+    if os.path.exists(offset_path):
+        with open(offset_path, 'r') as offset_file:
             try:
                 data = json.load(offset_file)
                 return OffsetData(**data)
@@ -757,7 +802,8 @@ def delete_offset_profile(profile_name: str) -> bool:
                 profiles.default_profile = next(iter(profiles.profiles))
         
         # Save updated profiles
-        with open('data/offset_profiles.json', 'w') as profiles_file:
+        data_dir = _get_data_directory()
+        with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
             profiles_file.write(profiles.model_dump_json(indent=4))
         
         print(f'Offset profile "{profile_name}" deleted!')
@@ -774,7 +820,8 @@ def set_default_offset_profile(profile_name: str) -> bool:
         profiles.default_profile = profile_name
         
         # Save updated profiles
-        with open('data/offset_profiles.json', 'w') as profiles_file:
+        data_dir = _get_data_directory()
+        with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
             profiles_file.write(profiles.model_dump_json(indent=4))
         
         print(f'Default offset profile set to "{profile_name}"!')

@@ -66,6 +66,7 @@ hiddenimports = [
     # GUI utilities
     'gui.utils.settings_manager',
     'gui.utils.styles',
+    'gui.utils.user_data',
 ]
 
 # Add collected hidden imports

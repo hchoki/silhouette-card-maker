@@ -86,6 +86,49 @@ The executables include:
 - All dependencies (Pillow, requests, pypdf, etc.)
 - GUI framework (Tkinter)
 - All plugins and assets
+- Bundled resources (calibration PDFs, cutting templates)
+
+## Resource Architecture
+
+The application uses a smart resource management system:
+
+### Bundled Resources (In Executable)
+These are packed into the executable via PyInstaller's `_MEIPASS`:
+
+- **assets/** - Fonts (arial.ttf), layouts (layouts.json), registration mark images
+  - Accessed automatically by the application
+  - Users don't need direct access to these files
+
+- **calibration/** - Printer offset calibration PDFs
+  - Available in the repository for download
+  - Used for determining printer offset values
+
+- **cutting_templates/** - Silhouette Studio cutting files (`.studio3`)
+  - Available in the repository for download  
+  - Imported into Silhouette Studio for cutting
+
+- **plugins/** - Game-specific card fetching plugins
+  - Bundled and available in the GUI dropdown
+
+### User Data (User's System)
+The application creates a user-selectable data directory containing:
+
+- `front/` - Card front images
+- `back/` - Card back images
+- `double_sided/` - Double-sided card images
+- `output/` - Generated PDFs
+- `decklist/` - Deck list files
+
+### Configuration Data (Platform-Specific)
+Settings and profiles stored in:
+- Windows: `%APPDATA%\SilhouetteCardMaker\config`
+- macOS: `~/Library/Application Support/SilhouetteCardMaker/config`
+- Linux: `~/.local/share/SilhouetteCardMaker/config`
+
+Contains:
+- `gui_settings.json` - GUI preferences
+- `offset_profiles.json` - Printer offset profiles
+- `data_location.json` - User data directory path
 
 ## Troubleshooting
 
