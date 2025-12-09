@@ -181,14 +181,16 @@ class UserDataManager:
             dict: Dictionary with paths to all user directories
         """
         user_data_dir = self.get_user_data_dir()
+        game_dir = user_data_dir / 'game'
         
         directories = {
             'base': user_data_dir,
-            'front': user_data_dir / 'front',
-            'back': user_data_dir / 'back',
-            'double_sided': user_data_dir / 'double_sided',
-            'output': user_data_dir / 'output',
-            'decklist': user_data_dir / 'decklist',
+            'game': game_dir,
+            'front': game_dir / 'front',
+            'back': game_dir / 'back',
+            'double_sided': game_dir / 'double_sided',
+            'output': game_dir / 'output',
+            'decklist': game_dir / 'decklist',
         }
         
         # Create all directories

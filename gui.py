@@ -240,12 +240,13 @@ class MTGCardFetcherGUI:
         
         # Info about what will be created
         structure_text = (
-            "The following folders will be created:\n\n"
-            "  📁 front/  - Front-side card images\n"
-            "  📁 back/  - Back-side card images\n"
-            "  📁 double_sided/  - Double-sided card images\n"
-            "  📁 output/  - Generated PDFs\n"
-            "  📁 decklist/  - Deck list files\n\n"
+            "The following folder structure will be created:\n\n"
+            "  📁 game/\n"
+            "    📁 front/  - Front-side card images\n"
+            "    📁 back/  - Back-side card images\n"
+            "    📁 double_sided/  - Double-sided card images\n"
+            "    📁 output/  - Generated PDFs\n"
+            "    📁 decklist/  - Deck list files\n\n"
             "You can change individual folder locations later in the 'Create PDF' tab."
         )
         
@@ -1921,6 +1922,9 @@ class MTGCardFetcherGUI:
     
     def create_pdf_worker(self):
         """Worker thread for PDF creation"""
+        success = False
+        error_message = None
+        
         try:
             # Redirect print to GUI
             original_print = print
@@ -1984,19 +1988,30 @@ class MTGCardFetcherGUI:
                 self.pdf_log_message("✅ PDF created successfully!")
                 self.pdf_log_message("═" * 70)
                 
-                self.root.after(0, lambda: self.pdf_creation_complete(True))
+                success = True
                 
             finally:
                 builtins.print = original_print
                 
         except Exception as e:
             import traceback
-            traceback.print_exc()
-            self.pdf_log_message("")
-            self.pdf_log_message("═" * 70)
-            self.pdf_log_message(f"❌ ERROR: {str(e)}")
-            self.pdf_log_message("═" * 70)
-            self.root.after(0, lambda: self.pdf_creation_complete(False, str(e)))
+            try:
+                traceback.print_exc()
+            except:
+                pass  # Ignore errors in error reporting
+            
+            error_message = str(e)
+            try:
+                self.pdf_log_message("")
+                self.pdf_log_message("═" * 70)
+                self.pdf_log_message(f"❌ ERROR: {error_message}")
+                self.pdf_log_message("═" * 70)
+            except:
+                pass  # Ignore errors in logging
+        
+        finally:
+            # Always reset the button state, no matter what happens
+            self.root.after(0, lambda: self.pdf_creation_complete(success, error_message))
     
     def pdf_log_message(self, message):
         """Thread-safe log message for PDF tab"""
