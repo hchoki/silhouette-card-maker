@@ -640,10 +640,10 @@ def generate_pdf(
                 if offset_profile == "default":
                     profiles = load_offset_profiles()
                     if profiles.default_profile:
-                        profile = load_offset_profile(profiles.default_profile)
+                        profile = profiles.profiles[profiles.default_profile]
                         if profile:
-                            print(f'Loaded default offset profile "{profiles.default_profile}": x={profile.x_offset}, y={profile.y_offset}')
-                            pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                            print(f'Loaded default offset profile "{profiles.default_profile}": x={profile.x_offset}, y={profile.y_offset}, angle={profile.angle_offset}°')
+                            pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi, profile.angle_offset)
                             offset_applied = True
                         else:
                             print(f'Default profile "{profiles.default_profile}" not found')
@@ -652,8 +652,8 @@ def generate_pdf(
                 else:
                     profile = load_offset_profile(offset_profile)
                     if profile:
-                        print(f'Loaded offset profile "{offset_profile}": x={profile.x_offset}, y={profile.y_offset}')
-                        pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                        print(f'Loaded offset profile "{offset_profile}": x={profile.x_offset}, y={profile.y_offset}, angle={profile.angle_offset}°')
+                        pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi, profile.angle_offset)
                         offset_applied = True
                     else:
                         print(f'Offset profile "{offset_profile}" not found')
@@ -688,6 +688,7 @@ class OffsetProfile(BaseModel):
     description: str
     x_offset: int
     y_offset: int
+    angle_offset: float = 0.0  # Rotation angle in degrees
     paper_size: str
     created_at: str
 
@@ -706,7 +707,7 @@ def save_offset(x_offset, y_offset) -> None:
 
     print('Offset data saved!')
 
-def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "") -> None:
+def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "", angle_offset: float = 0.0) -> None:
     """Save a named offset profile"""
     # Get the data directory
     data_dir = _get_data_directory()
@@ -721,6 +722,7 @@ def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str
         description=description or f"Offset profile for {paper_size or 'custom setup'}",
         x_offset=x_offset,
         y_offset=y_offset,
+        angle_offset=angle_offset,
         paper_size=paper_size,
         created_at=datetime.now().isoformat()
     )
@@ -830,13 +832,20 @@ def set_default_offset_profile(profile_name: str) -> bool:
     print(f'Offset profile "{profile_name}" not found!')
     return False
 
-def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int) -> List[Image.Image]:
+def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int, angle_offset: float = 0.0) -> List[Image.Image]:
     offset_images = []
 
     add_offset = False
     for image in images:
         if add_offset:
-            offset_images.append(ImageChops.offset(image, math.floor(x_offset * ppi / 300), math.floor(y_offset * ppi / 300)))
+            # Apply translation offset
+            offset_img = ImageChops.offset(image, math.floor(x_offset * ppi / 300), math.floor(y_offset * ppi / 300))
+            
+            # Apply rotation if angle_offset is non-zero
+            if angle_offset != 0.0:
+                offset_img = offset_img.rotate(angle_offset, expand=False, fillcolor='white')
+            
+            offset_images.append(offset_img)
         else:
             offset_images.append(image)
 
