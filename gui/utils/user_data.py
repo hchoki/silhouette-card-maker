@@ -1,8 +1,8 @@
 """
 User Data Directory Management
 
-Handles the location of user data directories for the packaged application.
-Uses platform-appropriate locations for storing user data.
+Handles the location of user data directories.
+ALWAYS uses local directories (game/, data/) whether running from source or as packaged exe.
 """
 
 import os
@@ -20,158 +20,91 @@ class UserDataManager:
         self._is_frozen = getattr(sys, 'frozen', False)
         self._config_loaded = False
         
+    def get_application_root(self) -> Path:
+        """
+        Get the application root directory.
+        - When packaged: directory where .exe is located
+        - When running from source: repository root
+        
+        Returns:
+            Path: The application root directory
+        """
+        if self._is_frozen:
+            # Packaged executable - use exe directory
+            return Path(sys.executable).parent
+        else:
+            # Development mode - use repository root
+            return Path(__file__).parent.parent.parent
+    
     def get_config_dir(self) -> Path:
         """
         Get the configuration directory path for settings and offset profiles.
-        This is always in APPDATA for packaged apps, regardless of user data location.
+        ALWAYS uses local 'data' directory in application root.
         
         Returns:
-            Path: The configuration directory
+            Path: The configuration directory (always <app_root>/data)
         """
-        if self._is_frozen:
-            # Packaged executable - use config in APPDATA
-            if sys.platform == 'win32':
-                base_dir = os.getenv('APPDATA', os.path.expanduser('~'))
-                config_dir = Path(base_dir) / 'SilhouetteCardMaker' / 'config'
-            elif sys.platform == 'darwin':
-                config_dir = Path.home() / 'Library' / 'Application Support' / 'SilhouetteCardMaker' / 'config'
-            else:
-                xdg_data_home = os.getenv('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share'))
-                config_dir = Path(xdg_data_home) / 'SilhouetteCardMaker' / 'config'
-        else:
-            # Development mode - use repository's data directory
-            if getattr(sys, '_MEIPASS', None):
-                repo_root = Path(sys._MEIPASS)
-            else:
-                repo_root = Path(__file__).parent.parent.parent
-            config_dir = repo_root / 'data'
-        
-        # Ensure the directory exists
+        config_dir = self.get_application_root() / 'data'
         config_dir.mkdir(parents=True, exist_ok=True)
         return config_dir
     
     def get_default_root_suggestion(self) -> Path:
         """
-        Get the suggested default root directory (where the exe is located).
+        Get the suggested default root directory for game data.
+        ALWAYS returns <app_root>/game
         
         Returns:
-            Path: Suggested root directory
+            Path: The game directory
         """
-        if self._is_frozen:
-            # Packaged executable - suggest exe directory
-            if getattr(sys, '_MEIPASS', None):
-                # Running from PyInstaller bundle
-                exe_path = Path(sys.executable).parent
-            else:
-                exe_path = Path(sys.executable).parent
-            return exe_path
-        else:
-            # Development mode - use repository's game directory
-            repo_root = Path(__file__).parent.parent.parent
-            return repo_root / 'game'
+        return self.get_application_root() / 'game'
     
     def load_user_data_location(self) -> Optional[Path]:
         """
         Load the user-selected data directory from config.
+        NOTE: For compatibility, but always returns game/ directory.
         
         Returns:
-            Optional[Path]: The saved user data directory, or None if not set
+            Path: The game directory (always <app_root>/game)
         """
-        config_dir = self.get_config_dir()
-        location_file = config_dir / 'data_location.json'
-        
-        if location_file.exists():
-            try:
-                with open(location_file, 'r') as f:
-                    data = json.load(f)
-                    path = Path(data.get('user_data_dir', ''))
-                    if path.exists():
-                        return path
-            except (json.JSONDecodeError, OSError):
-                pass
-        
-        return None
+        return self.get_default_root_suggestion()
     
     def save_user_data_location(self, path: Path) -> None:
         """
-        Save the user-selected data directory to config.
+        No-op: Data directory is always local, no need to save preference.
         
         Args:
-            path: The user data directory path to save
+            path: Ignored
         """
-        config_dir = self.get_config_dir()
-        location_file = config_dir / 'data_location.json'
-        
-        with open(location_file, 'w') as f:
-            json.dump({
-                'user_data_dir': str(path),
-                'configured': True
-            }, f, indent=2)
+        pass
     
     def is_configured(self) -> bool:
         """
         Check if user has configured their data directory.
+        Always returns True since we always use local game/ directory.
         
         Returns:
-            bool: True if configured
+            bool: Always True
         """
-        config_dir = self.get_config_dir()
-        location_file = config_dir / 'data_location.json'
-        return location_file.exists()
+        return True
         
     def get_user_data_dir(self) -> Path:
         """
         Get the user data directory path.
-        
-        For packaged executables:
-        - First checks for user-configured location
-        - Falls back to exe directory if not configured
-        
-        For development, uses the repository's game/ directory.
+        ALWAYS returns <app_root>/game whether packaged or running from source.
         
         Returns:
-            Path: The user data directory
+            Path: The game directory
         """
-        if self._user_data_dir is not None:
-            return self._user_data_dir
-        
-        if not self._config_loaded:
-            # Try to load saved location (only for packaged apps)
-            if self._is_frozen:
-                saved_location = self.load_user_data_location()
-                if saved_location:
-                    self._user_data_dir = saved_location
-                    self._config_loaded = True
-                    return self._user_data_dir
-            
-            self._config_loaded = True
-        
-        if self._is_frozen:
-            # Packaged executable - use default suggestion (exe directory)
-            self._user_data_dir = self.get_default_root_suggestion()
-        else:
-            # Development mode - use repository's game directory
-            if getattr(sys, '_MEIPASS', None):
-                repo_root = Path(sys._MEIPASS)
-            else:
-                repo_root = Path(__file__).parent.parent.parent
-            self._user_data_dir = repo_root / 'game'
-        
-        return self._user_data_dir
+        return self.get_application_root() / 'game'
     
     def set_user_data_dir(self, path: Path) -> None:
         """
-        Set and save the user data directory.
+        No-op: Data directory is always local game/, cannot be changed.
         
         Args:
-            path: The directory to use for user data
+            path: Ignored
         """
-        self._user_data_dir = path
-        if self._is_frozen:
-            self.save_user_data_location(path)
-        
-        # Ensure directories exist in the new location
-        self.ensure_directories_exist()
+        pass
     
     def ensure_directories_exist(self) -> dict:
         """
@@ -181,16 +114,15 @@ class UserDataManager:
             dict: Dictionary with paths to all user directories
         """
         user_data_dir = self.get_user_data_dir()
-        game_dir = user_data_dir / 'game'
         
         directories = {
             'base': user_data_dir,
-            'game': game_dir,
-            'front': game_dir / 'front',
-            'back': game_dir / 'back',
-            'double_sided': game_dir / 'double_sided',
-            'output': game_dir / 'output',
-            'decklist': game_dir / 'decklist',
+            'game': user_data_dir,
+            'front': user_data_dir / 'front',
+            'back': user_data_dir / 'back',
+            'double_sided': user_data_dir / 'double_sided',
+            'output': user_data_dir / 'output',
+            'decklist': user_data_dir / 'decklist',
         }
         
         # Create all directories
@@ -227,16 +159,12 @@ class UserDataManager:
     def is_first_run(self) -> bool:
         """
         Check if this is the first time the application is run.
+        Always returns False since we don't need first-run setup.
         
         Returns:
-            bool: True if this appears to be the first run
+            bool: Always False
         """
-        if not self._is_frozen:
-            # Development mode - not first run
-            return False
-        
-        # Check if user has configured their data directory
-        return not self.is_configured()
+        return False
     
     def is_packaged(self) -> bool:
         """
@@ -246,6 +174,13 @@ class UserDataManager:
             bool: True if running as packaged executable
         """
         return self._is_frozen
+    
+    def ensure_user_data_structure(self) -> None:
+        """
+        Ensure the complete user data structure exists.
+        Creates all necessary directories.
+        """
+        self.ensure_directories_exist()
 
 
 # Global instance

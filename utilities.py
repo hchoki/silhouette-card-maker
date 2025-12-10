@@ -13,50 +13,33 @@ from natsort import natsorted
 from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 from pydantic import BaseModel
 
-def _get_asset_directory() -> str:
+def _get_application_root() -> Path:
     """
-    Get the assets directory path.
-    For packaged executables, uses PyInstaller's _MEIPASS.
-    For development, uses relative 'assets' path.
+    Get the application root directory.
+    - When packaged: directory where .exe is located
+    - When running from source: repository root
     """
     if getattr(sys, 'frozen', False):
-        # Packaged executable - use PyInstaller's temp folder
-        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-        return os.path.join(base_path, 'assets')
+        # Packaged executable - use exe directory
+        return Path(sys.executable).parent
     else:
-        # Development mode - use relative path
-        return 'assets'
+        # Development mode - use repository root
+        return Path(__file__).parent
 
-# Specify directory locations
-asset_directory = _get_asset_directory()
-
+# Specify directory locations (always relative to application root)
+asset_directory = str(_get_application_root() / 'assets')
 layouts_filename = 'layouts.json'
 layouts_path = os.path.join(asset_directory, layouts_filename)
 
 def _get_data_directory() -> str:
     """
     Get the data directory for storing offset profiles and settings.
-    Uses user data config directory for packaged executables, 'data' for development.
+    Always uses 'data' directory in application root (whether packaged or not).
     """
-    is_frozen = getattr(sys, 'frozen', False)
-    
-    if is_frozen:
-        # Packaged executable - use config subdirectory in user data
-        if sys.platform == 'win32':
-            base_dir = os.getenv('APPDATA', os.path.expanduser('~'))
-            data_dir = os.path.join(base_dir, 'SilhouetteCardMaker', 'config')
-        elif sys.platform == 'darwin':
-            data_dir = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'SilhouetteCardMaker', 'config')
-        else:
-            xdg_data_home = os.getenv('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share'))
-            data_dir = os.path.join(xdg_data_home, 'SilhouetteCardMaker', 'config')
-    else:
-        # Development mode - use repository's data directory
-        data_dir = 'data'
-    
+    data_dir = _get_application_root() / 'data'
     # Ensure directory exists
-    os.makedirs(data_dir, exist_ok=True)
-    return data_dir
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return str(data_dir)
 
 class CardSize(str, Enum):
     STANDARD = "standard"

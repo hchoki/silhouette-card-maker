@@ -2,6 +2,9 @@
 """
 PyInstaller spec file for Silhouette Card Maker
 This creates a standalone executable with all dependencies bundled.
+
+The executable will be created in the root folder (not dist/)
+All data directories (game/, data/) will be created next to the exe on first run.
 """
 
 import sys
@@ -10,20 +13,20 @@ from PyInstaller.utils.hooks import collect_all
 
 block_cipher = None
 
-# Get the project root directory
-root_dir = Path('.').absolute()
+# Get the project root directory (parent of build_tools/)
+root_dir = Path('..').absolute()
 
 # Collect all submodules for critical packages
 requests_imports = collect_all('requests')
 urllib3_imports = collect_all('urllib3')
 
-# Data files to include
+# Data files to include (bundled into exe, extracted on first run)
 datas = [
-    ('assets', 'assets'),
-    ('calibration', 'calibration'),
-    ('cutting_templates', 'cutting_templates'),
-    ('plugins', 'plugins'),
-    ('gui/utils', 'gui/utils'),
+    (str(root_dir / 'assets'), 'assets'),
+    (str(root_dir / 'calibration'), 'calibration'),
+    (str(root_dir / 'cutting_templates'), 'cutting_templates'),
+    (str(root_dir / 'plugins'), 'plugins'),
+    (str(root_dir / 'gui' / 'utils'), 'gui/utils'),
 ]
 
 # Add collected data files
@@ -74,8 +77,8 @@ hiddenimports += requests_imports[1]
 hiddenimports += urllib3_imports[1]
 
 a = Analysis(
-    ['gui.py'],
-    pathex=[],
+    [str(root_dir / 'gui.py')],
+    pathex=[str(root_dir)],
     binaries=[],
     datas=datas,
     hiddenimports=hiddenimports,
@@ -118,3 +121,12 @@ exe = EXE(
     entitlements_file=None,
     icon=None,  # Add icon path here if you create one: icon='assets/icon.ico'
 )
+
+# For macOS: Create an app bundle
+if sys.platform == 'darwin':
+    app = BUNDLE(
+        exe,
+        name='SilhouetteCardMaker.app',
+        icon=None,
+        bundle_identifier='com.silhouettecardmaker.app',
+    )

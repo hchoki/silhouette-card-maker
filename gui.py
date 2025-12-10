@@ -30,7 +30,7 @@ from deck_formats import DeckFormat
 from scryfall import get_handle_card as scryfall_get_handle_card
 from deck_formats import parse_deck
 from utilities import (
-    Registration, CardSize, PaperSize, generate_pdf, 
+    Registration, CardSize, PaperSize, generate_pdf,
     load_saved_offset, save_offset,
     load_offset_profiles, load_offset_profile, save_offset_profile,
     list_offset_profiles, delete_offset_profile, set_default_offset_profile
@@ -50,12 +50,12 @@ class MTGCardFetcherGUI:
         # Configure modern style using StyleManager
         StyleManager.setup_styles(root)
         
-        # Initialize user data manager
-        self.user_data_manager = get_user_data_manager()
-        default_paths = self.user_data_manager.get_default_paths()
-        
         # Initialize plugin manager
         self.plugin_manager = get_plugin_manager()
+        
+        # Initialize user data manager (uses local directories even when packaged)
+        self.user_data_manager = get_user_data_manager()
+        self.user_data_manager.ensure_user_data_structure()
         
         # Fetch card variables
         self.selected_game = tk.StringVar(value="mtg")  # Default to MTG
@@ -71,6 +71,9 @@ class MTGCardFetcherGUI:
         self.prefer_extra_art = tk.BooleanVar(value=False)
         self.prefer_older_sets = tk.BooleanVar(value=False)
         self.ignore_set_collector = tk.BooleanVar(value=False)
+        
+        # Get default paths from user data manager
+        default_paths = self.user_data_manager.get_default_paths()
         
         # PDF creation variables
         self.front_dir = tk.StringVar(value=default_paths['front_dir'])
@@ -104,23 +107,17 @@ class MTGCardFetcherGUI:
         self.completed_cards = 0
         self.is_initializing = True  # Flag to prevent callbacks during setup
         
-        # Initialize settings manager using user data config directory
-        config_dir = self.user_data_manager.get_config_dir()
-        settings_file = os.path.join(config_dir, 'gui_settings.json')
+        # Initialize settings manager using config directory
+        settings_file = os.path.join(self.user_data_manager.get_config_dir(), 'gui_settings.json')
         self.settings_manager = SettingsManager(settings_file)
         
         # Load saved settings
         self.load_settings()
-        
         self.setup_ui()
         self.check_message_queue()
         
         # Mark initialization as complete
         self.is_initializing = False
-        
-        # Show first-run dialog if needed
-        if self.user_data_manager.is_first_run() and self.user_data_manager.is_packaged():
-            self.root.after(500, self.show_first_run_dialog)
         
         # Save settings on close
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -174,124 +171,6 @@ class MTGCardFetcherGUI:
     def save_settings(self):
         """Save current settings to JSON file"""
         self.settings_manager.save_settings(self._get_settings_variables())
-    
-    def show_first_run_dialog(self):
-        """Show welcome dialog on first run with folder selection"""
-        suggested_dir = self.user_data_manager.get_default_root_suggestion()
-        selected_dir = tk.StringVar(value=str(suggested_dir))
-        
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Welcome to Silhouette Card Maker - Setup")
-        dialog.geometry("650x500")
-        dialog.resizable(False, False)
-        dialog.transient(self.root)
-        dialog.grab_set()
-        
-        # Prevent closing without selection
-        dialog.protocol("WM_DELETE_WINDOW", lambda: None)
-        
-        # Center the dialog
-        dialog.update_idletasks()
-        x = (dialog.winfo_screenwidth() // 2) - (650 // 2)
-        y = (dialog.winfo_screenheight() // 2) - (500 // 2)
-        dialog.geometry(f"650x500+{x}+{y}")
-        
-        # Content frame
-        content = ttk.Frame(dialog, padding="30", style='TFrame')
-        content.pack(fill=tk.BOTH, expand=True)
-        
-        # Title
-        title = ttk.Label(content, text="🎴 Welcome to Silhouette Card Maker!", 
-                         font=('Segoe UI', 16, 'bold'), style='TLabel')
-        title.pack(pady=(0, 15))
-        
-        # Info text
-        info_text = (
-            "Welcome! Let's set up your workspace.\n\n"
-            "Please choose a folder where your card images and PDFs will be stored.\n"
-            "By default, we suggest the folder where the application is located."
-        )
-        
-        info_label = ttk.Label(content, text=info_text, style='TLabel', 
-                              justify=tk.CENTER, wraplength=580)
-        info_label.pack(pady=(0, 20))
-        
-        # Folder selection frame
-        folder_frame = ttk.LabelFrame(content, text="  📁 Data Folder Location  ", 
-                                     padding="15", style='TLabelframe')
-        folder_frame.pack(fill=tk.X, pady=(0, 15))
-        
-        # Path entry
-        path_entry_frame = ttk.Frame(folder_frame, style='TFrame')
-        path_entry_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        path_entry = ttk.Entry(path_entry_frame, textvariable=selected_dir, 
-                              font=('Consolas', 9), style='TEntry')
-        path_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        
-        def browse_folder():
-            folder = filedialog.askdirectory(
-                title="Select Data Folder",
-                initialdir=selected_dir.get()
-            )
-            if folder:
-                selected_dir.set(folder)
-        
-        ttk.Button(path_entry_frame, text="Browse...", command=browse_folder,
-                  style='TButton').pack(side=tk.LEFT)
-        
-        # Info about what will be created
-        structure_text = (
-            "The following folder structure will be created:\n\n"
-            "  📁 game/\n"
-            "    📁 front/  - Front-side card images\n"
-            "    📁 back/  - Back-side card images\n"
-            "    📁 double_sided/  - Double-sided card images\n"
-            "    📁 output/  - Generated PDFs\n"
-            "    📁 decklist/  - Deck list files\n\n"
-            "You can change individual folder locations later in the 'Create PDF' tab."
-        )
-        
-        structure_label = ttk.Label(content, text=structure_text, style='TLabel', 
-                                   justify=tk.LEFT, font=('Segoe UI', 9))
-        structure_label.pack(pady=(0, 20))
-        
-        # Buttons
-        button_frame = ttk.Frame(content, style='TFrame')
-        button_frame.pack(side=tk.BOTTOM)
-        
-        def confirm_selection():
-            path = Path(selected_dir.get())
-            try:
-                # Create the directory if it doesn't exist
-                path.mkdir(parents=True, exist_ok=True)
-                
-                # Set as the user data directory
-                self.user_data_manager.set_user_data_dir(path)
-                
-                # Update GUI paths to reflect the new location
-                default_paths = self.user_data_manager.get_default_paths()
-                self.front_dir.set(default_paths['front_dir'])
-                self.back_dir.set(default_paths['back_dir'])
-                self.double_sided_dir.set(default_paths['double_sided_dir'])
-                self.output_pdf_path.set(os.path.join(default_paths['output_dir'], 'game.pdf'))
-                
-                dialog.destroy()
-                
-                # Show success message
-                messagebox.showinfo(
-                    "Setup Complete", 
-                    f"Your workspace has been set up at:\n\n{path}\n\n"
-                    "You're ready to start making cards!"
-                )
-            except Exception as e:
-                messagebox.showerror(
-                    "Error", 
-                    f"Could not create directory:\n{e}\n\nPlease choose a different location."
-                )
-        
-        ttk.Button(button_frame, text="Continue", command=confirm_selection, 
-                  style='Accent.TButton').pack(padx=5)
     
     def on_closing(self):
         """Handle window closing"""
@@ -724,13 +603,12 @@ class MTGCardFetcherGUI:
         ttk.Entry(paths_frame, textvariable=self.output_pdf_path, style='TEntry').grid(row=3, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
         ttk.Button(paths_frame, text="Save As...", command=self.browse_pdf_output, style='TButton').grid(row=3, column=2, pady=5)
         
-        # Quick access button
-        if self.user_data_manager.is_packaged():
-            button_frame = ttk.Frame(paths_frame, style='TFrame')
-            button_frame.grid(row=4, column=0, columnspan=3, pady=(10, 0))
-            ttk.Button(button_frame, text="📂 Open Data Folder", 
-                      command=self.open_user_data_folder, 
-                      style='TButton').pack()
+        # Quick access button (always show since we always use local directories)
+        button_frame = ttk.Frame(paths_frame, style='TFrame')
+        button_frame.grid(row=4, column=0, columnspan=3, pady=(10, 0))
+        ttk.Button(button_frame, text="📂 Open Data Folder", 
+                  command=self.open_user_data_folder, 
+                  style='TButton').pack()
         
         # Card & Paper sizes
         size_frame = ttk.LabelFrame(left_frame, text="  📏 Size Settings  ", padding="8", style='TLabelframe')

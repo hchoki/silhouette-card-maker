@@ -26,6 +26,7 @@ hugo/public/
 art/
 # Build artifacts (PyInstaller)
 build/
+build_tools/build/
 dist/
 *.spec.bak
 *.exe
