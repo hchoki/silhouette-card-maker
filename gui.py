@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'plugins', 'mtg'))
 # Import GUI utilities
 from gui.utils.settings_manager import SettingsManager
 from gui.utils.styles import StyleManager
+from gui.utils.user_data import get_user_data_manager
 
 # Import plugin manager
 from plugins.plugin_manager import get_plugin_manager
@@ -29,7 +30,7 @@ from deck_formats import DeckFormat
 from scryfall import get_handle_card as scryfall_get_handle_card
 from deck_formats import parse_deck
 from utilities import (
-    Registration, CardSize, PaperSize, generate_pdf, 
+    Registration, CardSize, PaperSize, generate_pdf,
     load_saved_offset, save_offset,
     load_offset_profiles, load_offset_profile, save_offset_profile,
     list_offset_profiles, delete_offset_profile, set_default_offset_profile
@@ -52,6 +53,10 @@ class MTGCardFetcherGUI:
         # Initialize plugin manager
         self.plugin_manager = get_plugin_manager()
         
+        # Initialize user data manager (uses local directories even when packaged)
+        self.user_data_manager = get_user_data_manager()
+        self.user_data_manager.ensure_user_data_structure()
+        
         # Fetch card variables
         self.selected_game = tk.StringVar(value="mtg")  # Default to MTG
         self.deck_path = tk.StringVar()
@@ -67,11 +72,14 @@ class MTGCardFetcherGUI:
         self.prefer_older_sets = tk.BooleanVar(value=False)
         self.ignore_set_collector = tk.BooleanVar(value=False)
         
+        # Get default paths from user data manager
+        default_paths = self.user_data_manager.get_default_paths()
+        
         # PDF creation variables
-        self.front_dir = tk.StringVar(value=os.path.join('game', 'front'))
-        self.back_dir = tk.StringVar(value=os.path.join('game', 'back'))
-        self.double_sided_dir = tk.StringVar(value=os.path.join('game', 'double_sided'))
-        self.output_pdf_path = tk.StringVar(value=os.path.join('game', 'output', 'game.pdf'))
+        self.front_dir = tk.StringVar(value=default_paths['front_dir'])
+        self.back_dir = tk.StringVar(value=default_paths['back_dir'])
+        self.double_sided_dir = tk.StringVar(value=default_paths['double_sided_dir'])
+        self.output_pdf_path = tk.StringVar(value=os.path.join(default_paths['output_dir'], 'game.pdf'))
         self.card_size = tk.StringVar(value=CardSize.STANDARD.value)
         self.paper_size = tk.StringVar(value=PaperSize.LETTER.value)
         self.registration = tk.StringVar(value=Registration.THREE.value)
@@ -85,6 +93,7 @@ class MTGCardFetcherGUI:
         # Offset variables
         self.x_offset = tk.IntVar(value=0)
         self.y_offset = tk.IntVar(value=0)
+        self.angle_offset = tk.DoubleVar(value=0.0)
         self.selected_profile = tk.StringVar(value="")
         self.pdf_selected_profile = tk.StringVar(value="")  # For Create PDF tab
         self.profile_name = tk.StringVar(value="")
@@ -98,14 +107,12 @@ class MTGCardFetcherGUI:
         self.completed_cards = 0
         self.is_initializing = True  # Flag to prevent callbacks during setup
         
-        # Initialize settings manager
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        settings_file = os.path.join(data_dir, 'gui_settings.json')
+        # Initialize settings manager using config directory
+        settings_file = os.path.join(self.user_data_manager.get_config_dir(), 'gui_settings.json')
         self.settings_manager = SettingsManager(settings_file)
         
         # Load saved settings
         self.load_settings()
-        
         self.setup_ui()
         self.check_message_queue()
         
@@ -153,6 +160,7 @@ class MTGCardFetcherGUI:
             # Offset tab settings
             'x_offset': self.x_offset,
             'y_offset': self.y_offset,
+            'angle_offset': self.angle_offset,
             'profile_paper_size': self.profile_paper_size,
         }
     
@@ -595,6 +603,13 @@ class MTGCardFetcherGUI:
         ttk.Entry(paths_frame, textvariable=self.output_pdf_path, style='TEntry').grid(row=3, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
         ttk.Button(paths_frame, text="Save As...", command=self.browse_pdf_output, style='TButton').grid(row=3, column=2, pady=5)
         
+        # Quick access button (always show since we always use local directories)
+        button_frame = ttk.Frame(paths_frame, style='TFrame')
+        button_frame.grid(row=4, column=0, columnspan=3, pady=(10, 0))
+        ttk.Button(button_frame, text="📂 Open Data Folder", 
+                  command=self.open_user_data_folder, 
+                  style='TButton').pack()
+        
         # Card & Paper sizes
         size_frame = ttk.LabelFrame(left_frame, text="  📏 Size Settings  ", padding="8", style='TLabelframe')
         size_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 8), padx=5)
@@ -779,12 +794,15 @@ class MTGCardFetcherGUI:
             default_prof = profiles.profiles[profiles.default_profile]
             self.x_offset.set(default_prof.x_offset)
             self.y_offset.set(default_prof.y_offset)
+            self.angle_offset.set(getattr(default_prof, 'angle_offset', 0.0))
             self.selected_profile.set(profiles.default_profile)
         else:
             saved = load_saved_offset()
             if saved:
                 self.x_offset.set(saved.x_offset)
                 self.y_offset.set(saved.y_offset)
+                self.angle_offset.set(0.0)  # Legacy profiles don't have angle offset
+                self.angle_offset.set(0.0)  # Legacy profiles don't have angle offset
         
         # Profile management section
         profile_frame = ttk.LabelFrame(left_frame, text="  📋 Offset Profiles  ", padding="8", style='TLabelframe')
@@ -839,8 +857,12 @@ class MTGCardFetcherGUI:
         ttk.Spinbox(new_profile_frame, from_=-1000, to=1000, textvariable=self.y_offset, 
                    width=10, style='TSpinbox').grid(row=4, column=1, sticky=tk.W, pady=5)
         
+        ttk.Label(new_profile_frame, text="Angle Offset (degrees):", style='Card.TLabel').grid(row=5, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Spinbox(new_profile_frame, from_=-45, to=45, textvariable=self.angle_offset, increment=0.1,
+                   width=10, style='TSpinbox', format="%.1f").grid(row=5, column=1, sticky=tk.W, pady=5)
+        
         ttk.Button(new_profile_frame, text="💾 Save Current Settings as Profile", 
-                  command=self.save_current_as_profile, style='Accent.TButton').grid(row=5, column=0, columnspan=2, pady=(10, 0))
+                  command=self.save_current_as_profile, style='Accent.TButton').grid(row=6, column=0, columnspan=2, pady=(10, 0))
         
         # Offset settings
         offset_frame = ttk.LabelFrame(left_frame, text="  ⚙️ Offset Settings  ", padding="8", style='TLabelframe')
@@ -867,7 +889,11 @@ class MTGCardFetcherGUI:
         ttk.Spinbox(offset_frame, from_=-1000, to=1000, textvariable=self.y_offset, 
                    width=10, style='TSpinbox').grid(row=4, column=1, sticky=tk.W, pady=5)
         
-        ttk.Label(offset_frame, text="PPI:", style='Card.TLabel').grid(row=5, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Label(offset_frame, text="Angle Offset (degrees):", style='Card.TLabel').grid(row=5, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Spinbox(offset_frame, from_=-45, to=45, textvariable=self.angle_offset, increment=0.1,
+                   width=10, style='TSpinbox', format="%.1f").grid(row=5, column=1, sticky=tk.W, pady=5)
+        
+        ttk.Label(offset_frame, text="PPI:", style='Card.TLabel').grid(row=6, column=0, sticky=tk.W, padx=(0, 10), pady=5)
         self.offset_ppi = tk.IntVar(value=300)
         ttk.Spinbox(offset_frame, from_=72, to=600, textvariable=self.offset_ppi, 
                    width=10, style='TSpinbox').grid(row=5, column=1, sticky=tk.W, pady=5)
@@ -890,7 +916,8 @@ class MTGCardFetcherGUI:
                     "• Set a default profile for automatic use\n\n"
                     "Offset directions:\n"
                     "• Positive X moves cards right, Negative X moves left\n"
-                    "• Positive Y moves cards down, Negative Y moves up")
+                    "• Positive Y moves cards down, Negative Y moves up\n"
+                    "• Positive angle rotates clockwise, Negative rotates counter-clockwise")
         ttk.Label(self.info_frame, text=info_text, style='Card.TLabel', 
                  font=('Segoe UI', 9), foreground='#a0a0a0', justify=tk.LEFT).pack(anchor=tk.W)
         
@@ -949,6 +976,21 @@ class MTGCardFetcherGUI:
         directory = filedialog.askdirectory(title="Select Directory")
         if directory:
             var.set(directory)
+    
+    def open_user_data_folder(self):
+        """Open the user data folder in file explorer"""
+        import subprocess
+        user_data_dir = self.user_data_manager.get_user_data_dir()
+        
+        try:
+            if sys.platform == 'win32':
+                os.startfile(user_data_dir)
+            elif sys.platform == 'darwin':
+                subprocess.run(['open', user_data_dir])
+            else:
+                subprocess.run(['xdg-open', user_data_dir])
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not open folder:\n{e}")
     
     def browse_pdf_output(self):
         """Browse for PDF output location"""
@@ -1125,6 +1167,7 @@ class MTGCardFetcherGUI:
             if legacy:
                 self.x_offset.set(legacy.x_offset)
                 self.y_offset.set(legacy.y_offset)
+                self.angle_offset.set(0.0)  # Legacy profiles don't have angle
                 self.update_profile_info()
                 self.offset_log_message(f"📋 Loaded legacy saved offset")
             return
@@ -1134,6 +1177,7 @@ class MTGCardFetcherGUI:
         if profile:
             self.x_offset.set(profile.x_offset)
             self.y_offset.set(profile.y_offset)
+            self.angle_offset.set(getattr(profile, 'angle_offset', 0.0))
             self.update_profile_info()
             self.offset_log_message(f"📋 Loaded profile: {profile_name}")
     
@@ -1190,7 +1234,8 @@ class MTGCardFetcherGUI:
             x_offset=self.x_offset.get(),
             y_offset=self.y_offset.get(),
             paper_size=paper_size,
-            description=description
+            description=description,
+            angle_offset=self.angle_offset.get()
         )
         
         # Clear form and refresh lists in both tabs
@@ -1230,9 +1275,11 @@ class MTGCardFetcherGUI:
         is_default = profiles.default_profile == profile_name
         default_text = " [DEFAULT]" if is_default else ""
         
+        angle_text = f", {profile.angle_offset:.1f}°" if hasattr(profile, 'angle_offset') and profile.angle_offset != 0.0 else ""
+        
         info_text = (f"{profile.description} | "
                     f"Paper: {profile.paper_size} | "
-                    f"Offset: ({profile.x_offset}, {profile.y_offset})"
+                    f"Offset: ({profile.x_offset}, {profile.y_offset}{angle_text})"
                     f"{default_text}")
         
         self.profile_info_label.config(text=info_text, foreground='#4ec9b0')
@@ -1292,9 +1339,11 @@ class MTGCardFetcherGUI:
         is_default = profiles.default_profile == profile_name
         default_text = " [DEFAULT]" if is_default else ""
         
+        angle_text = f", {profile.angle_offset:.1f}°" if hasattr(profile, 'angle_offset') and profile.angle_offset != 0.0 else ""
+        
         info_text = (f"{profile.description} | "
                     f"Paper: {profile.paper_size} | "
-                    f"Offset: ({profile.x_offset}, {profile.y_offset})"
+                    f"Offset: ({profile.x_offset}, {profile.y_offset}{angle_text})"
                     f"{default_text}")
         
         self.pdf_profile_info_label.config(text=info_text, foreground='#4ec9b0')
@@ -1578,9 +1627,9 @@ class MTGCardFetcherGUI:
                 
                 self.log_message(f"🎮 Game: {plugin.name}", 'info')
                 
-                # Set up directories
-                front_directory = os.path.join('game', 'front')
-                double_sided_directory = os.path.join('game', 'double_sided')
+                # Set up directories - use paths from settings
+                front_directory = self.front_dir.get()
+                double_sided_directory = self.double_sided_dir.get()
                 os.makedirs(front_directory, exist_ok=True)
                 os.makedirs(double_sided_directory, exist_ok=True)
                 
@@ -1772,6 +1821,9 @@ class MTGCardFetcherGUI:
     
     def create_pdf_worker(self):
         """Worker thread for PDF creation"""
+        success = False
+        error_message = None
+        
         try:
             # Redirect print to GUI
             original_print = print
@@ -1835,19 +1887,30 @@ class MTGCardFetcherGUI:
                 self.pdf_log_message("✅ PDF created successfully!")
                 self.pdf_log_message("═" * 70)
                 
-                self.root.after(0, lambda: self.pdf_creation_complete(True))
+                success = True
                 
             finally:
                 builtins.print = original_print
                 
         except Exception as e:
             import traceback
-            traceback.print_exc()
-            self.pdf_log_message("")
-            self.pdf_log_message("═" * 70)
-            self.pdf_log_message(f"❌ ERROR: {str(e)}")
-            self.pdf_log_message("═" * 70)
-            self.root.after(0, lambda: self.pdf_creation_complete(False, str(e)))
+            try:
+                traceback.print_exc()
+            except:
+                pass  # Ignore errors in error reporting
+            
+            error_message = str(e)
+            try:
+                self.pdf_log_message("")
+                self.pdf_log_message("═" * 70)
+                self.pdf_log_message(f"❌ ERROR: {error_message}")
+                self.pdf_log_message("═" * 70)
+            except:
+                pass  # Ignore errors in logging
+        
+        finally:
+            # Always reset the button state, no matter what happens
+            self.root.after(0, lambda: self.pdf_creation_complete(success, error_message))
     
     def pdf_log_message(self, message):
         """Thread-safe log message for PDF tab"""
@@ -1906,6 +1969,7 @@ class MTGCardFetcherGUI:
                 self.offset_log_message(f"📄 Input PDF: {self.input_pdf_path.get()}")
                 self.offset_log_message(f"⚙️ X Offset: {self.x_offset.get()}")
                 self.offset_log_message(f"⚙️ Y Offset: {self.y_offset.get()}")
+                self.offset_log_message(f"⚙️ Angle Offset: {self.angle_offset.get():.1f}°")
                 
                 # Show profile info if one is selected
                 if self.selected_profile.get():
@@ -1929,7 +1993,8 @@ class MTGCardFetcherGUI:
                 self.offset_log_message("")
                 self.offset_log_message("⚙️ Applying offset...")
                 final_images = offset_images(raw_images, self.x_offset.get(), 
-                                            self.y_offset.get(), self.offset_ppi.get())
+                                            self.y_offset.get(), self.offset_ppi.get(),
+                                            self.angle_offset.get())
                 
                 # Determine output path
                 output_path = self.offset_output_path.get()

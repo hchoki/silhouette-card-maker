@@ -1,0 +1,117 @@
+name: Build Releases
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build Windows executable
+        run: |
+          pyinstaller --clean SilhouetteCardMaker.spec
+      
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SilhouetteCardMaker-Windows
+          path: dist/SilhouetteCardMaker.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build macOS app
+        run: |
+          pyinstaller --clean SilhouetteCardMaker.spec
+      
+      - name: Create DMG (optional)
+        run: |
+          # Create a simple DMG for easier distribution
+          hdiutil create -volname "Silhouette Card Maker" -srcfolder dist -ov -format UDZO SilhouetteCardMaker-macOS.dmg
+      
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SilhouetteCardMaker-macOS
+          path: SilhouetteCardMaker-macOS.dmg
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build Linux executable
+        run: |
+          pyinstaller --clean SilhouetteCardMaker.spec
+      
+      - name: Create tarball
+        run: |
+          cd dist
+          tar -czf SilhouetteCardMaker-Linux.tar.gz SilhouetteCardMaker
+          cd ..
+      
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SilhouetteCardMaker-Linux
+          path: dist/SilhouetteCardMaker-Linux.tar.gz
+
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            SilhouetteCardMaker-Windows/SilhouetteCardMaker.exe
+            SilhouetteCardMaker-macOS/SilhouetteCardMaker-macOS.dmg
+            SilhouetteCardMaker-Linux/SilhouetteCardMaker-Linux.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

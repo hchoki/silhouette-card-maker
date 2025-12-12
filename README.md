@@ -8,6 +8,22 @@ You can do it all with the press of a button and a cutting machine! And I can sh
 
 If this is your first time here, check out the [tutorial](https://alan-cha.github.io/silhouette-card-maker/tutorial/)! Please join our [Discord server](https://discord.gg/jhsKmAgbXc) too!
 
+## Quick Start
+
+### For End Users (No Programming Required!)
+
+Download the latest executable for your platform from [Releases](https://github.com/hchoki/silhouette-card-maker/releases):
+
+- **Windows**: Download and run `SilhouetteCardMaker.exe`
+- **macOS**: Download and open `SilhouetteCardMaker-macOS.dmg`
+- **Linux**: Download and extract `SilhouetteCardMaker-Linux.tar.gz`
+
+The GUI application includes everything you need - no Python installation required!
+
+### For Developers
+
+Use the command-line tools or build from source. See [Installation](#create_pdfpy) below.
+
 ## Demo
 
 Watch me cut **104 cards in 26 minutes** without breaking a sweat!

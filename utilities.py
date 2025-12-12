@@ -5,6 +5,7 @@ import math
 import os
 from pathlib import Path
 import re
+import sys
 from typing import Dict, List
 from xml.dom import ValidationErr
 
@@ -12,11 +13,33 @@ from natsort import natsorted
 from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 from pydantic import BaseModel
 
-# Specify directory locations
-asset_directory = 'assets'
+def _get_application_root() -> Path:
+    """
+    Get the application root directory.
+    - When packaged: directory where .exe is located
+    - When running from source: repository root
+    """
+    if getattr(sys, 'frozen', False):
+        # Packaged executable - use exe directory
+        return Path(sys.executable).parent
+    else:
+        # Development mode - use repository root
+        return Path(__file__).parent
 
+# Specify directory locations (always relative to application root)
+asset_directory = str(_get_application_root() / 'assets')
 layouts_filename = 'layouts.json'
 layouts_path = os.path.join(asset_directory, layouts_filename)
+
+def _get_data_directory() -> str:
+    """
+    Get the data directory for storing offset profiles and settings.
+    Always uses 'data' directory in application root (whether packaged or not).
+    """
+    data_dir = _get_application_root() / 'data'
+    # Ensure directory exists
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return str(data_dir)
 
 class CardSize(str, Enum):
     STANDARD = "standard"
@@ -416,7 +439,8 @@ def generate_pdf(
             max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout_size.width, card_layout_size.height)
 
             # Create reusable back page for single-sided cards
-            single_sided_back_page = reg_im.copy()
+            # Rotate registration marks 180° so they align with front page marks
+            single_sided_back_page = reg_im.copy().rotate(180)
             if not use_default_back_page:
 
                 # Load the card back image
@@ -539,7 +563,8 @@ def generate_pdf(
                     back_card_images.append(ds_image)
 
                 double_sided_front_page = reg_im.copy()
-                double_sided_back_page = reg_im.copy()
+                # Rotate registration marks 180° so they align with front page marks
+                double_sided_back_page = reg_im.copy().rotate(180)
 
                 # Create front layout for double-sided cards
                 draw_card_layout(
@@ -600,10 +625,10 @@ def generate_pdf(
                 if offset_profile == "default":
                     profiles = load_offset_profiles()
                     if profiles.default_profile:
-                        profile = load_offset_profile(profiles.default_profile)
+                        profile = profiles.profiles[profiles.default_profile]
                         if profile:
-                            print(f'Loaded default offset profile "{profiles.default_profile}": x={profile.x_offset}, y={profile.y_offset}')
-                            pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                            print(f'Loaded default offset profile "{profiles.default_profile}": x={profile.x_offset}, y={profile.y_offset}, angle={profile.angle_offset}°')
+                            pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi, profile.angle_offset)
                             offset_applied = True
                         else:
                             print(f'Default profile "{profiles.default_profile}" not found')
@@ -612,8 +637,8 @@ def generate_pdf(
                 else:
                     profile = load_offset_profile(offset_profile)
                     if profile:
-                        print(f'Loaded offset profile "{offset_profile}": x={profile.x_offset}, y={profile.y_offset}')
-                        pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi)
+                        print(f'Loaded offset profile "{offset_profile}": x={profile.x_offset}, y={profile.y_offset}, angle={profile.angle_offset}°')
+                        pages = offset_images(pages, profile.x_offset, profile.y_offset, ppi, profile.angle_offset)
                         offset_applied = True
                     else:
                         print(f'Offset profile "{offset_profile}" not found')
@@ -648,6 +673,7 @@ class OffsetProfile(BaseModel):
     description: str
     x_offset: int
     y_offset: int
+    angle_offset: float = 0.0  # Rotation angle in degrees
     paper_size: str
     created_at: str
 
@@ -657,19 +683,19 @@ class OffsetProfiles(BaseModel):
 
 def save_offset(x_offset, y_offset) -> None:
     """Save offset using the legacy single-profile system for backwards compatibility"""
-    # Create the directory if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    # Get the data directory
+    data_dir = _get_data_directory()
 
     # Save the offset data to a JSON file
-    with open('data/offset_data.json', 'w') as offset_file:
+    with open(os.path.join(data_dir, 'offset_data.json'), 'w') as offset_file:
         offset_file.write(OffsetData(x_offset=x_offset, y_offset=y_offset).model_dump_json(indent=4))
 
     print('Offset data saved!')
 
-def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "") -> None:
+def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str = "", description: str = "", angle_offset: float = 0.0) -> None:
     """Save a named offset profile"""
-    # Create the directory if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    # Get the data directory
+    data_dir = _get_data_directory()
     
     # Load existing profiles or create new structure
     profiles = load_offset_profiles()
@@ -681,6 +707,7 @@ def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str
         description=description or f"Offset profile for {paper_size or 'custom setup'}",
         x_offset=x_offset,
         y_offset=y_offset,
+        angle_offset=angle_offset,
         paper_size=paper_size,
         created_at=datetime.now().isoformat()
     )
@@ -693,15 +720,18 @@ def save_offset_profile(name: str, x_offset: int, y_offset: int, paper_size: str
         profiles.default_profile = name
     
     # Save profiles
-    with open('data/offset_profiles.json', 'w') as profiles_file:
+    data_dir = _get_data_directory()
+    with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
         profiles_file.write(profiles.model_dump_json(indent=4))
     
     print(f'Offset profile "{name}" saved!')
 
 def load_offset_profiles() -> OffsetProfiles:
     """Load all offset profiles"""
-    if os.path.exists('data/offset_profiles.json'):
-        with open('data/offset_profiles.json', 'r') as profiles_file:
+    data_dir = _get_data_directory()
+    profiles_path = os.path.join(data_dir, 'offset_profiles.json')
+    if os.path.exists(profiles_path):
+        with open(profiles_path, 'r') as profiles_file:
             try:
                 data = json.load(profiles_file)
                 return OffsetProfiles(**data)
@@ -723,8 +753,10 @@ def load_offset_profile(profile_name: str) -> OffsetProfile:
 
 def load_saved_offset() -> OffsetData:
     """Load offset using the legacy single-profile system for backwards compatibility"""
-    if os.path.exists('data/offset_data.json'):
-        with open('data/offset_data.json', 'r') as offset_file:
+    data_dir = _get_data_directory()
+    offset_path = os.path.join(data_dir, 'offset_data.json')
+    if os.path.exists(offset_path):
+        with open(offset_path, 'r') as offset_file:
             try:
                 data = json.load(offset_file)
                 return OffsetData(**data)
@@ -757,7 +789,8 @@ def delete_offset_profile(profile_name: str) -> bool:
                 profiles.default_profile = next(iter(profiles.profiles))
         
         # Save updated profiles
-        with open('data/offset_profiles.json', 'w') as profiles_file:
+        data_dir = _get_data_directory()
+        with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
             profiles_file.write(profiles.model_dump_json(indent=4))
         
         print(f'Offset profile "{profile_name}" deleted!')
@@ -774,7 +807,8 @@ def set_default_offset_profile(profile_name: str) -> bool:
         profiles.default_profile = profile_name
         
         # Save updated profiles
-        with open('data/offset_profiles.json', 'w') as profiles_file:
+        data_dir = _get_data_directory()
+        with open(os.path.join(data_dir, 'offset_profiles.json'), 'w') as profiles_file:
             profiles_file.write(profiles.model_dump_json(indent=4))
         
         print(f'Default offset profile set to "{profile_name}"!')
@@ -783,13 +817,20 @@ def set_default_offset_profile(profile_name: str) -> bool:
     print(f'Offset profile "{profile_name}" not found!')
     return False
 
-def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int) -> List[Image.Image]:
+def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int, angle_offset: float = 0.0) -> List[Image.Image]:
     offset_images = []
 
     add_offset = False
     for image in images:
         if add_offset:
-            offset_images.append(ImageChops.offset(image, math.floor(x_offset * ppi / 300), math.floor(y_offset * ppi / 300)))
+            # Apply translation offset
+            offset_img = ImageChops.offset(image, math.floor(x_offset * ppi / 300), math.floor(y_offset * ppi / 300))
+            
+            # Apply rotation if angle_offset is non-zero
+            if angle_offset != 0.0:
+                offset_img = offset_img.rotate(angle_offset, expand=False, fillcolor='white')
+            
+            offset_images.append(offset_img)
         else:
             offset_images.append(image)
 
