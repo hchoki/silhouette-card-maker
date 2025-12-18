@@ -34,3 +34,4 @@ dist/
 *.dmg
 *.tar.gz
 *.log
+.github/copilot-instructions.md

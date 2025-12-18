@@ -440,7 +440,7 @@ def generate_pdf(
 
             # Create reusable back page for single-sided cards
             # Rotate registration marks 180° so they align with front page marks
-            single_sided_back_page = reg_im.copy().rotate(180)
+            single_sided_back_page = ImageOps.mirror(reg_im.copy().rotate(180))
             if not use_default_back_page:
 
                 # Load the card back image
@@ -461,7 +461,7 @@ def generate_pdf(
                         card_layout_size.width,
                         card_layout_size.height,
                         max_print_bleed,
-                        (0, 0),
+                        crop,
                         ppi_ratio,
                         extend_corners,
                         flip=True
@@ -564,7 +564,7 @@ def generate_pdf(
 
                 double_sided_front_page = reg_im.copy()
                 # Rotate registration marks 180° so they align with front page marks
-                double_sided_back_page = reg_im.copy().rotate(180)
+                double_sided_back_page = ImageOps.mirror(reg_im.copy().rotate(180))
 
                 # Create front layout for double-sided cards
                 draw_card_layout(
