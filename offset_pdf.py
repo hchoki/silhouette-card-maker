@@ -21,6 +21,7 @@ default_output_pdf_path = os.path.join(output_directory, 'game.pdf')
 @click.option("--output_pdf_path", help="The desired path of the offset PDF.")
 @click.option("-x", "--x_offset", type=int, help="The desired offset in the x-axis.")
 @click.option("-y", "--y_offset", type=int, help="The desired offset in the y-axis.")
+@click.option("-a", "--angle_offset", type=float, default=0.0, help="Rotation angle offset in degrees.")
 @click.option("-s", "--save", default=False, is_flag=True, help="Save the x and y offset values (legacy mode).")
 @click.option("--save_profile", help="Save offset as a named profile (e.g., 'letter_printer', 'a4_office').")
 @click.option("--paper_size", help="Paper size for the profile (e.g., 'letter', 'a4', 'tabloid').")
@@ -30,7 +31,7 @@ default_output_pdf_path = os.path.join(output_directory, 'game.pdf')
 @click.option("--set_default", help="Set a profile as the default.")
 @click.option("--ppi", default=300, type=click.IntRange(min=0), show_default=True, help="Pixels per inch (PPI) when creating PDF.")
 
-def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile, paper_size, description, list_profiles, delete_profile, set_default, ppi):
+def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, angle_offset, save, save_profile, paper_size, description, list_profiles, delete_profile, set_default, ppi):
     
     # Handle profile management commands first
     if list_profiles:
@@ -46,7 +47,8 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile
                 print(f"  {name}{default_marker}")
                 print(f"    Description: {profile.description}")
                 print(f"    Paper Size: {profile.paper_size or 'Not specified'}")
-                print(f"    Offsets: x={profile.x_offset}, y={profile.y_offset}")
+                angle_text = f", angle={profile.angle_offset:.1f}°" if hasattr(profile, 'angle_offset') and profile.angle_offset != 0.0 else ""
+                print(f"    Offsets: x={profile.x_offset}, y={profile.y_offset}{angle_text}")
                 print(f"    Created: {profile.created_at}")
                 print()
         return
@@ -62,6 +64,7 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile
     # Proceed with offset calculation and PDF processing
     new_x_offset = 0
     new_y_offset = 0
+    new_angle_offset = angle_offset
 
     # Load legacy offset if available
     saved_offset = load_saved_offset()
@@ -77,7 +80,8 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile
     if y_offset is not None:
         new_y_offset = y_offset
 
-    print(f'Using x offset: {new_x_offset}, y offset: {new_y_offset}')
+    angle_text = f", angle: {new_angle_offset:.1f}°" if new_angle_offset != 0.0 else ""
+    print(f'Using x offset: {new_x_offset}, y offset: {new_y_offset}{angle_text}')
 
     # Save offset (legacy mode or new profile mode)
     if save:
@@ -94,7 +98,8 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile
             x_offset=new_x_offset,
             y_offset=new_y_offset,
             paper_size=paper_size or "",
-            description=description or f"Offset profile for {paper_size or 'custom setup'}"
+            description=description or f"Offset profile for {paper_size or 'custom setup'}",
+            angle_offset=new_angle_offset
         )
 
     try:
@@ -108,7 +113,7 @@ def offset_pdf(pdf_path, output_pdf_path, x_offset, y_offset, save, save_profile
             raw_images.append(page.render(ppi/72).to_pil())
 
         # Offset images
-        final_images = offset_images(raw_images, new_x_offset, new_y_offset, ppi)
+        final_images = offset_images(raw_images, new_x_offset, new_y_offset, ppi, new_angle_offset)
 
         # The default for output_pdf_path is the original path but with _offset.py appended to the end.
         if output_pdf_path is None:

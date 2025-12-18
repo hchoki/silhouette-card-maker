@@ -41,8 +41,8 @@ class MTGCardFetcherGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Card Fetcher & PDF Creator")
-        self.root.geometry("1600x900")
-        self.root.minsize(1400, 800)
+        self.root.geometry("1400x950")
+        self.root.minsize(1200, 850)
         
         # Message queue for thread-safe GUI updates
         self.message_queue = queue.Queue()
@@ -84,6 +84,7 @@ class MTGCardFetcherGUI:
         self.paper_size = tk.StringVar(value=PaperSize.LETTER.value)
         self.registration = tk.StringVar(value=Registration.THREE.value)
         self.only_fronts = tk.BooleanVar(value=False)
+        self.output_images = tk.BooleanVar(value=False)
         self.crop_amount = tk.StringVar(value="")
         self.extend_corners = tk.IntVar(value=0)
         self.ppi = tk.IntVar(value=300)
@@ -151,6 +152,7 @@ class MTGCardFetcherGUI:
             'paper_size': self.paper_size,
             'registration': self.registration,
             'only_fronts': self.only_fronts,
+            'output_images': self.output_images,
             'crop_amount': self.crop_amount,
             'extend_corners': self.extend_corners,
             'ppi': self.ppi,
@@ -638,11 +640,14 @@ class MTGCardFetcherGUI:
         ttk.Checkbutton(options_frame, text="Only Fronts (exclude backs)", 
                        variable=self.only_fronts).grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=2)
         
+        ttk.Checkbutton(options_frame, text="Output as Images (instead of PDF)", 
+                       variable=self.output_images).grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=2)
+        
         # Offset Profile Selection
-        ttk.Label(options_frame, text="Apply Offset Profile:", style='Card.TLabel').grid(row=1, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Label(options_frame, text="Apply Offset Profile:", style='Card.TLabel').grid(row=2, column=0, sticky=tk.W, padx=(0, 10), pady=5)
         self.pdf_profile_combo = ttk.Combobox(options_frame, textvariable=self.pdf_selected_profile, 
                                               state='readonly', style='TCombobox', width=30)
-        self.pdf_profile_combo.grid(row=1, column=1, sticky=tk.W, pady=5)
+        self.pdf_profile_combo.grid(row=2, column=1, sticky=tk.W, pady=5)
         self.pdf_profile_combo.bind('<<ComboboxSelected>>', self.update_pdf_profile_info)
         
         # Add "None" option, legacy offset, and populate profiles
@@ -668,11 +673,11 @@ class MTGCardFetcherGUI:
         self.pdf_profile_info_label = ttk.Label(options_frame, text="No offset will be applied", 
                                                 style='Card.TLabel', font=('Segoe UI', 9), 
                                                 foreground='#808080')
-        self.pdf_profile_info_label.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=(2, 10))
+        self.pdf_profile_info_label.grid(row=3, column=0, columnspan=2, sticky=tk.W, pady=(2, 10))
         self.update_pdf_profile_info()
         
-        ttk.Label(options_frame, text="PDF Name Label:", style='Card.TLabel').grid(row=3, column=0, sticky=tk.W, padx=(0, 10), pady=5)
-        ttk.Entry(options_frame, textvariable=self.pdf_name, width=30, style='TEntry').grid(row=3, column=1, sticky=tk.W, pady=5)
+        ttk.Label(options_frame, text="PDF Name Label:", style='Card.TLabel').grid(row=4, column=0, sticky=tk.W, padx=(0, 10), pady=5)
+        ttk.Entry(options_frame, textvariable=self.pdf_name, width=30, style='TEntry').grid(row=4, column=1, sticky=tk.W, pady=5)
         
         # Advanced options
         advanced_frame = ttk.LabelFrame(left_frame, text="  🔧 Advanced  ", padding="8", style='TLabelframe')
@@ -1867,7 +1872,7 @@ class MTGCardFetcherGUI:
                     self.back_dir.get(),
                     self.double_sided_dir.get(),
                     self.output_pdf_path.get(),
-                    False,  # output_images
+                    self.output_images.get(),
                     self.card_size.get(),
                     self.paper_size.get(),
                     self.registration.get(),

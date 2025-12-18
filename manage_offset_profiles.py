@@ -42,12 +42,13 @@ from utilities import (
 @click.option("--set-default", help="Set a profile as the default.")
 @click.option("--x", "--x_offset", type=int, help="X-axis offset (required when creating).")
 @click.option("--y", "--y_offset", type=int, help="Y-axis offset (required when creating).")
+@click.option("--angle", "--angle_offset", type=float, default=0.0, help="Rotation angle offset in degrees.")
 @click.option("--paper", help="Paper size for the profile (e.g., 'letter', 'a4', 'tabloid').")
 @click.option("--desc", help="Description for the profile.")
 @click.option("--export", help="Export all profiles to a JSON file.")
 @click.option("--import", "import_file", help="Import profiles from a JSON file.")
 
-def manage_profiles(list_all, create, delete, info, set_default, x, y, paper, desc, export, import_file):
+def manage_profiles(list_all, create, delete, info, set_default, x, y, angle, paper, desc, export, import_file):
     """Manage offset profiles for different paper sizes and printer setups."""
     
     if list_all:
@@ -70,7 +71,8 @@ def manage_profiles(list_all, create, delete, info, set_default, x, y, paper, de
                 print(f"📋 {name}{default_marker}")
                 print(f"   Description: {profile.description}")
                 print(f"   Paper Size:  {profile.paper_size or 'Not specified'}")
-                print(f"   Offsets:     x={profile.x_offset:+d}, y={profile.y_offset:+d}")
+                angle_text = f", angle={profile.angle_offset:+.1f}°" if hasattr(profile, 'angle_offset') and profile.angle_offset != 0.0 else ""
+                print(f"   Offsets:     x={profile.x_offset:+d}, y={profile.y_offset:+d}{angle_text}")
                 print(f"   Created:     {profile.created_at}")
                 print()
         return
@@ -86,7 +88,8 @@ def manage_profiles(list_all, create, delete, info, set_default, x, y, paper, de
             x_offset=x,
             y_offset=y,
             paper_size=paper or "",
-            description=desc or f"Offset profile for {paper or 'custom setup'}"
+            description=desc or f"Offset profile for {paper or 'custom setup'}",
+            angle_offset=angle
         )
         return
     
@@ -107,6 +110,8 @@ def manage_profiles(list_all, create, delete, info, set_default, x, y, paper, de
             print(f"Paper Size:   {profile.paper_size or 'Not specified'}")
             print(f"X Offset:     {profile.x_offset:+d} pixels")
             print(f"Y Offset:     {profile.y_offset:+d} pixels")
+            if hasattr(profile, 'angle_offset') and profile.angle_offset != 0.0:
+                print(f"Angle Offset: {profile.angle_offset:+.1f}°")
             print(f"Created:      {profile.created_at}")
             print()
             print("Usage in create_pdf.py:")
