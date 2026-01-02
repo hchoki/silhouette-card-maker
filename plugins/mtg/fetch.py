@@ -47,7 +47,9 @@ def cli(
     if format == DeckFormat.MPCFILL_XML:
         get_handle_card = mpc_get_handle_card(
             front_directory,
-            double_sided_directory
+            double_sided_directory,
+            parallel,
+            max_workers
         )
     else:
         get_handle_card = scryfall_get_handle_card(
@@ -83,12 +85,19 @@ def cli(
         if queue.size() > 0:
             print(f"\n📋 Processing {queue.size()} queued downloads in parallel...")
             downloader = get_handle_card.downloader
+            
+            # Use the appropriate fetch function based on format
+            if format == DeckFormat.MPCFILL_XML:
+                fetch_func = get_handle_card.fetch_card
+            else:
+                fetch_func = get_handle_card.fetch_card_art
+            
             downloader.download_cards_parallel(
                 tasks=queue.get_all_tasks(),
-                fetch_function=get_handle_card.fetch_card_art,
+                fetch_function=fetch_func,
                 front_dir=get_handle_card.front_img_dir,
                 double_sided_dir=get_handle_card.double_sided_dir,
-                art_crop=get_handle_card.art_crop
+                art_crop=get_handle_card.art_crop if hasattr(get_handle_card, 'art_crop') else False
             )
 
 if __name__ == '__main__':
