@@ -179,21 +179,15 @@ def get_back_card_image_path(back_dir_path) -> str | None:
     if len(files) == 1:
         return os.path.join(back_dir_path, files[0])
 
-    # Multiple back files detected, provide a selection menu
+    # Multiple back files detected - for GUI usage, return the first one
+    # For CLI, the user should use the GUI or specify which back to use
+    print(f'⚠️  Multiple back images found in {back_dir_path}:')
     for i, f in enumerate(files):
-        print(f'[{i + 1}] {f}')
-
-    while True:
-        choice = input("Select a back image (enter the number): ")
-
-        if not choice.isdigit():
-            continue
-
-        index = int(choice) - 1
-        if index >= 0 and index < len(files):
-            break
-
-    return os.path.join(back_dir_path, files[index])
+        print(f'    [{i + 1}] {f}')
+    print(f'⚠️  Using first back image: {files[0]}')
+    print(f'    Tip: Use the GUI to select a specific back image, or keep only one back in the directory.')
+    
+    return os.path.join(back_dir_path, files[0])
 
 def draw_card_with_bleed(card_image: Image, base_image: Image, box: tuple[int, int, int, int], print_bleed: tuple[int, int]):
     origin_x, origin_y, _, _ = box
@@ -332,7 +326,8 @@ def generate_pdf(
     skip_indices: List[int],
     load_offset: bool,
     offset_profile: str,
-    name: str
+    name: str,
+    selected_back_card: str = None  # Optional: specific back card to use
 ):
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
@@ -363,7 +358,15 @@ def generate_pdf(
     back_card_image_path = None
     use_default_back_page = True
     if not only_fronts:
-        back_card_image_path = get_back_card_image_path(back_dir_path)
+        # If a specific back card was selected, use it
+        if selected_back_card and selected_back_card not in ["(Auto-detect)", "(No backs available)"]:
+            back_card_image_path = os.path.join(back_dir_path, selected_back_card)
+            if not os.path.isfile(back_card_image_path):
+                print(f'Selected back card "{selected_back_card}" not found. Using auto-detect.')
+                back_card_image_path = get_back_card_image_path(back_dir_path)
+        else:
+            back_card_image_path = get_back_card_image_path(back_dir_path)
+        
         use_default_back_page = back_card_image_path is None
         if use_default_back_page:
             print(f'No back image provided in back image directory \"{back_dir_path}\". Using default instead.')

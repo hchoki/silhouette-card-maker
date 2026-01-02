@@ -74,10 +74,15 @@ class MTGCardFetcherGUI:
         
         # Get default paths from user data manager
         default_paths = self.user_data_manager.get_default_paths()
+        self.default_front_dir = default_paths['front_dir']
+        self.default_back_dir = default_paths['back_dir']
+        self.default_double_sided_dir = default_paths['double_sided_dir']
+        self.default_output_dir = default_paths['output_dir']
         
         # PDF creation variables
         self.front_dir = tk.StringVar(value=default_paths['front_dir'])
         self.back_dir = tk.StringVar(value=default_paths['back_dir'])
+        self.selected_back_card = tk.StringVar(value="")
         self.double_sided_dir = tk.StringVar(value=default_paths['double_sided_dir'])
         self.output_pdf_path = tk.StringVar(value=os.path.join(default_paths['output_dir'], 'game.pdf'))
         self.card_size = tk.StringVar(value=CardSize.STANDARD.value)
@@ -103,6 +108,7 @@ class MTGCardFetcherGUI:
         
         self.is_fetching = False
         self.is_creating_pdf = False
+        self.last_created_pdf = None  # Track the last created PDF for "Open" button
         self.cancel_fetch = False  # Flag to cancel fetch operation
         self.total_cards = 0
         self.completed_cards = 0
@@ -116,6 +122,9 @@ class MTGCardFetcherGUI:
         self.load_settings()
         self.setup_ui()
         self.check_message_queue()
+        
+        # Initialize back card list after UI setup
+        self.root.after(100, self.update_back_card_list)
         
         # Mark initialization as complete
         self.is_initializing = False
@@ -146,6 +155,7 @@ class MTGCardFetcherGUI:
             # PDF tab settings
             'front_dir': self.front_dir,
             'back_dir': self.back_dir,
+            'selected_back_card': self.selected_back_card,
             'double_sided_dir': self.double_sided_dir,
             'output_pdf_path': self.output_pdf_path,
             'card_size': self.card_size,
@@ -589,16 +599,35 @@ class MTGCardFetcherGUI:
         ttk.Label(paths_frame, text="Front Cards:", style='Card.TLabel').grid(row=0, column=0, sticky=tk.W, padx=(0, 10), pady=5)
         ttk.Entry(paths_frame, textvariable=self.front_dir, style='TEntry').grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
         ttk.Button(paths_frame, text="Browse...", command=lambda: self.browse_directory(self.front_dir), style='TButton').grid(row=0, column=2, pady=5)
+        ttk.Button(paths_frame, text="↺", command=lambda: self.reset_directory(self.front_dir, self.default_front_dir), 
+                  width=2, style='TButton').grid(row=0, column=3, pady=5, padx=(5, 0))
         
         # Back directory
         ttk.Label(paths_frame, text="Back Cards:", style='Card.TLabel').grid(row=1, column=0, sticky=tk.W, padx=(0, 10), pady=5)
         ttk.Entry(paths_frame, textvariable=self.back_dir, style='TEntry').grid(row=1, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
         ttk.Button(paths_frame, text="Browse...", command=lambda: self.browse_directory(self.back_dir), style='TButton').grid(row=1, column=2, pady=5)
+        ttk.Button(paths_frame, text="↺", command=lambda: self.reset_directory(self.back_dir, self.default_back_dir), 
+                  width=2, style='TButton').grid(row=1, column=3, pady=5, padx=(5, 0))
+        
+        # Back card selector (for when multiple backs exist)
+        ttk.Label(paths_frame, text="Select Back:", style='Card.TLabel').grid(row=1, column=4, sticky=tk.W, padx=(10, 10), pady=5)
+        self.back_card_combo = ttk.Combobox(paths_frame, textvariable=self.selected_back_card, 
+                                            state='readonly', style='TCombobox', width=20)
+        self.back_card_combo.grid(row=1, column=5, sticky=tk.W, pady=5, padx=(0, 5))
+        self.back_card_combo.set("(Auto-detect)")
+        # Add refresh button with better styling
+        refresh_btn = ttk.Button(paths_frame, text="↻", command=self.update_back_card_list, 
+                                width=2, style='TButton')
+        refresh_btn.grid(row=1, column=6, pady=5)
+        # Bind back_dir changes to update the dropdown
+        self.back_dir.trace_add('write', lambda *args: self.update_back_card_list())
         
         # Double-sided directory
         ttk.Label(paths_frame, text="Double-Sided:", style='Card.TLabel').grid(row=2, column=0, sticky=tk.W, padx=(0, 10), pady=5)
         ttk.Entry(paths_frame, textvariable=self.double_sided_dir, style='TEntry').grid(row=2, column=1, sticky=(tk.W, tk.E), padx=(0, 10), pady=5)
         ttk.Button(paths_frame, text="Browse...", command=lambda: self.browse_directory(self.double_sided_dir), style='TButton').grid(row=2, column=2, pady=5)
+        ttk.Button(paths_frame, text="↺", command=lambda: self.reset_directory(self.double_sided_dir, self.default_double_sided_dir), 
+                  width=2, style='TButton').grid(row=2, column=3, pady=5, padx=(5, 0))
         
         # Output path
         ttk.Label(paths_frame, text="Output PDF:", style='Card.TLabel').grid(row=3, column=0, sticky=tk.W, padx=(0, 10), pady=5)
@@ -981,6 +1010,61 @@ class MTGCardFetcherGUI:
         directory = filedialog.askdirectory(title="Select Directory")
         if directory:
             var.set(directory)
+    
+    def open_created_pdf(self):
+        """Open the last created PDF file"""
+        if not self.last_created_pdf or not os.path.exists(self.last_created_pdf):
+            messagebox.showerror("Error", "PDF file not found.")
+            return
+        
+        try:
+            if sys.platform == 'win32':
+                os.startfile(self.last_created_pdf)
+            elif sys.platform == 'darwin':
+                import subprocess
+                subprocess.run(['open', self.last_created_pdf])
+            else:
+                import subprocess
+                subprocess.run(['xdg-open', self.last_created_pdf])
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not open PDF:\n{e}")
+    
+    def reset_directory(self, var, default_path):
+        """Reset a directory to its default value"""
+        var.set(default_path)
+    
+    def update_back_card_list(self):
+        """Update the back card selection dropdown based on available files"""
+        back_dir = self.back_dir.get()
+        
+        if not back_dir or not os.path.isdir(back_dir):
+            self.back_card_combo['values'] = ["(Auto-detect)"]
+            self.selected_back_card.set("(Auto-detect)")
+            return
+        
+        try:
+            # Get all non-.md files from back directory
+            files = [f for f in os.listdir(back_dir) 
+                    if os.path.isfile(os.path.join(back_dir, f)) and not f.endswith(".md")]
+            
+            if len(files) == 0:
+                self.back_card_combo['values'] = ["(No backs available)"]
+                self.selected_back_card.set("(No backs available)")
+            elif len(files) == 1:
+                # Only one back, auto-select it
+                self.back_card_combo['values'] = [files[0]]
+                self.selected_back_card.set(files[0])
+            else:
+                # Multiple backs, let user choose
+                values = ["(Auto-detect)"] + files
+                self.back_card_combo['values'] = values
+                # Keep current selection if valid, otherwise reset to auto-detect
+                if self.selected_back_card.get() not in values:
+                    self.selected_back_card.set("(Auto-detect)")
+        except Exception as e:
+            print(f"Error updating back card list: {e}")
+            self.back_card_combo['values'] = ["(Auto-detect)"]
+            self.selected_back_card.set("(Auto-detect)")
     
     def open_user_data_folder(self):
         """Open the user data folder in file explorer"""
@@ -1807,6 +1891,9 @@ class MTGCardFetcherGUI:
             messagebox.showwarning("Warning", "PDF creation already in progress.")
             return
         
+        # Refresh back card list to ensure it's up to date
+        self.update_back_card_list()
+        
         # Validate inputs
         if not os.path.exists(self.front_dir.get()):
             messagebox.showerror("Error", f"Front directory does not exist: {self.front_dir.get()}")
@@ -1884,13 +1971,17 @@ class MTGCardFetcherGUI:
                     skip_list,
                     use_legacy,  # load_offset (use legacy if selected)
                     offset_profile_name,  # offset_profile parameter
-                    self.pdf_name.get() if self.pdf_name.get() else None
+                    self.pdf_name.get() if self.pdf_name.get() else None,
+                    self.selected_back_card.get() if self.selected_back_card.get() else None  # selected back card
                 )
                 
                 self.pdf_log_message("")
                 self.pdf_log_message("═" * 70)
                 self.pdf_log_message("✅ PDF created successfully!")
                 self.pdf_log_message("═" * 70)
+                
+                # Store the created PDF path
+                self.last_created_pdf = self.output_pdf_path.get()
                 
                 success = True
                 
@@ -1933,7 +2024,9 @@ class MTGCardFetcherGUI:
         self.is_creating_pdf = False
         
         if success:
-            messagebox.showinfo("Success", "PDF created successfully!")
+            # Ask if user wants to open the PDF
+            if messagebox.askyesno("Success", "PDF created successfully!\n\nWould you like to open it now?"):
+                self.open_created_pdf()
         else:
             messagebox.showerror("Error", message or "Failed to create PDF")
     
