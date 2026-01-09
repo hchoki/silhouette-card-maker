@@ -25,8 +25,7 @@ jobs:
       
       - name: Build Windows executable
         run: |
-          cd build_tools
-          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
+          cd build_tools && python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Get version
         id: get_version
@@ -43,7 +42,7 @@ jobs:
         run: |
           mkdir -p release
           cp SilhouetteCardMaker.exe release/
-          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp -r assets calibration cutting_templates plugins game examples release/
           cp README.md LICENSE.md requirements.txt release/
           cd release
           7z a -tzip ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Windows.zip *
@@ -72,8 +71,7 @@ jobs:
       
       - name: Build macOS app
         run: |
-          cd build_tools
-          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
+          cd build_tools && python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Get version
         id: get_version
@@ -88,7 +86,7 @@ jobs:
         run: |
           mkdir -p release
           cp -r SilhouetteCardMaker.app release/
-          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp -r assets calibration cutting_templates plugins game examples release/
           cp README.md LICENSE.md requirements.txt release/
           cd release
           zip -r ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-macOS.zip *
@@ -117,8 +115,7 @@ jobs:
       
       - name: Build Linux executable
         run: |
-          cd build_tools
-          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
+          cd build_tools && python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Get version
         id: get_version
@@ -133,7 +130,7 @@ jobs:
         run: |
           mkdir -p release
           cp SilhouetteCardMaker release/
-          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp -r assets calibration cutting_templates plugins game examples release/
           cp README.md LICENSE.md requirements.txt release/
           cd release
           tar -czf ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Linux.tar.gz *
