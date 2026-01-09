@@ -119,7 +119,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,  # Add icon path here if you create one: icon='assets/icon.ico'
+    icon=None,
 )
 
 # For macOS: Create an app bundle
