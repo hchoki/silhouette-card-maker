@@ -130,47 +130,10 @@ jobs:
             echo "version=dev-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
           fi
       
-      - name: Download and setup appimagetool
-        run: |
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-          # Extract appimagetool since FUSE is not available in GitHub Actions
-          ./appimagetool-x86_64.AppImage --appimage-extract
-          mv squashfs-root appimagetool-squashfs
-      
-      - name: Create AppImage
-        run: |
-          # Create AppDir structure
-          mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/applications
-          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          
-          # Copy executable
-          cp SilhouetteCardMaker AppDir/usr/bin/
-          
-          # Copy desktop file
-          cp build_tools/SilhouetteCardMaker.desktop AppDir/usr/share/applications/
-          cp build_tools/SilhouetteCardMaker.desktop AppDir/
-          
-          # Create AppRun script
-          cat > AppDir/AppRun << 'EOF'
-          #!/bin/bash
-          SELF=$(readlink -f "$0")
-          HERE=${SELF%/*}
-          export PATH="${HERE}/usr/bin:${PATH}"
-          export LD_LIBRARY_PATH="${HERE}/usr/lib:${LD_LIBRARY_PATH}"
-          cd "${HERE}/usr/bin"
-          exec "${HERE}/usr/bin/SilhouetteCardMaker" "$@"
-          EOF
-          chmod +x AppDir/AppRun
-          
-          # Build AppImage using extracted appimagetool with --no-appstream to skip icon validation
-          ARCH=x86_64 ./appimagetool-squashfs/AppRun --no-appstream AppDir SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage
-      
       - name: Package Linux release
         run: |
           mkdir -p release
-          cp SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage release/
+          cp SilhouetteCardMaker release/
           # Copy all source files
           cp -r assets calibration cutting_templates plugins game examples gui test release/
           cp *.py *.md *.txt release/ 2>/dev/null || true
