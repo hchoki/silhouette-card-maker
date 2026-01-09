@@ -24,8 +24,8 @@ jobs:
           pip install pyinstaller
       
       - name: Build Windows executable
-        working-directory: build_tools
         run: |
+          cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Upload Windows artifact
@@ -51,8 +51,8 @@ jobs:
           pip install pyinstaller
       
       - name: Build macOS app
-        working-directory: build_tools
         run: |
+          cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Create DMG
@@ -83,8 +83,8 @@ jobs:
           pip install pyinstaller
       
       - name: Build Linux executable
-        working-directory: build_tools
         run: |
+          cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Create tarball
