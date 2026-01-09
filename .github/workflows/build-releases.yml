@@ -152,9 +152,6 @@ jobs:
           cp build_tools/SilhouetteCardMaker.desktop AppDir/usr/share/applications/
           cp build_tools/SilhouetteCardMaker.desktop AppDir/
           
-          # Create a minimal placeholder icon to satisfy appimagetool
-          convert -size 256x256 xc:transparent AppDir/.DirIcon
-          
           # Create AppRun script
           cat > AppDir/AppRun << 'EOF'
           #!/bin/bash
