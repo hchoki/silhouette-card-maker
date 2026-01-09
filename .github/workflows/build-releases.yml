@@ -42,8 +42,12 @@ jobs:
         run: |
           mkdir -p release
           cp SilhouetteCardMaker.exe release/
-          cp -r assets calibration cutting_templates plugins game examples release/
-          cp README.md LICENSE.md requirements.txt release/
+          # Copy all source files
+          cp -r assets calibration cutting_templates plugins game examples gui test release/
+          cp *.py *.md *.txt release/ 2>/dev/null || true
+          # Remove build artifacts and unnecessary folders
+          rm -rf release/__pycache__ release/data release/.git release/.github release/build_tools
+          find release -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
       
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -84,8 +88,12 @@ jobs:
         run: |
           mkdir -p release
           cp -r SilhouetteCardMaker.app release/
-          cp -r assets calibration cutting_templates plugins game examples release/
-          cp README.md LICENSE.md requirements.txt release/
+          # Copy all source files
+          cp -r assets calibration cutting_templates plugins game examples gui test release/
+          cp *.py *.md *.txt release/ 2>/dev/null || true
+          # Remove build artifacts and unnecessary folders
+          rm -rf release/__pycache__ release/data release/.git release/.github release/build_tools
+          find release -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
       
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -126,8 +134,12 @@ jobs:
         run: |
           mkdir -p release
           cp SilhouetteCardMaker release/
-          cp -r assets calibration cutting_templates plugins game examples release/
-          cp README.md LICENSE.md requirements.txt release/
+          # Copy all source files
+          cp -r assets calibration cutting_templates plugins game examples gui test release/
+          cp *.py *.md *.txt release/ 2>/dev/null || true
+          # Remove build artifacts and unnecessary folders
+          rm -rf release/__pycache__ release/data release/.git release/.github release/build_tools
+          find release -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
       
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
