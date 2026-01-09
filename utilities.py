@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 from typing import Dict, List
 from xml.dom import ValidationErr
 
@@ -329,6 +330,9 @@ def generate_pdf(
     name: str,
     selected_back_card: str = None  # Optional: specific back card to use
 ):
+    # Create timestamp to check how long process takes
+    startTime = time.time()
+
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
     if not f_path.exists() or not f_path.is_dir():
@@ -441,97 +445,18 @@ def generate_pdf(
 
             max_print_bleed = calculate_max_print_bleed(card_layout.x_pos, card_layout.y_pos, card_layout_size.width, card_layout_size.height)
 
-            # Create reusable back page for single-sided cards
-            # Rotate registration marks 180° so they align with front page marks
-            single_sided_back_page = ImageOps.mirror(reg_im.copy().rotate(180))
-            if not use_default_back_page:
+            # Load and cache the single back image for reuse.
+            single_back_image = None
+            if not only_fronts and not use_default_back_page and back_card_image_path is not None:
+                try:
+                    single_back_image = Image.open(back_card_image_path)
+                    single_back_image = ImageOps.exif_transpose(single_back_image)
+                except FileNotFoundError:
+                    single_back_image = None
 
-                # Load the card back image
-                with Image.open(back_card_image_path) as back_im:
-                    back_im = ImageOps.exif_transpose(back_im)
-
-                    back_images = [back_im] * num_cards
-                    for s in clean_skip_indices:
-                        back_images[s] = None
-
-                    draw_card_layout(
-                        back_images,
-                        single_sided_back_page,
-                        num_rows,
-                        num_cols,
-                        card_layout.x_pos,
-                        card_layout.y_pos,
-                        card_layout_size.width,
-                        card_layout_size.height,
-                        max_print_bleed,
-                        crop,
-                        ppi_ratio,
-                        extend_corners,
-                        flip=True
-                    )
-
-            # Create single-sided card layout
+            # Create card layout
             num_image = 1
-            it = iter(natsorted(list(front_set - ds_set)))
-            while True:
-                file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
-                if not file_group:
-                    break
-
-                # Fetch card art
-                front_card_images = []
-                file_group_iterator = iter(file_group)
-                for i in range(num_cards):
-                    if i in clean_skip_indices:
-                        front_card_images.append(None)
-                        continue
-
-                    try:
-                        file = next(file_group_iterator)
-                    except StopIteration:
-                        break
-
-                    print(f'Image {num_image}: {file}')
-                    num_image = num_image + 1
-
-                    front_image_path = os.path.join(front_dir_path, file)
-                    front_image = Image.open(front_image_path)
-                    front_image = ImageOps.exif_transpose(front_image)
-                    front_card_images.append(front_image)
-
-                single_sided_front_page = reg_im.copy()
-
-                # Create front layout for single-sided cards
-                draw_card_layout(
-                    front_card_images,
-                    single_sided_front_page,
-                    num_rows,
-                    num_cols,
-                    card_layout.x_pos,
-                    card_layout.y_pos,
-                    card_layout_size.width,
-                    card_layout_size.height,
-                    max_print_bleed,
-                    crop,
-                    ppi_ratio,
-                    extend_corners,
-                    flip=False
-                )
-
-                add_front_back_pages(
-                    single_sided_front_page,
-                    single_sided_back_page,
-                    pages,
-                    paper_layout.width,
-                    paper_layout.height,
-                    ppi_ratio,
-                    card_layout.template,
-                    only_fronts,
-                    name
-                )
-
-            # Create double-sided card layout
-            it = iter(natsorted(list(ds_set)))
+            it = iter(natsorted(list(front_set)))
             while True:
                 file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
                 if not file_group:
@@ -552,27 +477,43 @@ def generate_pdf(
                     except StopIteration:
                         break
 
-                    print(f'Image {num_image} (double-sided): {file}')
-                    num_image = num_image + 1
+                    print(f'Image {num_image}: {file}')
+                    num_image += 1
 
                     front_image_path = os.path.join(front_dir_path, file)
                     front_image = Image.open(front_image_path)
                     front_image = ImageOps.exif_transpose(front_image)
                     front_card_images.append(front_image)
 
+                    # Determine back image: prefer double-sided specific image, then single back image, else None
+                    if only_fronts:
+                        back_card_images.append(None)
+                        continue
+
                     ds_image_path = os.path.join(double_sided_dir_path, file)
-                    ds_image = Image.open(ds_image_path)
-                    ds_image = ImageOps.exif_transpose(ds_image)
-                    back_card_images.append(ds_image)
+                    # Try to load double-sided back image
+                    try:
+                        ds_image = Image.open(ds_image_path)
+                        ds_image = ImageOps.exif_transpose(ds_image)
+                        back_card_images.append(ds_image)
+                        continue
+                    except FileNotFoundError:
+                        # Fall back to single back image if present (use cached copy)
+                        if single_back_image is not None:
+                            back_card_images.append(single_back_image.copy())
+                            continue
+                        else:
+                            back_card_images.append(None)
+                            continue
 
-                double_sided_front_page = reg_im.copy()
+                front_page = reg_im.copy()
                 # Rotate registration marks 180° so they align with front page marks
-                double_sided_back_page = ImageOps.mirror(reg_im.copy().rotate(180))
+                back_page = ImageOps.mirror(reg_im.copy().rotate(180))
 
-                # Create front layout for double-sided cards
+                # Create front layout
                 draw_card_layout(
                     front_card_images,
-                    double_sided_front_page,
+                    front_page,
                     num_rows,
                     num_cols,
                     card_layout.x_pos,
@@ -586,10 +527,10 @@ def generate_pdf(
                     flip=False
                 )
 
-                # Create back layout for double-sided cards
+                # Create back layout
                 draw_card_layout(
                     back_card_images,
-                    double_sided_back_page,
+                    back_page,
                     num_rows,
                     num_cols,
                     card_layout.x_pos,
@@ -605,14 +546,14 @@ def generate_pdf(
 
                 # Add the front and back layouts
                 add_front_back_pages(
-                    double_sided_front_page,
-                    double_sided_back_page,
+                    front_page,
+                    back_page,
                     pages,
                     paper_layout.width,
                     paper_layout.height,
                     ppi_ratio,
                     card_layout.template,
-                    False,
+                    only_fronts,
                     name
                 )
 
@@ -665,7 +606,7 @@ def generate_pdf(
 
             else:
                 pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
-                print(f'Generated PDF: {output_path}')
+                print(f'Generated PDF: {output_path} ({round(time.time() - startTime, 4)} seconds)')
 
 class OffsetData(BaseModel):
     x_offset: int

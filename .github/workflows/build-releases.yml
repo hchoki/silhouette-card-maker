@@ -24,14 +24,15 @@ jobs:
           pip install pyinstaller
       
       - name: Build Windows executable
+        working-directory: build_tools
         run: |
-          pyinstaller --clean SilhouetteCardMaker.spec
+          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: SilhouetteCardMaker-Windows
-          path: dist/SilhouetteCardMaker.exe
+          path: SilhouetteCardMaker.exe
 
   build-macos:
     runs-on: macos-latest
@@ -50,13 +51,14 @@ jobs:
           pip install pyinstaller
       
       - name: Build macOS app
+        working-directory: build_tools
         run: |
-          pyinstaller --clean SilhouetteCardMaker.spec
+          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
-      - name: Create DMG (optional)
+      - name: Create DMG
         run: |
           # Create a simple DMG for easier distribution
-          hdiutil create -volname "Silhouette Card Maker" -srcfolder dist -ov -format UDZO SilhouetteCardMaker-macOS.dmg
+          hdiutil create -volname "Silhouette Card Maker" -srcfolder SilhouetteCardMaker.app -ov -format UDZO SilhouetteCardMaker-macOS.dmg
       
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -81,20 +83,19 @@ jobs:
           pip install pyinstaller
       
       - name: Build Linux executable
+        working-directory: build_tools
         run: |
-          pyinstaller --clean SilhouetteCardMaker.spec
+          python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
       - name: Create tarball
         run: |
-          cd dist
           tar -czf SilhouetteCardMaker-Linux.tar.gz SilhouetteCardMaker
-          cd ..
       
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: SilhouetteCardMaker-Linux
-          path: dist/SilhouetteCardMaker-Linux.tar.gz
+          path: SilhouetteCardMaker-Linux.tar.gz
 
   create-release:
     needs: [build-windows, build-macos, build-linux]
