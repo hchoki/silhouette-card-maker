@@ -28,11 +28,31 @@ jobs:
           cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
+      - name: Get version
+        id: get_version
+        shell: bash
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=dev-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Package Windows release
+        shell: bash
+        run: |
+          mkdir -p release
+          cp SilhouetteCardMaker.exe release/
+          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp README.md LICENSE.md requirements.txt release/
+          cd release
+          7z a -tzip ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Windows.zip *
+      
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: SilhouetteCardMaker-Windows
-          path: SilhouetteCardMaker.exe
+          path: SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Windows.zip
 
   build-macos:
     runs-on: macos-latest
@@ -55,16 +75,29 @@ jobs:
           cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
-      - name: Create DMG
+      - name: Get version
+        id: get_version
         run: |
-          # Create a simple DMG for easier distribution
-          hdiutil create -volname "Silhouette Card Maker" -srcfolder SilhouetteCardMaker.app -ov -format UDZO SilhouetteCardMaker-macOS.dmg
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=dev-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Package macOS release
+        run: |
+          mkdir -p release
+          cp -r SilhouetteCardMaker.app release/
+          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp README.md LICENSE.md requirements.txt release/
+          cd release
+          zip -r ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-macOS.zip *
       
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: SilhouetteCardMaker-macOS
-          path: SilhouetteCardMaker-macOS.dmg
+          path: SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-macOS.zip
 
   build-linux:
     runs-on: ubuntu-latest
@@ -87,15 +120,29 @@ jobs:
           cd build_tools
           python -m PyInstaller --clean --distpath .. --workpath build SilhouetteCardMaker.spec
       
-      - name: Create tarball
+      - name: Get version
+        id: get_version
         run: |
-          tar -czf SilhouetteCardMaker-Linux.tar.gz SilhouetteCardMaker
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=dev-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Package Linux release
+        run: |
+          mkdir -p release
+          cp SilhouetteCardMaker release/
+          cp -r assets calibration cutting_templates plugins data game examples release/
+          cp README.md LICENSE.md requirements.txt release/
+          cd release
+          tar -czf ../SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Linux.tar.gz *
       
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: SilhouetteCardMaker-Linux
-          path: SilhouetteCardMaker-Linux.tar.gz
+          path: SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-Linux.tar.gz
 
   create-release:
     needs: [build-windows, build-macos, build-linux]
@@ -109,10 +156,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            SilhouetteCardMaker-Windows/SilhouetteCardMaker.exe
-            SilhouetteCardMaker-macOS/SilhouetteCardMaker-macOS.dmg
-            SilhouetteCardMaker-Linux/SilhouetteCardMaker-Linux.tar.gz
+            SilhouetteCardMaker-Windows/*
+            SilhouetteCardMaker-macOS/*
+            SilhouetteCardMaker-Linux/*
           draft: false
           prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
