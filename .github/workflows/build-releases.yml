@@ -152,6 +152,9 @@ jobs:
           cp build_tools/SilhouetteCardMaker.desktop AppDir/usr/share/applications/
           cp build_tools/SilhouetteCardMaker.desktop AppDir/
           
+          # Create a minimal placeholder icon to satisfy appimagetool
+          convert -size 256x256 xc:transparent AppDir/.DirIcon
+          
           # Create AppRun script
           cat > AppDir/AppRun << 'EOF'
           #!/bin/bash
@@ -164,8 +167,8 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          # Build AppImage using extracted appimagetool
-          ARCH=x86_64 ./appimagetool-squashfs/AppRun AppDir SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage
+          # Build AppImage using extracted appimagetool with --no-appstream to skip icon validation
+          ARCH=x86_64 ./appimagetool-squashfs/AppRun --no-appstream AppDir SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage
       
       - name: Package Linux release
         run: |
