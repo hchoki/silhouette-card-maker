@@ -134,6 +134,9 @@ jobs:
         run: |
           wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool-x86_64.AppImage
+          # Extract appimagetool since FUSE is not available in GitHub Actions
+          ./appimagetool-x86_64.AppImage --appimage-extract
+          mv squashfs-root appimagetool-squashfs
       
       - name: Create AppImage
         run: |
@@ -161,8 +164,8 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          # Build AppImage
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage
+          # Build AppImage using extracted appimagetool
+          ARCH=x86_64 ./appimagetool-squashfs/AppRun AppDir SilhouetteCardMaker-${{ steps.get_version.outputs.version }}-x86_64.AppImage
       
       - name: Package Linux release
         run: |
