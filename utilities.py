@@ -378,11 +378,13 @@ def generate_pdf(
     front_image_filenames = get_image_file_paths(front_dir_path)
     ds_image_filenames = get_image_file_paths(double_sided_dir_path)
 
-    # Check if double-sided back images has matching front images
-    front_set = set(front_image_filenames)
-    ds_set = set(ds_image_filenames)
-    if not ds_set.issubset(front_set):
-        raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".')
+    # Check if double-sided back images has matching front images (compare by base name without extension)
+    front_basenames = set(os.path.splitext(f)[0] for f in front_image_filenames)
+    ds_basenames = set(os.path.splitext(f)[0] for f in ds_image_filenames)
+    missing_fronts = ds_basenames - front_basenames
+    
+    if missing_fronts:
+        raise Exception(f'Double-sided backs "{missing_fronts}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".')
 
     if only_fronts:
         if len(ds_set) > 0:
@@ -454,9 +456,31 @@ def generate_pdf(
                 except FileNotFoundError:
                     single_back_image = None
 
+            # Separate single-sided and double-sided cards, grouping double-sided at the end
+            # Create a mapping of basenames to actual double-sided filenames for quick lookup
+            ds_basename_map = {os.path.splitext(f)[0]: f for f in ds_image_filenames}
+            
+            sorted_fronts = natsorted(list(front_image_filenames))
+            single_sided_cards = []
+            double_sided_cards = []
+            
+            for file in sorted_fronts:
+                file_basename = os.path.splitext(file)[0]
+                # Check if a double-sided back exists with matching basename
+                if file_basename in ds_basename_map:
+                    double_sided_cards.append(file)
+                else:
+                    single_sided_cards.append(file)
+            
+            # Concatenate: single-sided first, then double-sided
+            ordered_cards = single_sided_cards + double_sided_cards
+            
+            if len(double_sided_cards) > 0:
+                print(f'Grouping cards: {len(single_sided_cards)} single-sided, {len(double_sided_cards)} double-sided (at end)')
+
             # Create card layout
             num_image = 1
-            it = iter(natsorted(list(front_set)))
+            it = iter(ordered_cards)
             while True:
                 file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
                 if not file_group:
@@ -490,21 +514,26 @@ def generate_pdf(
                         back_card_images.append(None)
                         continue
 
-                    ds_image_path = os.path.join(double_sided_dir_path, file)
-                    # Try to load double-sided back image
-                    try:
-                        ds_image = Image.open(ds_image_path)
-                        ds_image = ImageOps.exif_transpose(ds_image)
-                        back_card_images.append(ds_image)
+                    # Check for double-sided back by matching basename (different extensions allowed)
+                    file_basename = os.path.splitext(file)[0]
+                    if file_basename in ds_basename_map:
+                        ds_filename = ds_basename_map[file_basename]
+                        ds_image_path = os.path.join(double_sided_dir_path, ds_filename)
+                        try:
+                            ds_image = Image.open(ds_image_path)
+                            ds_image = ImageOps.exif_transpose(ds_image)
+                            back_card_images.append(ds_image)
+                            continue
+                        except FileNotFoundError:
+                            pass
+                    
+                    # Fall back to single back image if present (use cached copy)
+                    if single_back_image is not None:
+                        back_card_images.append(single_back_image.copy())
                         continue
-                    except FileNotFoundError:
-                        # Fall back to single back image if present (use cached copy)
-                        if single_back_image is not None:
-                            back_card_images.append(single_back_image.copy())
-                            continue
-                        else:
-                            back_card_images.append(None)
-                            continue
+                    else:
+                        back_card_images.append(None)
+                        continue
 
                 front_page = reg_im.copy()
                 # Rotate registration marks 180° so they align with front page marks
