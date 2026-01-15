@@ -1725,55 +1725,37 @@ class MTGCardFetcherGUI:
                 
                 # Handle different plugins
                 if game_id == "mtg":
-                    # MTG-specific handling (original code)
+                    # MTG-specific handling - use shared fetch_cards function
                     from plugins.mtg.deck_formats import DeckFormat
-                    from plugins.mtg.deck_formats import parse_deck
+                    from plugins.mtg.fetch import fetch_cards
                     
                     format_enum = DeckFormat(self.deck_format.get())
                     
-                    # Use MPCFill handler for mpcfill_xml format, otherwise use Scryfall
-                    if format_enum == DeckFormat.MPCFILL_XML:
-                        from plugins.mtg.mpcfill import get_handle_card as mpc_get_handle_card
-                        
-                        get_handle_card = mpc_get_handle_card(
-                            front_directory,
-                            double_sided_directory,
-                            self.parallel.get(),
-                            self.max_workers.get()
-                        )
-                    else:
-                        from plugins.mtg.scryfall import get_handle_card as scryfall_get_handle_card
-                        
-                        get_handle_card = scryfall_get_handle_card(
-                            self.ignore_set_collector.get(),
-                            self.prefer_older_sets.get(),
-                            set(),  # prefer_set (not implemented in GUI yet)
-                            self.prefer_showcase.get(),
-                            self.prefer_extra_art.get(),
-                            self.tokens.get(),
-                            self.art_crop.get(),
-                            self.parallel.get(),
-                            self.max_workers.get(),
-                            self.api_delay.get(),
-                            front_directory,
-                            double_sided_directory,
-                            cancel_check=lambda: self.cancel_fetch  # Pass cancel check
-                        )
-                    
-                    # Read and parse deck
                     self.log_message("📖 Reading deck list...", 'info')
                     if self.parallel.get():
                         self.log_message("📊 Building download queue (fetching card metadata)...", 'info')
                     
-                    import time
-                    fetch_start_time = time.time()
-                    
                     # Use temp file if available (pasted text), otherwise use selected file
                     deck_file_path = self.temp_deck_file if self.temp_deck_file else self.deck_path.get()
                     
-                    with open(deck_file_path, 'r', encoding='utf-8') as deck_file:
-                        deck_text = deck_file.read()
-                        parse_deck(deck_text, format_enum, get_handle_card)
+                    # Call shared fetch_cards function (used by both CLI and GUI)
+                    fetch_cards(
+                        deck_path=deck_file_path,
+                        format=format_enum,
+                        front_directory=front_directory,
+                        double_sided_directory=double_sided_directory,
+                        ignore_set_and_collector_number=self.ignore_set_collector.get(),
+                        prefer_older_sets=self.prefer_older_sets.get(),
+                        prefer_set=set(),  # prefer_set (not implemented in GUI yet)
+                        prefer_showcase=self.prefer_showcase.get(),
+                        prefer_extra_art=self.prefer_extra_art.get(),
+                        tokens=self.tokens.get(),
+                        art_crop=self.art_crop.get(),
+                        parallel=self.parallel.get(),
+                        max_workers=self.max_workers.get(),
+                        api_delay=self.api_delay.get(),
+                        cancel_check=lambda: self.cancel_fetch
+                    )
                     
                     # Check if user canceled
                     if self.cancel_fetch:
@@ -1781,33 +1763,6 @@ class MTGCardFetcherGUI:
                         self.log_message("⚠️ Fetch canceled by user", 'warning')
                         error_message = 'Fetch canceled by user'
                         return
-                    
-                    fetch_elapsed_time = time.time() - fetch_start_time
-                    
-                    # Process parallel downloads if enabled
-                    if self.parallel.get() and hasattr(get_handle_card, 'download_queue'):
-                        from plugins.mtg.download_manager import DownloadQueue
-                        dl_queue = get_handle_card.download_queue
-                        if dl_queue.size() > 0:
-                            self.log_message(f"✅ Queued {dl_queue.size()} cards for download")
-                            self.log_message("")
-                            downloader = get_handle_card.downloader
-                            
-                            # Use appropriate fetch function based on format
-                            if format_enum == DeckFormat.MPCFILL_XML:
-                                fetch_func = get_handle_card.fetch_card
-                            else:
-                                fetch_func = get_handle_card.fetch_card_art
-                            
-                            result = downloader.download_cards_parallel(
-                                tasks=dl_queue.get_all_tasks(),
-                                fetch_function=fetch_func,
-                                front_dir=get_handle_card.front_img_dir,
-                                double_sided_dir=get_handle_card.double_sided_dir,
-                                art_crop=get_handle_card.art_crop if hasattr(get_handle_card, 'art_crop') else False,
-                                fetch_time=fetch_elapsed_time,  # Pass fetch time to include in summary
-                                cancel_check=lambda: self.cancel_fetch  # Pass cancel check function
-                            )
                 
                 elif game_id == "lorcana":
                     # Lorcana-specific handling
