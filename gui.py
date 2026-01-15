@@ -1116,6 +1116,7 @@ class MTGCardFetcherGUI:
             title="Select Deck List",
             filetypes=[
                 ("Text files", "*.txt"),
+                ("XML files", "*.xml"),
                 ("All files", "*.*")
             ]
         )
@@ -1145,7 +1146,7 @@ class MTGCardFetcherGUI:
         
         # Instructions
         instructions = ttk.Label(main_frame, 
-                                text="Paste your deck list below. Each line should contain a card in your deck format.",
+                                text="Paste your deck list below. Supports text format or MPCFill XML format.",
                                 style='Card.TLabel',
                                 wraplength=650)
         instructions.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))

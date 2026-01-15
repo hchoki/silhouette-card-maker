@@ -45,7 +45,7 @@ class PluginManager:
         self.register_plugin(GamePlugin(
             id="mtg",
             name="Magic: The Gathering",
-            deck_formats=["archidekt", "moxfield", "deckstats", "tappedout", "mtga", "mtgo", "generic"],
+            deck_formats=["archidekt", "moxfield", "deckstats", "tappedout", "mtga", "mtgo", "mpcfill_xml", "generic"],
             fetch_module="plugins.mtg.fetch",
             supports_set_collector=True,
             supports_showcase=True,
