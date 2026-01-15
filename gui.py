@@ -1115,6 +1115,7 @@ class MTGCardFetcherGUI:
         filename = filedialog.askopenfilename(
             title="Select Deck List",
             filetypes=[
+                ("Deck files", "*.txt;*.xml"),
                 ("Text files", "*.txt"),
                 ("XML files", "*.xml"),
                 ("All files", "*.*")
