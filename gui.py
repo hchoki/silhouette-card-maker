@@ -1727,26 +1727,38 @@ class MTGCardFetcherGUI:
                 if game_id == "mtg":
                     # MTG-specific handling (original code)
                     from plugins.mtg.deck_formats import DeckFormat
-                    from plugins.mtg.scryfall import get_handle_card as scryfall_get_handle_card
                     from plugins.mtg.deck_formats import parse_deck
                     
                     format_enum = DeckFormat(self.deck_format.get())
                     
-                    get_handle_card = scryfall_get_handle_card(
-                        self.ignore_set_collector.get(),
-                        self.prefer_older_sets.get(),
-                        set(),  # prefer_set (not implemented in GUI yet)
-                        self.prefer_showcase.get(),
-                        self.prefer_extra_art.get(),
-                        self.tokens.get(),
-                        self.art_crop.get(),
-                        self.parallel.get(),
-                        self.max_workers.get(),
-                        self.api_delay.get(),
-                        front_directory,
-                        double_sided_directory,
-                        cancel_check=lambda: self.cancel_fetch  # Pass cancel check
-                    )
+                    # Use MPCFill handler for mpcfill_xml format, otherwise use Scryfall
+                    if format_enum == DeckFormat.MPCFILL_XML:
+                        from plugins.mtg.mpcfill import get_handle_card as mpc_get_handle_card
+                        
+                        get_handle_card = mpc_get_handle_card(
+                            front_directory,
+                            double_sided_directory,
+                            self.parallel.get(),
+                            self.max_workers.get()
+                        )
+                    else:
+                        from plugins.mtg.scryfall import get_handle_card as scryfall_get_handle_card
+                        
+                        get_handle_card = scryfall_get_handle_card(
+                            self.ignore_set_collector.get(),
+                            self.prefer_older_sets.get(),
+                            set(),  # prefer_set (not implemented in GUI yet)
+                            self.prefer_showcase.get(),
+                            self.prefer_extra_art.get(),
+                            self.tokens.get(),
+                            self.art_crop.get(),
+                            self.parallel.get(),
+                            self.max_workers.get(),
+                            self.api_delay.get(),
+                            front_directory,
+                            double_sided_directory,
+                            cancel_check=lambda: self.cancel_fetch  # Pass cancel check
+                        )
                     
                     # Read and parse deck
                     self.log_message("📖 Reading deck list...", 'info')
@@ -1780,12 +1792,19 @@ class MTGCardFetcherGUI:
                             self.log_message(f"✅ Queued {dl_queue.size()} cards for download")
                             self.log_message("")
                             downloader = get_handle_card.downloader
+                            
+                            # Use appropriate fetch function based on format
+                            if format_enum == DeckFormat.MPCFILL_XML:
+                                fetch_func = get_handle_card.fetch_card
+                            else:
+                                fetch_func = get_handle_card.fetch_card_art
+                            
                             result = downloader.download_cards_parallel(
                                 tasks=dl_queue.get_all_tasks(),
-                                fetch_function=get_handle_card.fetch_card_art,
+                                fetch_function=fetch_func,
                                 front_dir=get_handle_card.front_img_dir,
                                 double_sided_dir=get_handle_card.double_sided_dir,
-                                art_crop=get_handle_card.art_crop,
+                                art_crop=get_handle_card.art_crop if hasattr(get_handle_card, 'art_crop') else False,
                                 fetch_time=fetch_elapsed_time,  # Pass fetch time to include in summary
                                 cancel_check=lambda: self.cancel_fetch  # Pass cancel check function
                             )
