@@ -6,6 +6,30 @@ from filetype.filetype import guess_extension
 from common import remove_nonalphanumeric
 from download_manager import RateLimitedDownloader, DownloadTask, DownloadQueue
 
+def download_cardback(cardback_id: str, back_img_dir: str) -> None:
+    """
+    Download a cardback image from MPCFill and save it to the back directory.
+    
+    Args:
+        cardback_id: The MPCFill ID for the cardback image
+        back_img_dir: Directory to save the cardback image
+    """
+    print(f"Downloading cardback with ID: {cardback_id}")
+    try:
+        card_art = request_mpcfill(cardback_id).content
+        
+        if card_art is not None:
+            card_art = b64decode(card_art)
+            card_art_ext = guess_extension(card_art)
+            image_path = os.path.join(back_img_dir, f'cardback.{card_art_ext}')
+            
+            with open(image_path, 'wb') as f:
+                f.write(card_art)
+            
+            print(f"Cardback saved to: {image_path}")
+    except Exception as e:
+        print(f"Error downloading cardback: {e}")
+
 def request_mpcfill(card_id: str) -> requests.Response:
     base_url = "https://script.google.com/macros/s/AKfycbw8laScKBfxda2Wb0g63gkYDBdy8NWNxINoC4xDOwnCQ3JMFdruam1MdmNmN4wI5k4/exec?id="
     r = requests.get(base_url + card_id, headers = {"user-agent": "silhouette-card-maker/0.1", "accept": "*/*"})

@@ -223,7 +223,13 @@ def parse_scryfall_json(deck_text, handle_card: Callable) -> None:
         handle_card(index, name, set_code, collector_number, quantity)
 
 # MPCFill XML parser
-def parse_mpcfill(deck_text, handle_card: Callable) -> None:
+def parse_mpcfill(deck_text, handle_card: Callable) -> str | None:
+    """
+    Parse MPCFill XML format and extract cards.
+    
+    Returns:
+        The cardback ID if present in the XML, None otherwise
+    """
     # We need to convert this into a more usable format for sanity
     # The back field will only exist if the back of a card exists
     # {
@@ -235,6 +241,7 @@ def parse_mpcfill(deck_text, handle_card: Callable) -> None:
     data = ET.fromstring(deck_text)
     fronts = data.find("fronts")
     backs = data.find("backs")
+    cardback_element = data.find("cardback")
 
     card_qty = int(data.find("details").find("quantity").text)
 
@@ -260,6 +267,11 @@ def parse_mpcfill(deck_text, handle_card: Callable) -> None:
     for index, item in enumerate(decklist, start=1):
         print(f"Index: {index}, quantity: {item['quantity']}, name: {item['name']}")
         handle_card(index, item["id"], item["name"], item.get("back", None), item["quantity"])
+    
+    # Return cardback ID if it exists
+    if cardback_element is not None:
+        return cardback_element.text
+    return None
 
 class DeckFormat(str, Enum):
     SIMPLE = "simple"
@@ -297,22 +309,36 @@ def get_format_functions(format: DeckFormat) -> Tuple[Callable, Callable]:
         raise ValueError("Unrecognized deck format")
 
 
-def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable) -> None:
+def parse_deck(deck_text: str, format: DeckFormat, handle_card: Callable):
+    """
+    Parse deck text according to the specified format.
+    
+    Returns:
+        For MPCFILL_XML format, returns the cardback ID if present (str or None).
+        For other formats, returns None.
+    """
     if format == DeckFormat.SIMPLE:
         parse_simple_list(deck_text, handle_card)
+        return None
     elif format == DeckFormat.MTGA:
         parse_mtga(deck_text, handle_card)
+        return None
     elif format == DeckFormat.MTGO:
         parse_mtgo(deck_text, handle_card)
+        return None
     elif format == DeckFormat.ARCHIDEKT:
         parse_archidekt(deck_text, handle_card)
+        return None
     elif format == DeckFormat.DECKSTATS:
         parse_deckstats(deck_text, handle_card)
+        return None
     elif format == DeckFormat.MOXFIELD:
         parse_moxfield(deck_text, handle_card)
+        return None
     elif format == DeckFormat.SCRYFALL_JSON:
         parse_scryfall_json(deck_text, handle_card)
+        return None
     elif format == DeckFormat.MPCFILL_XML:
-        parse_mpcfill(deck_text, handle_card)
+        return parse_mpcfill(deck_text, handle_card)
     else:
         raise ValueError("Unrecognized deck format")

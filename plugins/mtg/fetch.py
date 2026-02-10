@@ -3,7 +3,7 @@ import os
 import click
 from deck_formats import DeckFormat, parse_deck
 from scryfall import get_handle_card as scryfall_get_handle_card
-from mpcfill import get_handle_card as mpc_get_handle_card
+from mpcfill import get_handle_card as mpc_get_handle_card, download_cardback
 
 from typing import Set
 
@@ -81,13 +81,21 @@ def fetch_cards(
 
     with open(deck_path, 'r') as deck_file:
         deck_text = deck_file.read()
-        parse_deck(deck_text, format, get_handle_card)
+        cardback_id = parse_deck(deck_text, format, get_handle_card)
+    
+    # Download cardback for MPCFill format if present
+    if format == DeckFormat.MPCFILL_XML and cardback_id:
+        # Use the same parent directory as front_directory to determine the back directory
+        parent_dir = os.path.dirname(front_directory)
+        back_directory = os.path.join(parent_dir, 'back')
+        os.makedirs(back_directory, exist_ok=True)
+        download_cardback(cardback_id, back_directory)
     
     # If parallel mode is enabled and we have queued downloads, process them now
     if parallel and hasattr(get_handle_card, 'download_queue'):
         queue = get_handle_card.download_queue
         if queue.size() > 0:
-            print(f"\n📋 Processing {queue.size()} queued downloads in parallel...")
+            print(f"\nProcessing {queue.size()} queued downloads in parallel...")
             downloader = get_handle_card.downloader
             
             # Use the appropriate fetch function based on format
@@ -168,17 +176,25 @@ def cli(
     with open(deck_path, 'r') as deck_file:
         deck_text = deck_file.read()
 
-        parse_deck(
+        cardback_id = parse_deck(
             deck_text,
             format,
             get_handle_card,
         )
     
+    # Download cardback for MPCFill format if present
+    if format == DeckFormat.MPCFILL_XML and cardback_id:
+        # Use the same parent directory as front_directory to determine the back directory
+        parent_dir = os.path.dirname(front_directory)
+        back_directory = os.path.join(parent_dir, 'back')
+        os.makedirs(back_directory, exist_ok=True)
+        download_cardback(cardback_id, back_directory)
+    
     # If parallel mode is enabled and we have queued downloads, process them now
     if parallel and hasattr(get_handle_card, 'download_queue'):
         queue = get_handle_card.download_queue
         if queue.size() > 0:
-            print(f"\n📋 Processing {queue.size()} queued downloads in parallel...")
+            print(f"\nProcessing {queue.size()} queued downloads in parallel...")
             downloader = get_handle_card.downloader
             
             # Use the appropriate fetch function based on format
