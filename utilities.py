@@ -5,6 +5,9 @@ import math
 import filetype
 import os
 import re
+import shutil
+import tempfile
+import zipfile
 from glob import glob
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -1122,3 +1125,233 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
         y_border_max = max(0, math.ceil((y_pos_1 - y_pos_0 - height) / 2))
 
     return (x_border_max, y_border_max)
+
+
+def _extract_zip_root(tmp_dir: str) -> Path:
+    """Extract the root path of a zip, handling zips with a single root folder."""
+    tmp_path = Path(tmp_dir)
+    entries = [e for e in tmp_path.iterdir() if not e.name.startswith('.')]
+    if len(entries) == 1 and entries[0].is_dir():
+        return entries[0]
+    return tmp_path
+
+
+def process_zip_decks(
+    zip_decks_dir: str,
+    output_dir: str,
+    output_images: bool,
+    card_size: str,
+    paper_size: str,
+    registration: str,
+    mirror_registration: bool,
+    only_fronts: bool,
+    fit: str,
+    crop_string: str | None,
+    crop_backs_string: str | None,
+    extend_corners: int,
+    ppi: int,
+    quality: int,
+    skip_indices: List[int],
+    load_offset: bool,
+    label: str,
+    show_outline: bool = False,
+    specialty: Optional[str] = None,
+    group: bool = False,
+):
+    zip_dir = Path(zip_decks_dir)
+    if not zip_dir.exists() or not zip_dir.is_dir():
+        raise Exception(f'Zip decks directory "{zip_dir}" does not exist.')
+
+    zip_files = sorted(zip_dir.glob("*.zip"))
+    if not zip_files:
+        print("No zip files found in", zip_decks_dir)
+        return
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    pdf_kwargs = dict(
+        output_images=output_images,
+        card_size=card_size,
+        paper_size=paper_size,
+        registration=registration,
+        mirror_registration=mirror_registration,
+        only_fronts=only_fronts,
+        fit=fit,
+        crop_string=crop_string,
+        crop_backs_string=crop_backs_string,
+        extend_corners=extend_corners,
+        ppi=ppi,
+        quality=quality,
+        skip_indices=skip_indices,
+        load_offset=load_offset,
+        label=label,
+        show_outline=show_outline,
+        specialty=specialty,
+    )
+
+    if group:
+        _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs)
+    else:
+        _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs)
+
+
+def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
+    processed = []
+    skipped = []
+
+    for zip_path in zip_files:
+        zip_name = zip_path.stem
+        print(f"\n--- Processing: {zip_name} ---")
+
+        tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                zf.extractall(tmp_dir)
+
+            tmp_path = _extract_zip_root(tmp_dir)
+
+            front_dir = tmp_path / "front"
+            back_dir = tmp_path / "back"
+            ds_dir = tmp_path / "double_sided"
+
+            if not front_dir.exists() or not front_dir.is_dir():
+                print(f"  Skipping {zip_name}: no 'front' folder found in zip.")
+                skipped.append(zip_name)
+                continue
+
+            back_dir.mkdir(exist_ok=True)
+            ds_dir.mkdir(exist_ok=True)
+
+            output_path = str(out_dir / f"{zip_name}.pdf")
+
+            generate_pdf(
+                front_dir_path=str(front_dir),
+                back_dir_path=str(back_dir),
+                ds_dir_path=str(ds_dir),
+                output_path=output_path,
+                **pdf_kwargs,
+            )
+
+            processed.append(zip_name)
+            print(f"  Output: {output_path}")
+        except Exception as e:
+            print(f"  Error processing {zip_name}: {e}")
+            skipped.append(zip_name)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+        try:
+            zip_path.unlink()
+            print(f"  Deleted: {zip_path.name}")
+        except Exception as e:
+            print(f"  Warning: could not delete {zip_path.name}: {e}")
+
+    print(f"\n--- Summary ---")
+    print(f"Processed: {len(processed)} deck(s)")
+    if skipped:
+        print(f"Skipped: {len(skipped)} - {', '.join(skipped)}")
+
+
+def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
+    merged_dir = tempfile.mkdtemp(prefix="zip_deck_grouped_")
+    merged_front = Path(merged_dir) / "front"
+    merged_back = Path(merged_dir) / "back"
+    merged_ds = Path(merged_dir) / "double_sided"
+    merged_front.mkdir()
+    merged_back.mkdir()
+    merged_ds.mkdir()
+
+    processed = []
+    skipped = []
+
+    for zip_path in zip_files:
+        zip_name = zip_path.stem
+        prefix = f"{zip_name}_"
+        print(f"\n--- Extracting: {zip_name} ---")
+
+        tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                zf.extractall(tmp_dir)
+
+            tmp_path = _extract_zip_root(tmp_dir)
+
+            front_dir = tmp_path / "front"
+            if not front_dir.exists() or not front_dir.is_dir():
+                print(f"  Skipping {zip_name}: no 'front' folder found in zip.")
+                skipped.append(zip_name)
+                continue
+
+            back_dir = tmp_path / "back"
+            ds_dir = tmp_path / "double_sided"
+
+            # Get the zip's back image (if any)
+            back_image_path = None
+            if back_dir.exists():
+                back_image_path = get_back_card_image_path(str(back_dir))
+
+            # Get list of double-sided filenames for this zip
+            ds_filenames = set()
+            if ds_dir.exists():
+                for f in ds_dir.iterdir():
+                    if f.is_file() and filetype.guess_mime(str(f)) in valid_mimetypes:
+                        ds_filenames.add(f.name)
+
+            # Copy front images with prefix
+            for f in front_dir.iterdir():
+                if not f.is_file() or filetype.guess_mime(str(f)) not in valid_mimetypes:
+                    continue
+                prefixed_name = prefix + f.name
+                shutil.copy2(f, merged_front / prefixed_name)
+
+                if f.name in ds_filenames:
+                    # Copy the matching double_sided image with prefix
+                    shutil.copy2(ds_dir / f.name, merged_ds / prefixed_name)
+                elif back_image_path is not None:
+                    # Convert the shared back into a per-card double_sided entry
+                    # Use the front's prefixed name but keep the back image's extension
+                    back_ext = Path(back_image_path).suffix
+                    front_stem = Path(prefixed_name).stem
+                    shutil.copy2(back_image_path, merged_ds / f"{front_stem}{back_ext}")
+
+            processed.append(zip_name)
+        except Exception as e:
+            print(f"  Error extracting {zip_name}: {e}")
+            skipped.append(zip_name)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    if not processed:
+        print("\nNo decks were successfully extracted.")
+        shutil.rmtree(merged_dir, ignore_errors=True)
+        return
+
+    # Generate a single grouped PDF
+    output_path = str(out_dir / "group.pdf")
+    print(f"\n--- Generating grouped PDF ---")
+    try:
+        generate_pdf(
+            front_dir_path=str(merged_front),
+            back_dir_path=str(merged_back),
+            ds_dir_path=str(merged_ds),
+            output_path=output_path,
+            **pdf_kwargs,
+        )
+        print(f"  Output: {output_path}")
+    finally:
+        shutil.rmtree(merged_dir, ignore_errors=True)
+
+    # Delete all processed zips
+    for zip_path in zip_files:
+        if zip_path.stem in processed:
+            try:
+                zip_path.unlink()
+                print(f"  Deleted: {zip_path.name}")
+            except Exception as e:
+                print(f"  Warning: could not delete {zip_path.name}: {e}")
+
+    print(f"\n--- Summary ---")
+    print(f"Processed: {len(processed)} deck(s) into group.pdf")
+    if skipped:
+        print(f"Skipped: {len(skipped)} - {', '.join(skipped)}")

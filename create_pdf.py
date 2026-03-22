@@ -2,12 +2,13 @@ import os
 import re
 
 import click
-from utilities import Registration, FitMode, generate_pdf, load_layout_config, get_all_card_size_names, get_all_paper_size_names, get_all_specialty_layout_names
+from utilities import Registration, FitMode, generate_pdf, process_zip_decks, load_layout_config, get_all_card_size_names, get_all_paper_size_names, get_all_specialty_layout_names
 
 front_directory = os.path.join('game', 'front')
 back_directory = os.path.join('game', 'back')
 double_sided_directory = os.path.join('game', 'double_sided')
 output_directory = os.path.join('game', 'output')
+zip_decks_directory = os.path.join('game', 'zip-decks')
 
 default_output_path = os.path.join(output_directory, 'game.pdf')
 
@@ -44,6 +45,10 @@ specialty_choices = get_all_specialty_layout_names(layout_config)
 @click.option("--label", help="Apply a custom label to each page.")
 @click.option("--show_outline", default=False, is_flag=True, help="Overlay a white outline of the cutting path on each page.")
 
+@click.option("--zip_decks", default=False, is_flag=True, help="Process zip files from the zip-decks directory. Each zip should contain front/, back/, and/or double_sided/ folders.")
+@click.option("--zip_decks_dir", default=zip_decks_directory, show_default=True, help="The path to the directory containing zip deck files.")
+@click.option("--group", default=False, is_flag=True, help="Combine all zip decks into a single PDF. Only used with --zip_decks.")
+
 @click.version_option("2.0.0")
 
 def cli(
@@ -67,8 +72,36 @@ def cli(
     skip,
     load_offset,
     label,
-    show_outline
+    show_outline,
+    zip_decks,
+    zip_decks_dir,
+    group
 ):
+    if zip_decks:
+        process_zip_decks(
+            zip_decks_dir=zip_decks_dir,
+            output_dir=os.path.dirname(output_path),
+            group=group,
+            output_images=output_images,
+            card_size=card_size,
+            paper_size=paper_size,
+            registration=registration,
+            mirror_registration=mirror_registration,
+            only_fronts=only_fronts,
+            fit=fit,
+            crop_string=crop,
+            crop_backs_string=crop_backs,
+            extend_corners=extend_corners,
+            ppi=ppi,
+            quality=quality,
+            skip_indices=skip,
+            load_offset=load_offset,
+            label=label,
+            show_outline=show_outline,
+            specialty=specialty,
+        )
+        return
+
     generate_pdf(
         front_dir_path,
         back_dir_path,
