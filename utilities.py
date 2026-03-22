@@ -16,7 +16,7 @@ from pydantic import BaseModel, model_validator
 
 import page_manager
 import size_convert
-from enums import Registration, Orientation
+from enums import Registration, Orientation, OrientationMode
 
 # Specify directory locations
 asset_directory = 'assets'
@@ -69,6 +69,7 @@ class RegistrationSettings(BaseModel):
 
 class DefaultSettings(BaseModel):
     card_radius: str
+    borderless_registration_inset: str = "3mm"
     registration: RegistrationSettings
 
 
@@ -579,7 +580,7 @@ def draw_outline(
                 width=1,
             )
 
-def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, ppi_ratio: float, template: str, only_fronts: bool, label: str, orientation: Orientation, label_margin_px: int):
+def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, ppi_ratio: float, template: str, only_fronts: bool, label: str, orientation: Orientation, grid_end_x: int, grid_end_y: int):
     font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40 * ppi_ratio)
 
     num_sheet = len(pages) + 1
@@ -593,19 +594,21 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     # Label goes on the short side of the paper, opposite the top-left black square.
     # Landscape: short sides are left/right; black square top-left → label on RIGHT.
     # Portrait: short sides are top/bottom; black square top-left → label on BOTTOM.
+    # Position the label at the midpoint between the card grid edge and the page edge
+    # so it never overlaps card content, even with tight borderless margins.
     if orientation == Orientation.LANDSCAPE:
         # Right side: rotate page, draw horizontal text, rotate back
         front_page = front_page.rotate(-90, expand=True)
         draw = ImageDraw.Draw(front_page)
         label_x = math.floor((page_height / 2) * ppi_ratio)
-        label_y = math.floor(page_width * ppi_ratio) - label_margin_px
+        label_y = math.floor((grid_end_x + page_width) / 2 * ppi_ratio)
         draw.text((label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font)
         front_page = front_page.rotate(90, expand=True)
     else:
         # Bottom side: horizontal text
         draw = ImageDraw.Draw(front_page)
         label_x = math.floor((page_width / 2) * ppi_ratio)
-        label_y = math.floor(page_height * ppi_ratio) - label_margin_px
+        label_y = math.floor((grid_end_y + page_height) / 2 * ppi_ratio)
         draw.text((label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font)
 
     # Rotate portrait pages to landscape so the generated PDF is always landscape.
@@ -651,6 +654,84 @@ def resolve_image_with_any_extension(path: str) -> str:
 
     return matches[0]
 
+def derive_borderless_paper(
+    paper_def: PaperSizeDef,
+    default_inset: str,
+    borderless_inset: str,
+) -> PaperSizeDef:
+    """Derive borderless paper parameters from a regular paper size.
+
+    Returns a PaperSizeDef with:
+    - width/height: virtual media size (for DXF/Silhouette Studio)
+    - pdf_width/pdf_height: original paper size (for PDF output)
+    - pdf_registration_inset: borderless inset
+    """
+    margin_mm = size_convert.size_to_mm(default_inset) - size_convert.size_to_mm(borderless_inset)
+    virtual_w = size_convert.size_to_mm(paper_def.width) + 2 * margin_mm
+    virtual_h = size_convert.size_to_mm(paper_def.height) + 2 * margin_mm
+    return PaperSizeDef(
+        width=f"{round(virtual_w, 1)}mm",
+        height=f"{round(virtual_h, 1)}mm",
+        pdf_width=paper_def.width,
+        pdf_height=paper_def.height,
+        pdf_registration_inset=borderless_inset,
+    )
+
+
+def find_best_orientation(
+    orientation_mode: OrientationMode,
+    card_width: str,
+    card_height: str,
+    paper_width: str,
+    paper_height: str,
+    inset: str,
+    length: str,
+    ppi: int,
+    preferred: Orientation = Orientation.LANDSCAPE,
+) -> tuple[Orientation, page_manager.CardLayout]:
+    """Resolve an OrientationMode to a concrete Orientation and compute the layout.
+
+    For OPTIMIZE, tries both orientations and returns the one with more cards,
+    using `preferred` as a tiebreaker.
+
+    Raises:
+        ValueError if no valid layout exists in any tried orientation.
+    """
+    kwargs = dict(
+        card_width=card_width,
+        card_height=card_height,
+        paper_width=paper_width,
+        paper_height=paper_height,
+        inset=inset,
+        length=length,
+        ppi=ppi,
+    )
+
+    if orientation_mode != OrientationMode.OPTIMIZE:
+        orientation = Orientation(orientation_mode.value)
+        return orientation, page_manager.generate_layout(orientation=orientation, **kwargs)
+
+    best_count = 0
+    best_orientation = preferred
+    best_computed = None
+
+    for orient in Orientation:
+        try:
+            computed = page_manager.generate_layout(orientation=orient, **kwargs)
+        except ValueError:
+            continue
+        count = len(computed.x_pos) * len(computed.y_pos)
+        if count > best_count or (count == best_count and orient == preferred):
+            best_count = count
+            best_orientation = orient
+            best_computed = computed
+
+    if best_computed is None:
+        raise ValueError("No valid layout in either orientation.")
+
+    return best_orientation, best_computed
+
+
 def generate_pdf(
     front_dir_path: str,
     back_dir_path: str,
@@ -673,6 +754,7 @@ def generate_pdf(
     label: str,
     show_outline: bool = False,
     specialty: Optional[str] = None,
+    borderless: bool = False,
 ):
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
@@ -724,6 +806,9 @@ def generate_pdf(
 
     layout_config = load_layout_config()
     default_reg = layout_config.defaults.registration
+
+    if borderless and specialty:
+        raise Exception('Cannot use --borderless with --specialty. Specialty layouts define their own geometry.')
 
     if specialty:
         if not layout_config.specialty_layouts or specialty not in layout_config.specialty_layouts:
@@ -784,24 +869,49 @@ def generate_pdf(
             raise Exception(f'Unsupported paper size "{paper_size}". Try paper sizes: {list(layout_config.paper_sizes.keys())}.')
         paper_size_def = layout_config.paper_sizes[paper_size]
 
-        # Look up orientation and version from the layouts field (per paper+card combination)
-        if paper_size not in layout_config.layouts or card_size not in layout_config.layouts[paper_size]:
-            raise Exception(f'No layout defined for paper "{paper_size}" with card "{card_size}". Add it to layouts.json.')
-        layout_def = layout_config.layouts[paper_size][card_size]
-        orientation = layout_def.orientation
-        version = layout_def.version
+        if borderless:
+            if paper_size.endswith('_borderless'):
+                raise Exception(f'Cannot use --borderless with paper size "{paper_size}". Use the base paper size instead (e.g. "a4").')
 
-        # Effective registration: merge per-layout overrides on top of defaults
-        layout_reg = layout_def.registration
-        lr = layout_reg or RegistrationSettings()
-        effective_inset = lr.inset or default_reg.inset
-        effective_thickness = lr.thickness or default_reg.thickness
-        effective_length = lr.length or default_reg.length
+            bl_inset = layout_config.defaults.borderless_registration_inset
+            paper_size_def = derive_borderless_paper(paper_size_def, default_reg.inset, bl_inset)
 
-        template = template_name(paper_size, card_size, version)
-        pdf_width = paper_size_def.pdf_width or paper_size_def.width
-        pdf_height = paper_size_def.pdf_height or paper_size_def.height
-        pdf_inset = paper_size_def.pdf_registration_inset or effective_inset
+            total_exclusion_mm = size_convert.size_to_mm(default_reg.length) + page_manager.REG_PADDING_MM
+            orientation, _ = find_best_orientation(
+                OrientationMode.OPTIMIZE,
+                card_size_def.width, card_size_def.height,
+                paper_size_def.pdf_width, paper_size_def.pdf_height,
+                inset=bl_inset,
+                length=f"{total_exclusion_mm}mm",
+                ppi=layout_config.ppi,
+            )
+
+            template = template_name(f"{paper_size}_borderless", card_size, 1)
+            pdf_width = paper_size_def.pdf_width
+            pdf_height = paper_size_def.pdf_height
+            pdf_inset = bl_inset
+            effective_inset = default_reg.inset
+            effective_thickness = default_reg.thickness
+            # effective_length set after generate_layout() using computed max
+        else:
+            # Look up orientation and version from the layouts field (per paper+card combination)
+            if paper_size not in layout_config.layouts or card_size not in layout_config.layouts[paper_size]:
+                raise Exception(f'No layout defined for paper "{paper_size}" with card "{card_size}". Add it to layouts.json.')
+            layout_def = layout_config.layouts[paper_size][card_size]
+            orientation = layout_def.orientation
+            version = layout_def.version
+
+            # Effective registration: merge per-layout overrides on top of defaults
+            layout_reg = layout_def.registration
+            lr = layout_reg or RegistrationSettings()
+            effective_inset = lr.inset or default_reg.inset
+            effective_thickness = lr.thickness or default_reg.thickness
+            effective_length = lr.length or default_reg.length
+
+            template = template_name(paper_size, card_size, version)
+            pdf_width = paper_size_def.pdf_width or paper_size_def.width
+            pdf_height = paper_size_def.pdf_height or paper_size_def.height
+            pdf_inset = paper_size_def.pdf_registration_inset or effective_inset
 
     # Corner exclusion zone = configured mark length + padding constant
     total_exclusion_mm = size_convert.size_to_mm(default_reg.length) + page_manager.REG_PADDING_MM
@@ -822,6 +932,15 @@ def generate_pdf(
     page_height_px = computed.paper_height_px
     x_pos = computed.x_pos
     y_pos = computed.y_pos
+
+    # For borderless, use the computed max registration length so marks
+    # fill the available space instead of using the tiny 5mm default.
+    if borderless:
+        effective_length = f"{computed.max_length_mm}mm"
+
+    # Card grid extent (used for label placement)
+    grid_end_x = x_pos[-1] + card_width_px if len(x_pos) > 0 else 0
+    grid_end_y = y_pos[-1] + card_height_px if len(y_pos) > 0 else 0
 
     # Determine the amount of x and y crop
     crop = parse_crop_string(crop_string, card_width_px, card_height_px)
@@ -854,11 +973,6 @@ def generate_pdf(
     ppi_ratio = ppi / 300
 
     inset_px = size_convert.size_to_pixel(pdf_inset, layout_config.ppi)
-    # For borderless papers the pdf_inset is very small (3mm) so the label
-    # would land at the paper edge. Use the default registration inset
-    # (10mm) instead, which matches where content actually sits.
-    label_inset_px = size_convert.size_to_pixel(effective_inset, layout_config.ppi)
-    label_margin_px = math.floor(max(0, label_inset_px - 2 * MINIMUM_BLEED) * ppi_ratio)
     clamp_inset_min = size_convert.size_to_mm(pdf_inset) >= page_manager.MIN_REG_INSET_MM
 
     # Load an image with the registration marks
@@ -1023,7 +1137,8 @@ def generate_pdf(
                 only_fronts,
                 label,
                 orientation,
-                label_margin_px
+                grid_end_x,
+                grid_end_y
             )
 
         if len(pages) == 0:
@@ -1050,6 +1165,10 @@ def generate_pdf(
         else:
             pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
             print(f'Generated PDF: {output_path}')
+
+        print(f'Registration length: {effective_length}, thickness: {effective_thickness}')
+        if borderless:
+            print(f'Media size: {paper_size_def.width} x {paper_size_def.height}')
 
 class OffsetData(BaseModel):
     x_offset: int
