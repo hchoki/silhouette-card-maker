@@ -111,3 +111,51 @@ def run_output_images_test(test_name, extra_args=None):
 @pytest.mark.parametrize("test_name,extra_args", TEST_CASES, ids=[n for n, _ in TEST_CASES])
 def test_output_images(test_name, extra_args):
     run_output_images_test(test_name, extra_args)
+
+
+# --- Borderless Tests ---
+
+def test_borderless_create_pdf():
+    """Verify the CLI runs with --borderless and produces a PDF."""
+    runner = CliRunner()
+    with tempfile.TemporaryDirectory() as output_dir:
+        output_path = os.path.join(output_dir, 'game.pdf')
+        result = runner.invoke(cli, [
+            '--front_dir_path', 'test/basic/front',
+            '--back_dir_path', 'test/basic/back',
+            '--output_path', output_path,
+            '--borderless',
+        ])
+        assert result.exit_code == 0, f"CLI failed: {result.output}\n{result.exception}"
+        assert os.path.exists(output_path)
+
+
+def test_borderless_a4_create_pdf():
+    """Verify --borderless works with explicit paper size."""
+    runner = CliRunner()
+    with tempfile.TemporaryDirectory() as output_dir:
+        output_path = os.path.join(output_dir, 'game.pdf')
+        result = runner.invoke(cli, [
+            '--front_dir_path', 'test/basic/front',
+            '--back_dir_path', 'test/basic/back',
+            '--output_path', output_path,
+            '--borderless',
+            '--paper_size', 'a4',
+        ])
+        assert result.exit_code == 0, f"CLI failed: {result.output}\n{result.exception}"
+        assert os.path.exists(output_path)
+
+
+def test_borderless_with_specialty_errors():
+    """--borderless with --specialty should raise an error."""
+    runner = CliRunner()
+    with tempfile.TemporaryDirectory() as output_dir:
+        output_path = os.path.join(output_dir, 'game.pdf')
+        result = runner.invoke(cli, [
+            '--front_dir_path', 'test/basic/front',
+            '--back_dir_path', 'test/basic/back',
+            '--output_path', output_path,
+            '--borderless',
+            '--specialty', 'letter-commander',
+        ])
+        assert result.exit_code != 0

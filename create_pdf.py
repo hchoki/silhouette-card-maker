@@ -44,6 +44,7 @@ specialty_choices = get_all_specialty_layout_names(layout_config)
 
 @click.option("--label", help="Apply a custom label to each page.")
 @click.option("--show_outline", default=False, is_flag=True, help="Overlay a white outline of the cutting path on each page.")
+@click.option("--borderless", default=False, is_flag=True, help="Use borderless mode for tighter margins and more cards per page.")
 
 @click.option("--zip_decks", default=False, is_flag=True, help="Process zip files from the zip-decks directory. Each zip should contain front/, back/, and/or double_sided/ folders.")
 @click.option("--zip_decks_dir", default=zip_decks_directory, show_default=True, help="The path to the directory containing zip deck files.")
@@ -73,6 +74,7 @@ def cli(
     load_offset,
     label,
     show_outline,
+    borderless,
     zip_decks,
     zip_decks_dir,
     group
@@ -99,6 +101,7 @@ def cli(
             label=label,
             show_outline=show_outline,
             specialty=specialty,
+            borderless=borderless,
         )
         return
 
@@ -124,6 +127,7 @@ def cli(
         label,
         show_outline,
         specialty=specialty,
+        borderless=borderless,
     )
 
 if __name__ == '__main__':

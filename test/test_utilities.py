@@ -25,6 +25,8 @@ from utilities import (
     add_front_back_pages,
     FitMode,
     asset_directory,
+    derive_borderless_paper,
+    PaperSizeDef,
 )
 from enums import Orientation
 
@@ -1443,7 +1445,7 @@ class TestAddFrontBackPages:
             page_width=300, page_height=400,
             ppi_ratio=1.0, template='test_v1',
             only_fronts=False, label=None,
-            orientation=Orientation.LANDSCAPE, label_margin_px=0
+            orientation=Orientation.LANDSCAPE, grid_end_x=200, grid_end_y=300
         )
         assert len(pages) == 2
         assert pages[0].size == front.size
@@ -1463,7 +1465,7 @@ class TestAddFrontBackPages:
             page_width=300, page_height=400,
             ppi_ratio=1.0, template='test_v1',
             only_fronts=True, label=None,
-            orientation=Orientation.LANDSCAPE, label_margin_px=0
+            orientation=Orientation.LANDSCAPE, grid_end_x=200, grid_end_y=300
         )
         assert len(pages) == 1
         assert pages[0].size == front.size
@@ -1485,14 +1487,14 @@ class TestAddFrontBackPages:
             page_width=300, page_height=400,
             ppi_ratio=1.0, template='test_v1',
             only_fronts=False, label=None,
-            orientation=Orientation.PORTRAIT, label_margin_px=0
+            orientation=Orientation.PORTRAIT, grid_end_x=200, grid_end_y=300
         )
         add_front_back_pages(
             front2, back2, pages,
             page_width=300, page_height=400,
             ppi_ratio=1.0, template='test_v1',
             only_fronts=False, label=None,
-            orientation=Orientation.PORTRAIT, label_margin_px=0
+            orientation=Orientation.PORTRAIT, grid_end_x=200, grid_end_y=300
         )
         assert len(pages) == 4
 
@@ -1510,6 +1512,49 @@ class TestAddFrontBackPages:
             page_width=300, page_height=400,
             ppi_ratio=1.0, template='test_v1',
             only_fronts=False, label='my_deck',
-            orientation=Orientation.PORTRAIT, label_margin_px=0
+            orientation=Orientation.PORTRAIT, grid_end_x=200, grid_end_y=300
         )
         assert len(pages) == 2
+
+
+class TestDeriveBorderlessPaper:
+    def test_a4_virtual_dimensions(self):
+        paper = PaperSizeDef(width="297mm", height="210mm")
+        result = derive_borderless_paper(paper, "10mm", "3mm")
+        assert result.width == "311.0mm"
+        assert result.height == "224.0mm"
+        assert result.pdf_width == "297mm"
+        assert result.pdf_height == "210mm"
+        assert result.pdf_registration_inset == "3mm"
+
+    def test_letter_virtual_dimensions(self):
+        paper = PaperSizeDef(width="11in", height="8.5in")
+        result = derive_borderless_paper(paper, "10mm", "3mm")
+        assert result.width == "293.4mm"
+        assert result.height == "229.9mm"
+        assert result.pdf_width == "11in"
+        assert result.pdf_height == "8.5in"
+
+    def test_a3_virtual_dimensions(self):
+        paper = PaperSizeDef(width="420mm", height="297mm")
+        result = derive_borderless_paper(paper, "10mm", "3mm")
+        assert result.width == "434.0mm"
+        assert result.height == "311.0mm"
+        assert result.pdf_width == "420mm"
+        assert result.pdf_height == "297mm"
+
+    def test_tabloid_virtual_dimensions(self):
+        paper = PaperSizeDef(width="17in", height="11in")
+        result = derive_borderless_paper(paper, "10mm", "3mm")
+        assert result.width == "445.8mm"
+        assert result.height == "293.4mm"
+        assert result.pdf_width == "17in"
+        assert result.pdf_height == "11in"
+
+    def test_arch_b_virtual_dimensions(self):
+        paper = PaperSizeDef(width="18in", height="12in")
+        result = derive_borderless_paper(paper, "10mm", "3mm")
+        assert result.width == "471.2mm"
+        assert result.height == "318.8mm"
+        assert result.pdf_width == "18in"
+        assert result.pdf_height == "12in"
