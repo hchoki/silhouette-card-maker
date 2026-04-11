@@ -23,3 +23,6 @@ test/*/output/*
 
 hugo/public/
 .vscode/launch.json
+
+# AI assistant artifacts
+context-snapshot.json

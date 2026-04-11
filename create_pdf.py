@@ -102,6 +102,9 @@ def cli(
             show_outline=show_outline,
             specialty=specialty,
             borderless=borderless,
+            front_dir_path=front_dir_path,
+            back_dir_path=back_dir_path,
+            double_sided_dir_path=double_sided_dir_path,
         )
         return
 

@@ -481,7 +481,9 @@ def draw_card_layout(
     extend_corners: int,
     flip: bool,
     fit: FitMode,
-    orientation: Orientation
+    orientation: Orientation,
+    per_card_crops: Optional[List[tuple[float, float] | None]] = None,
+    per_card_extend_corners: Optional[List[int | None]] = None,
 ):
     num_cards = num_rows * num_cols
     crop_percent_x, crop_percent_y = crop
@@ -519,11 +521,21 @@ def draw_card_layout(
         bleed_offset_y = 0
         synthetic_bleed = (scaled_bleed_width, scaled_bleed_height)
 
+        # Per-card extend_corners override
+        card_extend = extend_corners
+        if per_card_extend_corners and i < len(per_card_extend_corners) and per_card_extend_corners[i] is not None:
+            card_extend = per_card_extend_corners[i]
+        card_extend_thickness = math.floor(card_extend * ppi_ratio)
+
         # Determine which crop percentages to use
         if card_image is single_back_image:
             active_crop_x, active_crop_y = crop_backs_percent_x, crop_backs_percent_y
         else:
-            active_crop_x, active_crop_y = crop_percent_x, crop_percent_y
+            # Per-card crop override
+            if per_card_crops and i < len(per_card_crops) and per_card_crops[i] is not None:
+                active_crop_x, active_crop_y = per_card_crops[i]
+            else:
+                active_crop_x, active_crop_y = crop_percent_x, crop_percent_y
 
         # Apply cropping, scaling, and fit mode
         if active_crop_x > 0 or active_crop_y > 0 or fit == FitMode.CROP:
@@ -543,20 +555,20 @@ def draw_card_layout(
 
         # Extend the corners if required
         card_image = card_image.crop((
-            extend_corners_thickness,
-            extend_corners_thickness,
-            card_image.width - extend_corners_thickness,
-            card_image.height - extend_corners_thickness
+            card_extend_thickness,
+            card_extend_thickness,
+            card_image.width - card_extend_thickness,
+            card_image.height - card_extend_thickness
         ))
 
         if flip and orientation == Orientation.LANDSCAPE:
             card_image = card_image.rotate(180)
 
         # Calculate final position
-        x = base_x + bleed_offset_x + extend_corners_thickness
-        y = base_y + bleed_offset_y + extend_corners_thickness
+        x = base_x + bleed_offset_x + card_extend_thickness
+        y = base_y + bleed_offset_y + card_extend_thickness
 
-        draw_card_with_bleed(card_image, base_image, x, y, (synthetic_bleed[0] + extend_corners_thickness, synthetic_bleed[1] + extend_corners_thickness))
+        draw_card_with_bleed(card_image, base_image, x, y, (synthetic_bleed[0] + card_extend_thickness, synthetic_bleed[1] + card_extend_thickness))
 
 def draw_outline(
     page: Image.Image,
@@ -758,6 +770,8 @@ def generate_pdf(
     show_outline: bool = False,
     specialty: Optional[str] = None,
     borderless: bool = False,
+    return_pages: bool = False,
+    card_overrides: Optional[Dict[str, dict]] = None,
 ):
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
@@ -1025,11 +1039,19 @@ def generate_pdf(
             # Batch size is based on cards per page
             front_card_images = []
             back_card_images = []
+            front_crop_overrides = []
+            front_extend_overrides = []
+            back_crop_overrides = []
+            back_extend_overrides = []
             file_group_iterator = iter(file_group)
             for i in range(num_cards):
                 if i in clean_skip_indices:
                     front_card_images.append(None)
                     back_card_images.append(None)
+                    front_crop_overrides.append(None)
+                    front_extend_overrides.append(None)
+                    back_crop_overrides.append(None)
+                    back_extend_overrides.append(None)
                     continue
 
                 try:
@@ -1039,6 +1061,23 @@ def generate_pdf(
 
                 print(f'Image {num_image}: {file}')
                 num_image += 1
+
+                # Look up per-card overrides from config
+                card_crop_override = None
+                card_extend_override = None
+                if card_overrides:
+                    filename = Path(file).name
+                    override = card_overrides.get(filename)
+                    if override:
+                        if 'crop' in override:
+                            card_crop_override = parse_crop_string(override['crop'], card_width_px, card_height_px)
+                        if 'extend_corners' in override:
+                            card_extend_override = override['extend_corners']
+
+                front_crop_overrides.append(card_crop_override)
+                front_extend_overrides.append(card_extend_override)
+                back_crop_overrides.append(None)
+                back_extend_overrides.append(None)
 
                 front_card_image_path = os.path.join(front_dir_path, file)
                 # Allow differing extensions for double-sided images
@@ -1100,6 +1139,8 @@ def generate_pdf(
                 flip=False,
                 fit=fit,
                 orientation=orientation,
+                per_card_crops=front_crop_overrides if card_overrides else None,
+                per_card_extend_corners=front_extend_overrides if card_overrides else None,
             )
 
             # Create back layout
@@ -1121,6 +1162,8 @@ def generate_pdf(
                 flip=True, # Flip the back sides
                 fit=fit,
                 orientation=orientation,
+                per_card_crops=back_crop_overrides if card_overrides else None,
+                per_card_extend_corners=back_extend_overrides if card_overrides else None,
             )
 
             # Draw cutting path outlines on top of the card images
@@ -1146,6 +1189,8 @@ def generate_pdf(
 
         if len(pages) == 0:
             print('No pages were generated')
+            if return_pages:
+                return []
             return
 
         # Load saved offset if available
@@ -1157,6 +1202,10 @@ def generate_pdf(
             else:
                 print(f'Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}, angle offset: {saved_offset.angle_offset}')
                 pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset, ppi, saved_offset.angle_offset)
+
+        # Return pages for external composition (used by zip config groups)
+        if return_pages:
+            return pages
 
         # Save the pages array as a PDF
         if output_images:
@@ -1250,6 +1299,33 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
     return (x_border_max, y_border_max)
 
 
+def _parse_zip_config(config_path: str) -> list[dict] | None:
+    """Parse a config.json from a zip deck. Returns list of group dicts or None."""
+    if not os.path.exists(config_path):
+        return None
+    with open(config_path, 'r') as f:
+        data = json.load(f)
+    groups = data.get('groups', [])
+    if not groups:
+        return None
+    return groups
+
+
+def _build_card_overrides(groups: list[dict]) -> Dict[str, dict]:
+    """Build a filename→{crop, extend_corners} mapping from config groups."""
+    overrides = {}
+    for group in groups:
+        settings = {}
+        if 'crop' in group:
+            settings['crop'] = group['crop']
+        if 'extend_corners' in group:
+            settings['extend_corners'] = group['extend_corners']
+        if settings:
+            for filename in group.get('files', []):
+                overrides[filename] = settings
+    return overrides
+
+
 def _extract_zip_root(tmp_dir: str) -> Path:
     """Extract the root path of a zip, handling zips with a single root folder."""
     tmp_path = Path(tmp_dir)
@@ -1281,6 +1357,9 @@ def process_zip_decks(
     specialty: Optional[str] = None,
     group: bool = False,
     borderless: bool = False,
+    front_dir_path: Optional[str] = None,
+    back_dir_path: Optional[str] = None,
+    double_sided_dir_path: Optional[str] = None,
 ):
     zip_dir = Path(zip_decks_dir)
     if not zip_dir.exists() or not zip_dir.is_dir():
@@ -1315,8 +1394,16 @@ def process_zip_decks(
         borderless=borderless,
     )
 
+    regular_dirs = None
+    if front_dir_path and Path(front_dir_path).exists():
+        regular_dirs = {
+            'front': front_dir_path,
+            'back': back_dir_path,
+            'double_sided': double_sided_dir_path,
+        }
+
     if group:
-        _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs)
+        _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=regular_dirs)
     else:
         _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs)
 
@@ -1350,11 +1437,20 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
 
             output_path = str(out_dir / f"{zip_name}.pdf")
 
+            # Check for config.json with per-card settings
+            config_path = str(tmp_path / "config.json")
+            groups = _parse_zip_config(config_path)
+            overrides = _build_card_overrides(groups) if groups else None
+
+            if overrides:
+                print(f"  Found config.json with {len(groups)} group(s)")
+
             generate_pdf(
                 front_dir_path=str(front_dir),
                 back_dir_path=str(back_dir),
                 ds_dir_path=str(ds_dir),
                 output_path=output_path,
+                card_overrides=overrides,
                 **pdf_kwargs,
             )
 
@@ -1378,7 +1474,35 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
         print(f"Skipped: {len(skipped)} - {', '.join(skipped)}")
 
 
-def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
+def _merge_deck_into(front_dir, back_dir, ds_dir, prefix, merged_front, merged_ds):
+    """Merge a deck's front/back/double_sided images into the grouped merge directory."""
+    back_image_path = None
+    if back_dir and Path(back_dir).exists():
+        back_image_path = get_back_card_image_path(str(back_dir))
+
+    ds_filenames = set()
+    ds_path = Path(ds_dir) if ds_dir else None
+    if ds_path and ds_path.exists():
+        for f in ds_path.iterdir():
+            if f.is_file() and filetype.guess_mime(str(f)) in valid_mimetypes:
+                ds_filenames.add(f.name)
+
+    front_path = Path(front_dir)
+    for f in front_path.iterdir():
+        if not f.is_file() or filetype.guess_mime(str(f)) not in valid_mimetypes:
+            continue
+        prefixed_name = prefix + f.name
+        shutil.copy2(f, merged_front / prefixed_name)
+
+        if f.name in ds_filenames:
+            shutil.copy2(ds_path / f.name, merged_ds / prefixed_name)
+        elif back_image_path is not None:
+            back_ext = Path(back_image_path).suffix
+            front_stem = Path(prefixed_name).stem
+            shutil.copy2(back_image_path, merged_ds / f"{front_stem}{back_ext}")
+
+
+def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None):
     merged_dir = tempfile.mkdtemp(prefix="zip_deck_grouped_")
     merged_front = Path(merged_dir) / "front"
     merged_back = Path(merged_dir) / "back"
@@ -1389,6 +1513,24 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
 
     processed = []
     skipped = []
+    # Accumulated card_overrides across all zips (keyed by prefixed filename)
+    all_card_overrides = {}
+
+    # Include regular game folders as a deck source
+    if regular_dirs:
+        front_dir = regular_dirs['front']
+        front_images = get_image_file_paths(front_dir)
+        if front_images:
+            print("\n--- Including regular folders ---")
+            _merge_deck_into(
+                front_dir=front_dir,
+                back_dir=regular_dirs.get('back'),
+                ds_dir=regular_dirs.get('double_sided'),
+                prefix="game_",
+                merged_front=merged_front,
+                merged_ds=merged_ds,
+            )
+            processed.append("game")
 
     for zip_path in zip_files:
         zip_name = zip_path.stem
@@ -1411,34 +1553,24 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
             back_dir = tmp_path / "back"
             ds_dir = tmp_path / "double_sided"
 
-            # Get the zip's back image (if any)
-            back_image_path = None
-            if back_dir.exists():
-                back_image_path = get_back_card_image_path(str(back_dir))
+            # Check for config.json and build per-card overrides with prefixed names
+            config_path = str(tmp_path / "config.json")
+            groups = _parse_zip_config(config_path)
+            if groups:
+                print(f"  Found config.json with {len(groups)} group(s)")
+                overrides = _build_card_overrides(groups)
+                for filename, settings in overrides.items():
+                    all_card_overrides[prefix + filename] = settings
 
-            # Get list of double-sided filenames for this zip
-            ds_filenames = set()
-            if ds_dir.exists():
-                for f in ds_dir.iterdir():
-                    if f.is_file() and filetype.guess_mime(str(f)) in valid_mimetypes:
-                        ds_filenames.add(f.name)
-
-            # Copy front images with prefix
-            for f in front_dir.iterdir():
-                if not f.is_file() or filetype.guess_mime(str(f)) not in valid_mimetypes:
-                    continue
-                prefixed_name = prefix + f.name
-                shutil.copy2(f, merged_front / prefixed_name)
-
-                if f.name in ds_filenames:
-                    # Copy the matching double_sided image with prefix
-                    shutil.copy2(ds_dir / f.name, merged_ds / prefixed_name)
-                elif back_image_path is not None:
-                    # Convert the shared back into a per-card double_sided entry
-                    # Use the front's prefixed name but keep the back image's extension
-                    back_ext = Path(back_image_path).suffix
-                    front_stem = Path(prefixed_name).stem
-                    shutil.copy2(back_image_path, merged_ds / f"{front_stem}{back_ext}")
+            # Merge into grouped directory (same for config and non-config zips)
+            _merge_deck_into(
+                front_dir=str(front_dir),
+                back_dir=str(back_dir) if back_dir.exists() else None,
+                ds_dir=str(ds_dir) if ds_dir.exists() else None,
+                prefix=prefix,
+                merged_front=merged_front,
+                merged_ds=merged_ds,
+            )
 
             processed.append(zip_name)
         except Exception as e:
@@ -1452,7 +1584,7 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
         shutil.rmtree(merged_dir, ignore_errors=True)
         return
 
-    # Generate a single grouped PDF
+    # Generate a single grouped PDF with per-card overrides
     output_path = str(out_dir / "group.pdf")
     print(f"\n--- Generating grouped PDF ---")
     try:
@@ -1461,6 +1593,7 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs):
             back_dir_path=str(merged_back),
             ds_dir_path=str(merged_ds),
             output_path=output_path,
+            card_overrides=all_card_overrides if all_card_overrides else None,
             **pdf_kwargs,
         )
         print(f"  Output: {output_path}")
