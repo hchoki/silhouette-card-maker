@@ -22,9 +22,9 @@ import size_convert
 from enums import Registration, Orientation, OrientationMode
 
 # Specify directory locations
-asset_directory = 'assets'
+asset_directory = "assets"
 
-layouts_filename = 'layouts.json'
+layouts_filename = "layouts.json"
 layouts_path = os.path.join(asset_directory, layouts_filename)
 
 # Specify valid mimetypes for images
@@ -49,7 +49,7 @@ valid_mimetypes = (
     # "image/heic",
     "image/avif",
     "image/qoi",
-    "image/dds"
+    "image/dds",
 )
 
 # Approximately 1.25mm of bleed assuming 300 PPI: ceil(1.25mm * 1in/25.4mm * 300ppi)
@@ -61,7 +61,6 @@ class CardSizeDef(BaseModel):
     height: str
     radius: Optional[str] = None
     aliases: Optional[List[str]] = None
-
 
 
 class RegistrationSettings(BaseModel):
@@ -103,9 +102,11 @@ class FitMode(str, Enum):
     STRETCH = "stretch"
     CROP = "crop"
 
+
 class CardLayoutSize(BaseModel):
     width: int
     height: int
+
 
 class PaperSizeDef(BaseModel):
     width: str
@@ -115,13 +116,16 @@ class PaperSizeDef(BaseModel):
     pdf_height: Optional[str] = None
     pdf_registration_inset: Optional[str] = None
 
-    @model_validator(mode='after')
-    def width_gte_height(self) -> 'PaperSizeDef':
+    @model_validator(mode="after")
+    def width_gte_height(self) -> "PaperSizeDef":
         w = size_convert.size_to_mm(self.width)
         h = size_convert.size_to_mm(self.height)
         if w < h:
-            raise ValueError(f'Paper width ({self.width}) must be >= height ({self.height}). Paper sizes are stored as landscape.')
+            raise ValueError(
+                f"Paper width ({self.width}) must be >= height ({self.height}). Paper sizes are stored as landscape."
+            )
         return self
+
 
 class CardLayout(BaseModel):
     orientation: Orientation
@@ -129,6 +133,7 @@ class CardLayout(BaseModel):
     num_rows: Optional[int] = None
     num_cols: Optional[int] = None
     registration: Optional[RegistrationSettings] = None
+
 
 class LayoutConfig(BaseModel):
     ppi: int
@@ -141,7 +146,7 @@ class LayoutConfig(BaseModel):
 
 def load_layout_config() -> LayoutConfig:
     """Load and validate layouts.json from the assets directory."""
-    with open(layouts_path, 'r') as f:
+    with open(layouts_path, "r") as f:
         return LayoutConfig(**json.load(f))
 
 
@@ -149,7 +154,9 @@ def resolve_card_size_alias(layout_config: LayoutConfig, card_size: str) -> str:
     """Resolve a card size alias to its canonical name. Returns the original if not an alias."""
     for name, card_def in layout_config.card_sizes.items():
         if card_def.aliases and card_size in card_def.aliases:
-            print(f'Card size "{card_size}" is an alias of "{name}". Using "{name}" card size and cutting template.')
+            print(
+                f'Card size "{card_size}" is an alias of "{name}". Using "{name}" card size and cutting template.'
+            )
             return name
     return card_size
 
@@ -158,7 +165,9 @@ def resolve_paper_size_alias(layout_config: LayoutConfig, paper_size: str) -> st
     """Resolve a paper size alias to its canonical name. Returns the original if not an alias."""
     for name, paper_def in layout_config.paper_sizes.items():
         if paper_def.aliases and paper_size in paper_def.aliases:
-            print(f'Paper size "{paper_size}" is an alias of "{name}". Using "{name}" paper size and cutting template.')
+            print(
+                f'Paper size "{paper_size}" is an alias of "{name}". Using "{name}" paper size and cutting template.'
+            )
             return name
     return paper_size
 
@@ -172,7 +181,9 @@ def get_all_card_size_names(layout_config: LayoutConfig) -> List[str]:
             names.extend(card_def.aliases)
     priority = ["standard", "poker", "bridge"]
     priority_names = [n for n in priority if n in names]
-    rest = sorted((n for n in names if n not in priority), key=lambda n: (n[0].isdigit(), n))
+    rest = sorted(
+        (n for n in names if n not in priority), key=lambda n: (n[0].isdigit(), n)
+    )
     return priority_names + rest
 
 
@@ -185,7 +196,9 @@ def get_all_paper_size_names(layout_config: LayoutConfig) -> List[str]:
             names.extend(paper_def.aliases)
     priority = ["letter", "tabloid", "a4", "a3", "arch_b"]
     priority_names = [n for n in priority if n in names]
-    rest = sorted((n for n in names if n not in priority), key=lambda n: (n[0].isdigit(), n))
+    rest = sorted(
+        (n for n in names if n not in priority), key=lambda n: (n[0].isdigit(), n)
+    )
     return priority_names + rest
 
 
@@ -209,7 +222,10 @@ EXTRANEOUS_FILES = {
     "Icon\r",  # macOS oddball
 }
 
-def parse_crop_string(crop_string: str | None, card_width: int, card_height: int) -> tuple[float, float]:
+
+def parse_crop_string(
+    crop_string: str | None, card_width: int, card_height: int
+) -> tuple[float, float]:
     """
     Calculates crop based on various formats.
 
@@ -244,7 +260,10 @@ def parse_crop_string(crop_string: str | None, card_width: int, card_height: int
 
     raise ValueError(f"Invalid crop format: '{crop_string}'")
 
-def convertInToCrop(crop_in: float, card_width_px: int, card_height_px: int) -> tuple[float, float]:
+
+def convertInToCrop(
+    crop_in: float, card_width_px: int, card_height_px: int
+) -> tuple[float, float]:
     # Convert from pixels to physical mm using DPI
     # Card dimensions are based on 300 ppi
     card_width_mm = card_width_px / 300
@@ -255,22 +274,27 @@ def convertInToCrop(crop_in: float, card_width_px: int, card_height_px: int) -> 
 
     return (crop_x_percent, crop_y_percent)
 
+
 def delete_hidden_files_in_directory(path: str):
     if len(path) > 0:
         for file in os.listdir(path):
             full_path = os.path.join(path, file)
-            if os.path.isfile(full_path) and (file in EXTRANEOUS_FILES or file.startswith("._")):
+            if os.path.isfile(full_path) and (
+                file in EXTRANEOUS_FILES or file.startswith("._")
+            ):
                 try:
                     os.remove(full_path)
                     print(f"Removed hidden file: {full_path}")
                 except OSError as e:
                     print(f"Could not remove {full_path}: {e}")
 
+
 def get_directory(path):
     if os.path.isdir(path):
         return os.path.abspath(path)
     else:
         return os.path.abspath(os.path.dirname(path))
+
 
 def get_image_file_paths(dir_path: str) -> List[str]:
     result = []
@@ -288,10 +312,15 @@ def get_image_file_paths(dir_path: str) -> List[str]:
 
     return result
 
+
 def get_back_card_image_path(back_dir_path) -> str | None:
     # List all files in the directory that are pngs and jpegs
     # The directory may contain markdown and/or other files
-    files = [f for f in Path(back_dir_path).glob("*") if f.is_file() and filetype.guess_mime(f) in valid_mimetypes]
+    files = [
+        f
+        for f in Path(back_dir_path).glob("*")
+        if f.is_file() and filetype.guess_mime(f) in valid_mimetypes
+    ]
 
     if len(files) == 0:
         return None
@@ -301,7 +330,7 @@ def get_back_card_image_path(back_dir_path) -> str | None:
 
     # Multiple back files detected, provide a selection menu
     for i, f in enumerate(files):
-        print(f'[{i + 1}] {f}')
+        print(f"[{i + 1}] {f}")
 
     while True:
         choice = input("Select a back image (enter the number): ")
@@ -315,6 +344,7 @@ def get_back_card_image_path(back_dir_path) -> str | None:
 
     return files[index]
 
+
 def crop_and_scale_image(
     card_image: Image.Image,
     crop_percent_x: float,
@@ -323,7 +353,7 @@ def crop_and_scale_image(
     scaled_height: int,
     scaled_bleed_width: int,
     scaled_bleed_height: int,
-    fit: FitMode = FitMode.STRETCH
+    fit: FitMode = FitMode.STRETCH,
 ) -> tuple[Image.Image, int, int, tuple[int, int]]:
     """
     Crop and scale a card image, returning the processed image and bleed offsets.
@@ -350,7 +380,9 @@ def crop_and_scale_image(
         # Uniform scaling: use the smaller ratio (the tighter-fitting axis) so that
         # the image fills the entire target area. The other axis has excess image
         # data that gets cropped away or used as real bleed.
-        uniform_ratio = min(cropped_width / scaled_width, cropped_height / scaled_height)
+        uniform_ratio = min(
+            cropped_width / scaled_width, cropped_height / scaled_height
+        )
         cropped_scaled_ratio_x = uniform_ratio
         cropped_scaled_ratio_y = uniform_ratio
     else:
@@ -362,8 +394,12 @@ def crop_and_scale_image(
     scaled_height_with_bleed = scaled_height + 2 * scaled_bleed_height
 
     # Calculate the size of the card after adding bleed, but before scaling: "unscaled bleed size"
-    unscaled_width_with_bleed = math.floor(scaled_width_with_bleed * cropped_scaled_ratio_x)
-    unscaled_height_with_bleed = math.floor(scaled_height_with_bleed * cropped_scaled_ratio_y)
+    unscaled_width_with_bleed = math.floor(
+        scaled_width_with_bleed * cropped_scaled_ratio_x
+    )
+    unscaled_height_with_bleed = math.floor(
+        scaled_height_with_bleed * cropped_scaled_ratio_y
+    )
 
     can_bleed_x = unscaled_width_with_bleed <= card_width
     can_bleed_y = unscaled_height_with_bleed <= card_height
@@ -373,13 +409,17 @@ def crop_and_scale_image(
     if can_bleed_x and can_bleed_y:
         crop_x = (card_width - unscaled_width_with_bleed) // 2
         crop_y = (card_height - unscaled_height_with_bleed) // 2
-        card_image = card_image.crop((
-            crop_x,
-            crop_y,
-            card_width - crop_x,
-            card_height - crop_y,
-        ))
-        card_image = card_image.resize((scaled_width_with_bleed, scaled_height_with_bleed))
+        card_image = card_image.crop(
+            (
+                crop_x,
+                crop_y,
+                card_width - crop_x,
+                card_height - crop_y,
+            )
+        )
+        card_image = card_image.resize(
+            (scaled_width_with_bleed, scaled_height_with_bleed)
+        )
 
         # Offset position to account for bleed included in image
         return card_image, -scaled_bleed_width, -scaled_bleed_height, (0, 0)
@@ -388,46 +428,68 @@ def crop_and_scale_image(
     if fit == FitMode.CROP:
         if can_bleed_x:
             # Real bleed on X, synthetic on Y
-            content_height = min(math.floor(scaled_height * cropped_scaled_ratio_y), card_height)
+            content_height = min(
+                math.floor(scaled_height * cropped_scaled_ratio_y), card_height
+            )
             crop_x = (card_width - unscaled_width_with_bleed) // 2
             crop_y = (card_height - content_height) // 2
-            card_image = card_image.crop((crop_x, crop_y, card_width - crop_x, card_height - crop_y))
+            card_image = card_image.crop(
+                (crop_x, crop_y, card_width - crop_x, card_height - crop_y)
+            )
             card_image = card_image.resize((scaled_width_with_bleed, scaled_height))
             return card_image, -scaled_bleed_width, 0, (0, scaled_bleed_height)
 
         if can_bleed_y:
             # Synthetic on X, real bleed on Y
-            content_width = min(math.floor(scaled_width * cropped_scaled_ratio_x), card_width)
+            content_width = min(
+                math.floor(scaled_width * cropped_scaled_ratio_x), card_width
+            )
             crop_x = (card_width - content_width) // 2
             crop_y = (card_height - unscaled_height_with_bleed) // 2
-            card_image = card_image.crop((crop_x, crop_y, card_width - crop_x, card_height - crop_y))
+            card_image = card_image.crop(
+                (crop_x, crop_y, card_width - crop_x, card_height - crop_y)
+            )
             card_image = card_image.resize((scaled_width, scaled_height_with_bleed))
             return card_image, 0, -scaled_bleed_height, (scaled_bleed_width, 0)
 
         # Neither axis has room for real bleed — center-crop to content area
-        content_width = min(math.floor(scaled_width * cropped_scaled_ratio_x), card_width)
-        content_height = min(math.floor(scaled_height * cropped_scaled_ratio_y), card_height)
+        content_width = min(
+            math.floor(scaled_width * cropped_scaled_ratio_x), card_width
+        )
+        content_height = min(
+            math.floor(scaled_height * cropped_scaled_ratio_y), card_height
+        )
         crop_x = (card_width - content_width) // 2
         crop_y = (card_height - content_height) // 2
-        card_image = card_image.crop((crop_x, crop_y, card_width - crop_x, card_height - crop_y))
+        card_image = card_image.crop(
+            (crop_x, crop_y, card_width - crop_x, card_height - crop_y)
+        )
         card_image = card_image.resize((scaled_width, scaled_height))
         return card_image, 0, 0, (scaled_bleed_width, scaled_bleed_height)
 
     # STRETCH fallback: crop the card to the cropped size, then resize it to the scaled size
     crop_x = card_width * (crop_percent_x / 100) // 2
     crop_y = card_height * (crop_percent_y / 100) // 2
-    card_image = card_image.crop((
-        crop_x,
-        crop_y,
-        card_width - crop_x,
-        card_height - crop_y,
-    ))
+    card_image = card_image.crop(
+        (
+            crop_x,
+            crop_y,
+            card_width - crop_x,
+            card_height - crop_y,
+        )
+    )
     card_image = card_image.resize((scaled_width, scaled_height))
 
     return card_image, 0, 0, (scaled_bleed_width, scaled_bleed_height)
 
 
-def draw_card_with_bleed(card_image: Image.Image, base_image: Image.Image, x: int, y: int, print_bleed: tuple[int, int]):
+def draw_card_with_bleed(
+    card_image: Image.Image,
+    base_image: Image.Image,
+    x: int,
+    y: int,
+    print_bleed: tuple[int, int],
+):
     bleed_width, bleed_height = print_bleed
 
     width, height = card_image.size
@@ -437,11 +499,16 @@ def draw_card_with_bleed(card_image: Image.Image, base_image: Image.Image, x: in
         X = 0
         Y = 1
 
-    def extend_edge(crop_box: tuple[int, int, int, int], start: tuple[int, int], bleed: int, axis: Axis):
+    def extend_edge(
+        crop_box: tuple[int, int, int, int],
+        start: tuple[int, int],
+        bleed: int,
+        axis: Axis,
+    ):
         for bleed_i in range(bleed):
             pos = (
                 start[0] + (bleed_i if axis == Axis.X else 0),
-                start[1] + (bleed_i if axis == Axis.Y else 0)
+                start[1] + (bleed_i if axis == Axis.Y else 0),
             )
 
             base_image.paste(card_image.crop(crop_box), pos)
@@ -456,13 +523,23 @@ def draw_card_with_bleed(card_image: Image.Image, base_image: Image.Image, x: in
     extend_edge((width - 1, 0, width, height), (x + width, y), bleed_width, Axis.X)
 
     # Corners
-    for bleed_width, crop_x, pos_x in [(bleed_width, 0, x - bleed_width), (bleed_width, width - 1, x + width)]:
-        for bleed_height, crop_y, pos_y in [(bleed_height, 0, y - bleed_height), (bleed_height, height - 1, y + height)]:
+    for bleed_width, crop_x, pos_x in [
+        (bleed_width, 0, x - bleed_width),
+        (bleed_width, width - 1, x + width),
+    ]:
+        for bleed_height, crop_y, pos_y in [
+            (bleed_height, 0, y - bleed_height),
+            (bleed_height, height - 1, y + height),
+        ]:
             for x_bleed_i in range(bleed_width):
                 for y_bleed_i in range(bleed_height):
-                    base_image.paste(card_image.crop((crop_x, crop_y, crop_x + 1, crop_y + 1)), (pos_x + x_bleed_i, pos_y + y_bleed_i))
+                    base_image.paste(
+                        card_image.crop((crop_x, crop_y, crop_x + 1, crop_y + 1)),
+                        (pos_x + x_bleed_i, pos_y + y_bleed_i),
+                    )
 
     return base_image
+
 
 def draw_card_layout(
     card_images: List[Image.Image | None],
@@ -523,43 +600,52 @@ def draw_card_layout(
 
         # Per-card extend_corners override
         card_extend = extend_corners
-        if per_card_extend_corners and i < len(per_card_extend_corners) and per_card_extend_corners[i] is not None:
+        if (
+            per_card_extend_corners
+            and i < len(per_card_extend_corners)
+            and per_card_extend_corners[i] is not None
+        ):
             card_extend = per_card_extend_corners[i]
         card_extend_thickness = math.floor(card_extend * ppi_ratio)
 
         # Determine which crop percentages to use
-        if card_image is single_back_image:
+        # Per-card override takes priority (used for double-sided backs and config fronts)
+        if per_card_crops and i < len(per_card_crops) and per_card_crops[i] is not None:
+            active_crop_x, active_crop_y = per_card_crops[i]
+        elif flip:
+            # Back page with no per-card override: shared back, use crop_backs
             active_crop_x, active_crop_y = crop_backs_percent_x, crop_backs_percent_y
         else:
-            # Per-card crop override
-            if per_card_crops and i < len(per_card_crops) and per_card_crops[i] is not None:
-                active_crop_x, active_crop_y = per_card_crops[i]
-            else:
-                active_crop_x, active_crop_y = crop_percent_x, crop_percent_y
+            # Front page with no per-card override: use global crop
+            active_crop_x, active_crop_y = crop_percent_x, crop_percent_y
 
         # Apply cropping, scaling, and fit mode
         if active_crop_x > 0 or active_crop_y > 0 or fit == FitMode.CROP:
-            card_image, bleed_offset_x, bleed_offset_y, synthetic_bleed = crop_and_scale_image(
-                card_image,
-                active_crop_x,
-                active_crop_y,
-                scaled_width,
-                scaled_height,
-                scaled_bleed_width,
-                scaled_bleed_height,
-                fit
+            card_image, bleed_offset_x, bleed_offset_y, synthetic_bleed = (
+                crop_and_scale_image(
+                    card_image,
+                    active_crop_x,
+                    active_crop_y,
+                    scaled_width,
+                    scaled_height,
+                    scaled_bleed_width,
+                    scaled_bleed_height,
+                    fit,
+                )
             )
         else:
             # No percentage crop and STRETCH mode: just scale to target size
             card_image = card_image.resize((scaled_width, scaled_height))
 
         # Extend the corners if required
-        card_image = card_image.crop((
-            card_extend_thickness,
-            card_extend_thickness,
-            card_image.width - card_extend_thickness,
-            card_image.height - card_extend_thickness
-        ))
+        card_image = card_image.crop(
+            (
+                card_extend_thickness,
+                card_extend_thickness,
+                card_image.width - card_extend_thickness,
+                card_image.height - card_extend_thickness,
+            )
+        )
 
         if flip and orientation == Orientation.LANDSCAPE:
             card_image = card_image.rotate(180)
@@ -568,7 +654,17 @@ def draw_card_layout(
         x = base_x + bleed_offset_x + card_extend_thickness
         y = base_y + bleed_offset_y + card_extend_thickness
 
-        draw_card_with_bleed(card_image, base_image, x, y, (synthetic_bleed[0] + card_extend_thickness, synthetic_bleed[1] + card_extend_thickness))
+        draw_card_with_bleed(
+            card_image,
+            base_image,
+            x,
+            y,
+            (
+                synthetic_bleed[0] + card_extend_thickness,
+                synthetic_bleed[1] + card_extend_thickness,
+            ),
+        )
+
 
 def draw_outline(
     page: Image.Image,
@@ -591,20 +687,36 @@ def draw_outline(
             draw.rounded_rectangle(
                 [sx, sy, sx + scaled_w, sy + scaled_h],
                 radius=scaled_r,
-                outline='white',
+                outline="white",
                 width=1,
             )
 
-def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages: List[Image.Image], page_width: int, page_height: int, ppi_ratio: float, template: str, only_fronts: bool, label: str, orientation: Orientation, grid_end_x: int, grid_end_y: int):
-    font = ImageFont.truetype(os.path.join(asset_directory, 'arial.ttf'), 40 * ppi_ratio)
+
+def add_front_back_pages(
+    front_page: Image.Image,
+    back_page: Image.Image,
+    pages: List[Image.Image],
+    page_width: int,
+    page_height: int,
+    ppi_ratio: float,
+    template: str,
+    only_fronts: bool,
+    label: str,
+    orientation: Orientation,
+    grid_end_x: int,
+    grid_end_y: int,
+):
+    font = ImageFont.truetype(
+        os.path.join(asset_directory, "arial.ttf"), 40 * ppi_ratio
+    )
 
     num_sheet = len(pages) + 1
     if not only_fronts:
         num_sheet = int(len(pages) / 2) + 1
 
-    label_text = f'sheet: {num_sheet}, template: {template}'
+    label_text = f"sheet: {num_sheet}, template: {template}"
     if label is not None:
-        label_text = f'label: {label}, {label_text}'
+        label_text = f"label: {label}, {label_text}"
 
     # Label goes on the short side of the paper, opposite the top-left black square.
     # Landscape: short sides are left/right; black square top-left → label on RIGHT.
@@ -617,14 +729,18 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
         draw = ImageDraw.Draw(front_page)
         label_x = math.floor((page_height / 2) * ppi_ratio)
         label_y = math.floor((grid_end_x + page_width) / 2 * ppi_ratio)
-        draw.text((label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font)
+        draw.text(
+            (label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font
+        )
         front_page = front_page.rotate(90, expand=True)
     else:
         # Bottom side: horizontal text
         draw = ImageDraw.Draw(front_page)
         label_x = math.floor((page_width / 2) * ppi_ratio)
         label_y = math.floor((grid_end_y + page_height) / 2 * ppi_ratio)
-        draw.text((label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font)
+        draw.text(
+            (label_x, label_y), label_text, fill=(0, 0, 0), anchor="mm", font=font
+        )
 
     # Rotate portrait pages to landscape so the generated PDF is always landscape.
     # This ensures offset_pdf.py works regardless of orientation detection.
@@ -637,6 +753,7 @@ def add_front_back_pages(front_page: Image.Image, back_page: Image.Image, pages:
     if not only_fronts:
         pages.append(back_page)
 
+
 def check_paths_subset(subset: set[str], mainset: set[str]) -> set[str]:
     """Return the items in `subset` whose basenames do NOT appear in `mainset`,
     ignoring extensions."""
@@ -644,6 +761,7 @@ def check_paths_subset(subset: set[str], mainset: set[str]) -> set[str]:
     mainset_stems = {Path(p).stem for p in mainset}
 
     return {orig for stem, orig in subset_stems.items() if stem not in mainset_stems}
+
 
 def resolve_image_with_any_extension(path: str) -> str:
     """
@@ -658,7 +776,7 @@ def resolve_image_with_any_extension(path: str) -> str:
         return str(p)
 
     # Case 2: try to find any file with the same stem
-    pattern = str(p.with_suffix('')) + ".*"   # e.g. "card1.*"
+    pattern = str(p.with_suffix("")) + ".*"  # e.g. "card1.*"
     matches = glob(pattern)
 
     if len(matches) == 0:
@@ -668,6 +786,7 @@ def resolve_image_with_any_extension(path: str) -> str:
         raise ValueError(f"Ambiguous image match: {matches}")
 
     return matches[0]
+
 
 def derive_borderless_paper(
     paper_def: PaperSizeDef,
@@ -681,7 +800,9 @@ def derive_borderless_paper(
     - pdf_width/pdf_height: original paper size (for PDF output)
     - pdf_registration_inset: borderless inset
     """
-    margin_mm = size_convert.size_to_mm(default_inset) - size_convert.size_to_mm(borderless_inset)
+    margin_mm = size_convert.size_to_mm(default_inset) - size_convert.size_to_mm(
+        borderless_inset
+    )
     virtual_w = size_convert.size_to_mm(paper_def.width) + 2 * margin_mm
     virtual_h = size_convert.size_to_mm(paper_def.height) + 2 * margin_mm
     return PaperSizeDef(
@@ -724,7 +845,9 @@ def find_best_orientation(
 
     if orientation_mode != OrientationMode.OPTIMIZE:
         orientation = Orientation(orientation_mode.value)
-        return orientation, page_manager.generate_layout(orientation=orientation, **kwargs)
+        return orientation, page_manager.generate_layout(
+            orientation=orientation, **kwargs
+        )
 
     best_count = 0
     best_orientation = preferred
@@ -772,6 +895,8 @@ def generate_pdf(
     borderless: bool = False,
     return_pages: bool = False,
     card_overrides: Optional[Dict[str, dict]] = None,
+    back_card_overrides: Optional[Dict[str, dict]] = None,
+    dfc_filenames: Optional[set[str]] = None,
 ):
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
@@ -796,16 +921,23 @@ def generate_pdf(
         output_path = get_directory(output_path)
     else:
         if not output_path.lower().endswith(".pdf"):
-            raise Exception(f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.')
+            raise Exception(
+                f'Cannot save PDF to output path "{output_path}" because it is not a valid PDF file path.'
+            )
 
     # Get the back image, if it exists
     back_card_image_path = None
     use_default_back_page = True
     if not only_fronts:
         back_card_image_path = get_back_card_image_path(back_dir_path)
+        back_card_image_name = (
+            Path(back_card_image_path).name if back_card_image_path else None
+        )
         use_default_back_page = back_card_image_path is None
         if use_default_back_page:
-            print(f'No back image provided in back image directory \"{back_dir_path}\". Using default instead.')
+            print(
+                f'No back image provided in back image directory "{back_dir_path}". Using default instead.'
+            )
 
     front_image_filenames = get_image_file_paths(front_dir_path)
     ds_image_filenames = get_image_file_paths(ds_dir_path)
@@ -815,27 +947,38 @@ def generate_pdf(
     ds_set = set(ds_image_filenames)
     diff = check_paths_subset(ds_set, front_set)
     if len(diff) > 0:
-        raise Exception(f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".')
+        raise Exception(
+            f'Double-sided backs "{ds_set - front_set}" do not have matching fronts. Add the missing fronts to front image directory "{front_dir_path}".'
+        )
 
     if only_fronts:
         if len(ds_set) > 0:
-            raise Exception(f'Cannot use "--only_fronts" with double-sided cards. Remove cards from double-side image directory "{ds_dir_path}".')
+            raise Exception(
+                f'Cannot use "--only_fronts" with double-sided cards. Remove cards from double-side image directory "{ds_dir_path}".'
+            )
 
     layout_config = load_layout_config()
     default_reg = layout_config.defaults.registration
 
     if borderless and specialty:
-        raise Exception('Cannot use --borderless with --specialty. Specialty layouts define their own geometry.')
+        raise Exception(
+            "Cannot use --borderless with --specialty. Specialty layouts define their own geometry."
+        )
 
     if specialty:
-        if not layout_config.specialty_layouts or specialty not in layout_config.specialty_layouts:
+        if (
+            not layout_config.specialty_layouts
+            or specialty not in layout_config.specialty_layouts
+        ):
             raise Exception(f'Specialty layout "{specialty}" not found.')
         spec = layout_config.specialty_layouts[specialty]
 
         # Resolve card size
         if spec.card_size.name:
             if spec.card_size.name not in layout_config.card_sizes:
-                raise Exception(f'Card size "{spec.card_size.name}" not found in card_sizes.')
+                raise Exception(
+                    f'Card size "{spec.card_size.name}" not found in card_sizes.'
+                )
             base = layout_config.card_sizes[spec.card_size.name]
             card_size_def = CardSizeDef(
                 width=base.width,
@@ -852,7 +995,9 @@ def generate_pdf(
         # Resolve paper size
         if spec.paper_size.name:
             if spec.paper_size.name not in layout_config.paper_sizes:
-                raise Exception(f'Paper size "{spec.paper_size.name}" not found in paper_sizes.')
+                raise Exception(
+                    f'Paper size "{spec.paper_size.name}" not found in paper_sizes.'
+                )
             paper_size_def = layout_config.paper_sizes[spec.paper_size.name]
         else:
             paper_size_def = PaperSizeDef(
@@ -878,26 +1023,39 @@ def generate_pdf(
 
         # Validate card size
         if card_size not in layout_config.card_sizes:
-            raise Exception(f'Unsupported card size "{card_size}". Try card sizes: {list(layout_config.card_sizes.keys())}.')
+            raise Exception(
+                f'Unsupported card size "{card_size}". Try card sizes: {list(layout_config.card_sizes.keys())}.'
+            )
         card_size_def = layout_config.card_sizes[card_size]
 
         # Validate paper size
         if paper_size not in layout_config.paper_sizes:
-            raise Exception(f'Unsupported paper size "{paper_size}". Try paper sizes: {list(layout_config.paper_sizes.keys())}.')
+            raise Exception(
+                f'Unsupported paper size "{paper_size}". Try paper sizes: {list(layout_config.paper_sizes.keys())}.'
+            )
         paper_size_def = layout_config.paper_sizes[paper_size]
 
         if borderless:
-            if paper_size.endswith('_borderless'):
-                raise Exception(f'Cannot use --borderless with paper size "{paper_size}". Use the base paper size instead (e.g. "a4").')
+            if paper_size.endswith("_borderless"):
+                raise Exception(
+                    f'Cannot use --borderless with paper size "{paper_size}". Use the base paper size instead (e.g. "a4").'
+                )
 
             bl_inset = layout_config.defaults.borderless_registration_inset
-            paper_size_def = derive_borderless_paper(paper_size_def, default_reg.inset, bl_inset)
+            paper_size_def = derive_borderless_paper(
+                paper_size_def, default_reg.inset, bl_inset
+            )
 
-            total_exclusion_mm = size_convert.size_to_mm(default_reg.length) + page_manager.REG_PADDING_MM
+            total_exclusion_mm = (
+                size_convert.size_to_mm(default_reg.length)
+                + page_manager.REG_PADDING_MM
+            )
             orientation, _ = find_best_orientation(
                 OrientationMode.OPTIMIZE,
-                card_size_def.width, card_size_def.height,
-                paper_size_def.pdf_width, paper_size_def.pdf_height,
+                card_size_def.width,
+                card_size_def.height,
+                paper_size_def.pdf_width,
+                paper_size_def.pdf_height,
                 inset=bl_inset,
                 length=f"{total_exclusion_mm}mm",
                 ppi=layout_config.ppi,
@@ -912,8 +1070,13 @@ def generate_pdf(
             # effective_length set after generate_layout() using computed max
         else:
             # Look up orientation and version from the layouts field (per paper+card combination)
-            if paper_size not in layout_config.layouts or card_size not in layout_config.layouts[paper_size]:
-                raise Exception(f'No layout defined for paper "{paper_size}" with card "{card_size}". Add it to layouts.json.')
+            if (
+                paper_size not in layout_config.layouts
+                or card_size not in layout_config.layouts[paper_size]
+            ):
+                raise Exception(
+                    f'No layout defined for paper "{paper_size}" with card "{card_size}". Add it to layouts.json.'
+                )
             layout_def = layout_config.layouts[paper_size][card_size]
             orientation = layout_def.orientation
             version = layout_def.version
@@ -931,7 +1094,9 @@ def generate_pdf(
             pdf_inset = paper_size_def.pdf_registration_inset or effective_inset
 
     # Corner exclusion zone = configured mark length + padding constant
-    total_exclusion_mm = size_convert.size_to_mm(default_reg.length) + page_manager.REG_PADDING_MM
+    total_exclusion_mm = (
+        size_convert.size_to_mm(default_reg.length) + page_manager.REG_PADDING_MM
+    )
     computed = page_manager.generate_layout(
         orientation=orientation,
         card_width=card_size_def.width,
@@ -972,7 +1137,9 @@ def generate_pdf(
     num_cards = num_rows * num_cols
 
     if num_cards == 0:
-        raise Exception(f'Card size "{card_size}" does not fit on paper size "{paper_size}".')
+        raise Exception(
+            f'Card size "{card_size}" does not fit on paper size "{paper_size}".'
+        )
 
     # Check skip indices
     # You can only skip valid indices (within the max card count per page)
@@ -980,17 +1147,21 @@ def generate_pdf(
     ignore_skip_indices = [n for n in skip_indices if n >= num_cards]
 
     if len(ignore_skip_indices) > 0:
-        print(f'Ignoring skip indices that are outside range 0-{num_cards - 1}: {ignore_skip_indices}')
+        print(
+            f"Ignoring skip indices that are outside range 0-{num_cards - 1}: {ignore_skip_indices}"
+        )
 
     # If all possible cards are skipped, this may result in an infinite loop
     if len(clean_skip_indices) == num_cards:
-        raise Exception(f'You cannot skip all cards per page')
+        raise Exception(f"You cannot skip all cards per page")
 
     # The baseline PPI is 300
     ppi_ratio = ppi / 300
 
     inset_px = size_convert.size_to_pixel(pdf_inset, layout_config.ppi)
-    clamp_inset_min = size_convert.size_to_mm(pdf_inset) >= page_manager.MIN_REG_INSET_MM
+    clamp_inset_min = (
+        size_convert.size_to_mm(pdf_inset) >= page_manager.MIN_REG_INSET_MM
+    )
 
     # Load an image with the registration marks
     with page_manager.generate_reg_mark(
@@ -1004,12 +1175,19 @@ def generate_pdf(
         orientation,
         clamp_inset_min=clamp_inset_min,
     ) as reg_im:
-        reg_im = reg_im.resize([math.floor(reg_im.width * ppi_ratio), math.floor(reg_im.height * ppi_ratio)])
+        reg_im = reg_im.resize(
+            [
+                math.floor(reg_im.width * ppi_ratio),
+                math.floor(reg_im.height * ppi_ratio),
+            ]
+        )
 
         # Create the array that will store the filled templates
         pages: List[Image.Image] = []
 
-        max_print_bleed = calculate_max_print_bleed(x_pos, y_pos, card_width_px, card_height_px, MINIMUM_BLEED)
+        max_print_bleed = calculate_max_print_bleed(
+            x_pos, y_pos, card_width_px, card_height_px, MINIMUM_BLEED
+        )
 
         # Load and cache the single back image for reuse
         # Do this if we expect both front and back pages and if we have a back image
@@ -1021,15 +1199,26 @@ def generate_pdf(
                 single_back_image = Image.open(back_card_image_path)
                 single_back_image = ImageOps.exif_transpose(single_back_image)
             except FileNotFoundError:
-                print(f'Cannot get back image "{back_card_image_path}". Using default instead.')
+                print(
+                    f'Cannot get back image "{back_card_image_path}". Using default instead.'
+                )
                 single_back_image = None
             except OSError as e:
-                raise OSError(f'Failed to load back image "{back_card_image_path}": {e}') from e
+                raise OSError(
+                    f'Failed to load back image "{back_card_image_path}": {e}'
+                ) from e
 
         # Create card layout
         num_image = 1
-        # First iterate on single-sided cards, then iterate on double-sided cards
-        it = iter(natsorted(list(check_paths_subset(front_set, ds_set))) + natsorted(list(ds_set)))
+        # First iterate on single-sided cards, then iterate on double-sided cards (DFC)
+        # dfc_filenames explicitly marks true DFC cards (used in grouped mode where
+        # shared backs are converted to double-sided entries). When not provided,
+        # all double-sided files are treated as DFC.
+        ordering_dfc_set = dfc_filenames if dfc_filenames is not None else ds_set
+        it = iter(
+            natsorted(list(check_paths_subset(front_set, ordering_dfc_set)))
+            + natsorted(list(ordering_dfc_set))
+        )
         while True:
             file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
             if not file_group:
@@ -1059,39 +1248,45 @@ def generate_pdf(
                 except StopIteration:
                     break
 
-                print(f'Image {num_image}: {file}')
+                print(f"Image {num_image}: {file}")
                 num_image += 1
 
-                # Look up per-card overrides from config
+                # Look up per-card overrides from config (by stem for extension-agnostic matching)
                 card_crop_override = None
                 card_extend_override = None
                 if card_overrides:
-                    filename = Path(file).name
-                    override = card_overrides.get(filename)
+                    stem = Path(file).stem
+                    override = card_overrides.get(stem)
                     if override:
-                        if 'crop' in override:
-                            card_crop_override = parse_crop_string(override['crop'], card_width_px, card_height_px)
-                        if 'extend_corners' in override:
-                            card_extend_override = override['extend_corners']
+                        if "crop" in override:
+                            card_crop_override = parse_crop_string(
+                                override["crop"], card_width_px, card_height_px
+                            )
+                        if "extend_corners" in override:
+                            card_extend_override = override["extend_corners"]
 
                 front_crop_overrides.append(card_crop_override)
                 front_extend_overrides.append(card_extend_override)
-                back_crop_overrides.append(None)
-                back_extend_overrides.append(None)
 
                 front_card_image_path = os.path.join(front_dir_path, file)
                 # Allow differing extensions for double-sided images
                 # Iteration is a combination of front and double-sided image paths
-                front_card_image_path = resolve_image_with_any_extension(front_card_image_path)
+                front_card_image_path = resolve_image_with_any_extension(
+                    front_card_image_path
+                )
                 try:
                     front_card_image = Image.open(front_card_image_path)
                     front_card_image = ImageOps.exif_transpose(front_card_image)
                 except OSError as e:
-                    raise OSError(f'Failed to load front image "{front_card_image_path}": {e}') from e
+                    raise OSError(
+                        f'Failed to load front image "{front_card_image_path}": {e}'
+                    ) from e
                 front_card_images.append(front_card_image)
 
                 if only_fronts:
                     back_card_images.append(None)
+                    back_crop_overrides.append(None)
+                    back_extend_overrides.append(None)
                     continue
 
                 # Add double-sided back image
@@ -1099,16 +1294,59 @@ def generate_pdf(
                     ds_card_image_path = os.path.join(ds_dir_path, file)
                     # Allow differing extensions for double-sided images
                     # Iteration is a combination of front and double-sided image paths
-                    ds_card_image_path = resolve_image_with_any_extension(ds_card_image_path)
+                    ds_card_image_path = resolve_image_with_any_extension(
+                        ds_card_image_path
+                    )
                     try:
                         ds_card_image = Image.open(ds_card_image_path)
                         ds_card_image = ImageOps.exif_transpose(ds_card_image)
                     except OSError as e:
-                        raise OSError(f'Failed to load double-sided image "{ds_card_image_path}": {e}') from e
+                        raise OSError(
+                            f'Failed to load double-sided image "{ds_card_image_path}": {e}'
+                        ) from e
                     back_card_images.append(ds_card_image)
+                    # Use back_card_overrides if available, else fall back to front overrides
+                    back_crop_override = None
+                    back_extend_override = None
+                    if back_card_overrides:
+                        stem = Path(file).stem
+                        back_override = back_card_overrides.get(stem)
+                        if back_override:
+                            if "crop" in back_override:
+                                back_crop_override = parse_crop_string(
+                                    back_override["crop"], card_width_px, card_height_px
+                                )
+                            if "extend_corners" in back_override:
+                                back_extend_override = back_override["extend_corners"]
+                    if back_crop_override is None and back_extend_override is None:
+                        # Fall back to front overrides for backwards compatibility
+                        back_crop_override = card_crop_override
+                        back_extend_override = card_extend_override
+                    back_crop_overrides.append(back_crop_override)
+                    back_extend_overrides.append(back_extend_override)
                     continue
 
                 back_card_images.append(single_back_image)
+                # Look up back overrides for shared back image
+                back_crop_override = None
+                back_extend_override = None
+                if back_card_overrides:
+                    back_stem = (
+                        Path(back_card_image_name).stem
+                        if back_card_image_name
+                        else None
+                    )
+                    if back_stem:
+                        back_override = back_card_overrides.get(back_stem)
+                        if back_override:
+                            if "crop" in back_override:
+                                back_crop_override = parse_crop_string(
+                                    back_override["crop"], card_width_px, card_height_px
+                                )
+                            if "extend_corners" in back_override:
+                                back_extend_override = back_override["extend_corners"]
+                back_crop_overrides.append(back_crop_override)
+                back_extend_overrides.append(back_extend_override)
 
             front_page = reg_im.copy()
             back_page = reg_im.copy()
@@ -1140,7 +1378,9 @@ def generate_pdf(
                 fit=fit,
                 orientation=orientation,
                 per_card_crops=front_crop_overrides if card_overrides else None,
-                per_card_extend_corners=front_extend_overrides if card_overrides else None,
+                per_card_extend_corners=front_extend_overrides
+                if card_overrides
+                else None,
             )
 
             # Create back layout
@@ -1159,17 +1399,35 @@ def generate_pdf(
                 crop_backs,
                 ppi_ratio,
                 extend_corners,
-                flip=True, # Flip the back sides
+                flip=True,  # Flip the back sides
                 fit=fit,
                 orientation=orientation,
-                per_card_crops=back_crop_overrides if card_overrides else None,
-                per_card_extend_corners=back_extend_overrides if card_overrides else None,
+                per_card_crops=back_crop_overrides if back_card_overrides else None,
+                per_card_extend_corners=back_extend_overrides
+                if back_card_overrides
+                else None,
             )
 
             # Draw cutting path outlines on top of the card images
             if show_outline:
-                draw_outline(front_page, x_pos, y_pos, card_width_px, card_height_px, radius_px, ppi_ratio)
-                draw_outline(back_page, x_pos, y_pos, card_width_px, card_height_px, radius_px, ppi_ratio)
+                draw_outline(
+                    front_page,
+                    x_pos,
+                    y_pos,
+                    card_width_px,
+                    card_height_px,
+                    radius_px,
+                    ppi_ratio,
+                )
+                draw_outline(
+                    back_page,
+                    x_pos,
+                    y_pos,
+                    card_width_px,
+                    card_height_px,
+                    radius_px,
+                    ppi_ratio,
+                )
 
             # Add the front and back layouts (also handles portrait→landscape rotation)
             add_front_back_pages(
@@ -1184,11 +1442,11 @@ def generate_pdf(
                 label,
                 orientation,
                 grid_end_x,
-                grid_end_y
+                grid_end_y,
             )
 
         if len(pages) == 0:
-            print('No pages were generated')
+            print("No pages were generated")
             if return_pages:
                 return []
             return
@@ -1198,10 +1456,18 @@ def generate_pdf(
             saved_offset = load_saved_offset()
 
             if saved_offset is None:
-                print('Offset cannot be applied')
+                print("Offset cannot be applied")
             else:
-                print(f'Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}, angle offset: {saved_offset.angle_offset}')
-                pages = offset_images(pages, saved_offset.x_offset, saved_offset.y_offset, ppi, saved_offset.angle_offset)
+                print(
+                    f"Loaded x offset: {saved_offset.x_offset}, y offset: {saved_offset.y_offset}, angle offset: {saved_offset.angle_offset}"
+                )
+                pages = offset_images(
+                    pages,
+                    saved_offset.x_offset,
+                    saved_offset.y_offset,
+                    ppi,
+                    saved_offset.angle_offset,
+                )
 
         # Return pages for external composition (used by zip config groups)
         if return_pages:
@@ -1210,49 +1476,80 @@ def generate_pdf(
         # Save the pages array as a PDF
         if output_images:
             for index, page in enumerate(pages):
-                page.save(os.path.join(output_path, f'page{index + 1}.png'), resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
+                page.save(
+                    os.path.join(output_path, f"page{index + 1}.png"),
+                    resolution=math.floor(300 * ppi_ratio),
+                    speed=0,
+                    subsampling=0,
+                    quality=quality,
+                )
 
-            print(f'Generated images: {output_path}')
+            print(f"Generated images: {output_path}")
 
         else:
-            pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=math.floor(300 * ppi_ratio), speed=0, subsampling=0, quality=quality)
-            print(f'Generated PDF: {output_path}')
+            pages[0].save(
+                output_path,
+                format="PDF",
+                save_all=True,
+                append_images=pages[1:],
+                resolution=math.floor(300 * ppi_ratio),
+                speed=0,
+                subsampling=0,
+                quality=quality,
+            )
+            print(f"Generated PDF: {output_path}")
 
-        print(f'Registration length: {effective_length}, thickness: {effective_thickness}')
+        print(
+            f"Registration length: {effective_length}, thickness: {effective_thickness}"
+        )
         if borderless:
-            print(f'Media size: {paper_size_def.width} x {paper_size_def.height}')
+            print(f"Media size: {paper_size_def.width} x {paper_size_def.height}")
+
 
 class OffsetData(BaseModel):
     x_offset: int
     y_offset: int
     angle_offset: float = 0.0
 
+
 def save_offset(x_offset: int, y_offset: int, angle_offset: float = 0.0) -> None:
     # Create the directory if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    os.makedirs("data", exist_ok=True)
 
     # Save the offset data to a JSON file
-    with open('data/offset_data.json', 'w') as offset_file:
-        offset_file.write(OffsetData(x_offset=x_offset, y_offset=y_offset, angle_offset=angle_offset).model_dump_json(indent=4))
+    with open("data/offset_data.json", "w") as offset_file:
+        offset_file.write(
+            OffsetData(
+                x_offset=x_offset, y_offset=y_offset, angle_offset=angle_offset
+            ).model_dump_json(indent=4)
+        )
 
-    print('Offset data saved!')
+    print("Offset data saved!")
+
 
 def load_saved_offset() -> OffsetData:
-    if os.path.exists('data/offset_data.json'):
-        with open('data/offset_data.json', 'r') as offset_file:
+    if os.path.exists("data/offset_data.json"):
+        with open("data/offset_data.json", "r") as offset_file:
             try:
                 data = json.load(offset_file)
                 return OffsetData(**data)
 
             except json.JSONDecodeError as e:
-                print(f'Cannot decode offset JSON: {e}')
+                print(f"Cannot decode offset JSON: {e}")
 
             except ValidationErr as e:
-                print(f'Cannot validate offset data: {e}.')
+                print(f"Cannot validate offset data: {e}.")
 
     return None
 
-def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: int, angle_offset: float = 0.0) -> List[Image.Image]:
+
+def offset_images(
+    images: List[Image.Image],
+    x_offset: int,
+    y_offset: int,
+    ppi: int,
+    angle_offset: float = 0.0,
+) -> List[Image.Image]:
     result_images = []
 
     add_offset = False
@@ -1261,11 +1558,19 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: 
             # The back page is rotated 180° in the PDF (long-side flip).
             # In orientation-relative terms: +X = right, -X = left, +Y = up, -Y = down.
             # Negating x_offset compensates for the 180° x-axis flip.
-            result = ImageChops.offset(image, math.floor(-x_offset * ppi / 300), math.floor(y_offset * ppi / 300))
+            result = ImageChops.offset(
+                image,
+                math.floor(-x_offset * ppi / 300),
+                math.floor(y_offset * ppi / 300),
+            )
             # Apply angle rotation if specified
             # Negative angle because PIL rotates counter-clockwise, but we want positive = clockwise
             if angle_offset != 0.0:
-                result = result.rotate(-angle_offset, center=(image.width / 2, image.height / 2), fillcolor='white')
+                result = result.rotate(
+                    -angle_offset,
+                    center=(image.width / 2, image.height / 2),
+                    fillcolor="white",
+                )
             result_images.append(result)
         else:
             result_images.append(image)
@@ -1274,7 +1579,10 @@ def offset_images(images: List[Image.Image], x_offset: int, y_offset: int, ppi: 
 
     return result_images
 
-def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, height: int, min_bleed: int = 0) -> tuple[int, int]:
+
+def calculate_max_print_bleed(
+    x_pos: List[int], y_pos: List[int], width: int, height: int, min_bleed: int = 0
+) -> tuple[int, int]:
     if len(x_pos) == 1 and len(y_pos) == 1:
         return (min_bleed, min_bleed)
 
@@ -1299,37 +1607,40 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
     return (x_border_max, y_border_max)
 
 
-def _parse_zip_config(config_path: str) -> list[dict] | None:
-    """Parse a config.json from a zip deck. Returns list of group dicts or None."""
+def _parse_zip_config(config_path: str) -> tuple[list[dict] | None, list[dict] | None]:
+    """Parse a config.json from a zip deck. Returns (front groups, back groups) or (None, None)."""
     if not os.path.exists(config_path):
-        return None
-    with open(config_path, 'r') as f:
+        return None, None
+    with open(config_path, "r") as f:
         data = json.load(f)
-    groups = data.get('groups', [])
-    if not groups:
-        return None
-    return groups
+    groups = data.get("groups", []) or None
+    back_groups = data.get("backGroups", []) or None
+    if not groups and not back_groups:
+        return None, None
+    return groups, back_groups
 
 
 def _build_card_overrides(groups: list[dict]) -> Dict[str, dict]:
-    """Build a filename→{crop, extend_corners} mapping from config groups."""
+    """Build a stem→{crop, extend_corners} mapping from config groups.
+    Uses filename stems (without extension) as keys for robust matching,
+    since front and double_sided files may have different extensions."""
     overrides = {}
     for group in groups:
         settings = {}
-        if 'crop' in group:
-            settings['crop'] = group['crop']
-        if 'extend_corners' in group:
-            settings['extend_corners'] = group['extend_corners']
+        if "crop" in group:
+            settings["crop"] = group["crop"]
+        if "extend_corners" in group:
+            settings["extend_corners"] = group["extend_corners"]
         if settings:
-            for filename in group.get('files', []):
-                overrides[filename] = settings
+            for filename in group.get("files", []):
+                overrides[Path(filename).stem] = settings
     return overrides
 
 
 def _extract_zip_root(tmp_dir: str) -> Path:
     """Extract the root path of a zip, handling zips with a single root folder."""
     tmp_path = Path(tmp_dir)
-    entries = [e for e in tmp_path.iterdir() if not e.name.startswith('.')]
+    entries = [e for e in tmp_path.iterdir() if not e.name.startswith(".")]
     if len(entries) == 1 and entries[0].is_dir():
         return entries[0]
     return tmp_path
@@ -1397,13 +1708,15 @@ def process_zip_decks(
     regular_dirs = None
     if front_dir_path and Path(front_dir_path).exists():
         regular_dirs = {
-            'front': front_dir_path,
-            'back': back_dir_path,
-            'double_sided': double_sided_dir_path,
+            "front": front_dir_path,
+            "back": back_dir_path,
+            "double_sided": double_sided_dir_path,
         }
 
     if group:
-        _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=regular_dirs)
+        _process_zip_decks_grouped(
+            zip_files, out_dir, pdf_kwargs, regular_dirs=regular_dirs
+        )
     else:
         _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs)
 
@@ -1418,7 +1731,7 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
 
         tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
         try:
-            with zipfile.ZipFile(zip_path, 'r') as zf:
+            with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(tmp_dir)
 
             tmp_path = _extract_zip_root(tmp_dir)
@@ -1439,11 +1752,15 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
 
             # Check for config.json with per-card settings
             config_path = str(tmp_path / "config.json")
-            groups = _parse_zip_config(config_path)
+            groups, back_groups = _parse_zip_config(config_path)
             overrides = _build_card_overrides(groups) if groups else None
+            back_overrides = _build_card_overrides(back_groups) if back_groups else None
 
-            if overrides:
-                print(f"  Found config.json with {len(groups)} group(s)")
+            if groups or back_groups:
+                group_count = (len(groups) if groups else 0) + (
+                    len(back_groups) if back_groups else 0
+                )
+                print(f"  Found config.json with {group_count} group(s)")
 
             generate_pdf(
                 front_dir_path=str(front_dir),
@@ -1451,6 +1768,7 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
                 ds_dir_path=str(ds_dir),
                 output_path=output_path,
                 card_overrides=overrides,
+                back_card_overrides=back_overrides,
                 **pdf_kwargs,
             )
 
@@ -1475,7 +1793,8 @@ def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
 
 
 def _merge_deck_into(front_dir, back_dir, ds_dir, prefix, merged_front, merged_ds):
-    """Merge a deck's front/back/double_sided images into the grouped merge directory."""
+    """Merge a deck's front/back/double_sided images into the grouped merge directory.
+    Returns the set of prefixed filenames that are true DFC (double-faced) cards."""
     back_image_path = None
     if back_dir and Path(back_dir).exists():
         back_image_path = get_back_card_image_path(str(back_dir))
@@ -1487,6 +1806,7 @@ def _merge_deck_into(front_dir, back_dir, ds_dir, prefix, merged_front, merged_d
             if f.is_file() and filetype.guess_mime(str(f)) in valid_mimetypes:
                 ds_filenames.add(f.name)
 
+    true_dfc = set()
     front_path = Path(front_dir)
     for f in front_path.iterdir():
         if not f.is_file() or filetype.guess_mime(str(f)) not in valid_mimetypes:
@@ -1496,10 +1816,14 @@ def _merge_deck_into(front_dir, back_dir, ds_dir, prefix, merged_front, merged_d
 
         if f.name in ds_filenames:
             shutil.copy2(ds_path / f.name, merged_ds / prefixed_name)
+            true_dfc.add(prefixed_name)
         elif back_image_path is not None:
-            back_ext = Path(back_image_path).suffix
+            # Use the front image's extension so ds_set lookup matches by exact filename
+            front_ext = Path(prefixed_name).suffix
             front_stem = Path(prefixed_name).stem
-            shutil.copy2(back_image_path, merged_ds / f"{front_stem}{back_ext}")
+            shutil.copy2(back_image_path, merged_ds / f"{front_stem}{front_ext}")
+
+    return true_dfc
 
 
 def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None):
@@ -1515,21 +1839,24 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None
     skipped = []
     # Accumulated card_overrides across all zips (keyed by prefixed filename)
     all_card_overrides = {}
+    all_back_card_overrides = {}
+    all_dfc_filenames = set()
 
     # Include regular game folders as a deck source
     if regular_dirs:
-        front_dir = regular_dirs['front']
+        front_dir = regular_dirs["front"]
         front_images = get_image_file_paths(front_dir)
         if front_images:
             print("\n--- Including regular folders ---")
-            _merge_deck_into(
+            dfc = _merge_deck_into(
                 front_dir=front_dir,
-                back_dir=regular_dirs.get('back'),
-                ds_dir=regular_dirs.get('double_sided'),
+                back_dir=regular_dirs.get("back"),
+                ds_dir=regular_dirs.get("double_sided"),
                 prefix="game_",
                 merged_front=merged_front,
                 merged_ds=merged_ds,
             )
+            all_dfc_filenames.update(dfc)
             processed.append("game")
 
     for zip_path in zip_files:
@@ -1539,7 +1866,7 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None
 
         tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
         try:
-            with zipfile.ZipFile(zip_path, 'r') as zf:
+            with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(tmp_dir)
 
             tmp_path = _extract_zip_root(tmp_dir)
@@ -1555,15 +1882,23 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None
 
             # Check for config.json and build per-card overrides with prefixed names
             config_path = str(tmp_path / "config.json")
-            groups = _parse_zip_config(config_path)
-            if groups:
-                print(f"  Found config.json with {len(groups)} group(s)")
-                overrides = _build_card_overrides(groups)
-                for filename, settings in overrides.items():
-                    all_card_overrides[prefix + filename] = settings
+            groups, back_groups = _parse_zip_config(config_path)
+            if groups or back_groups:
+                group_count = (len(groups) if groups else 0) + (
+                    len(back_groups) if back_groups else 0
+                )
+                print(f"  Found config.json with {group_count} group(s)")
+                if groups:
+                    overrides = _build_card_overrides(groups)
+                    for filename, settings in overrides.items():
+                        all_card_overrides[prefix + filename] = settings
+                if back_groups:
+                    back_overrides = _build_card_overrides(back_groups)
+                    for filename, settings in back_overrides.items():
+                        all_back_card_overrides[prefix + filename] = settings
 
             # Merge into grouped directory (same for config and non-config zips)
-            _merge_deck_into(
+            dfc = _merge_deck_into(
                 front_dir=str(front_dir),
                 back_dir=str(back_dir) if back_dir.exists() else None,
                 ds_dir=str(ds_dir) if ds_dir.exists() else None,
@@ -1571,6 +1906,7 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None
                 merged_front=merged_front,
                 merged_ds=merged_ds,
             )
+            all_dfc_filenames.update(dfc)
 
             processed.append(zip_name)
         except Exception as e:
@@ -1594,6 +1930,10 @@ def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None
             ds_dir_path=str(merged_ds),
             output_path=output_path,
             card_overrides=all_card_overrides if all_card_overrides else None,
+            back_card_overrides=all_back_card_overrides
+            if all_back_card_overrides
+            else None,
+            dfc_filenames=all_dfc_filenames if all_dfc_filenames else None,
             **pdf_kwargs,
         )
         print(f"  Output: {output_path}")
