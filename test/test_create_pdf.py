@@ -6,14 +6,17 @@ Output image tests render pages to PNG and do pixel-level comparison
 against pre-generated expected images (see test/generate_expected_images.py).
 """
 import os
+import json
 import tempfile
+import zipfile
 import pytest
+from glob import glob
 from click.testing import CliRunner
 import numpy as np
 from PIL import Image, ImageChops
 from pathlib import Path
 from create_pdf import cli
-from utilities import generate_pdf, Registration, FitMode
+from utilities import generate_pdf, process_zip_decks, Registration, FitMode
 from pdf_cases import IMAGES_DIR, BACK_DIR, DS_DIR, EXPECTED_DIR, TEST_CASES
 
 
@@ -265,3 +268,69 @@ def test_per_card_extend_corners_override_changes_front():
         assert _pages_differ(base_dir, ovr_dir, base_pages[0]), (
             "per-card extend_corners override did not change the front page"
         )
+
+
+# --- Zip-deck batch workflow ---
+
+def _make_deck_zip(zip_path, front_files, config=None):
+    """Build a deck zip wrapped in a deck folder (front/ plus an optional config.json),
+    mirroring how decks are normally zipped (a single top-level folder)."""
+    deck = Path(zip_path).stem
+    with zipfile.ZipFile(zip_path, 'w') as zf:
+        for fp in front_files:
+            zf.write(fp, arcname=f"{deck}/front/{os.path.basename(fp)}")
+        if config is not None:
+            zf.writestr(f"{deck}/config.json", json.dumps(config))
+
+
+_ZIP_PDF_KWARGS = dict(
+    output_images=False,
+    card_size='standard',
+    paper_size='letter',
+    registration=Registration.THREE.value,
+    mirror_registration=False,
+    only_fronts=True,
+    fit=FitMode.STRETCH.value,
+    crop_string=None,
+    crop_backs_string=None,
+    extend_edges=None,
+    extend_corners=None,
+    ppi=300,
+    quality=100,
+    skip_indices=[],
+    load_offset=False,
+    label=None,
+)
+
+
+def test_zip_decks_individual_produces_pdf_per_deck():
+    """--zip_decks (individual mode) renders one PDF per zip."""
+    fronts = sorted(glob(os.path.join(IMAGES_DIR, '*')))[:3]
+    with tempfile.TemporaryDirectory() as zips_dir, \
+         tempfile.TemporaryDirectory() as out_dir:
+        _make_deck_zip(os.path.join(zips_dir, 'deck1.zip'), fronts)
+        process_zip_decks(zip_decks_dir=zips_dir, output_dir=out_dir, **_ZIP_PDF_KWARGS)
+        assert os.path.exists(os.path.join(out_dir, 'deck1.pdf'))
+
+
+def test_zip_decks_individual_with_config_json():
+    """A config.json group is parsed and applied without error, still producing a PDF."""
+    fronts = sorted(glob(os.path.join(IMAGES_DIR, '*')))[:3]
+    target_stem = Path(fronts[0]).stem
+    config = {"groups": [{"files": [Path(fronts[0]).name], "extend_corners": "5mm"}]}
+    with tempfile.TemporaryDirectory() as zips_dir, \
+         tempfile.TemporaryDirectory() as out_dir:
+        _make_deck_zip(os.path.join(zips_dir, 'cfg.zip'), fronts, config=config)
+        process_zip_decks(zip_decks_dir=zips_dir, output_dir=out_dir, **_ZIP_PDF_KWARGS)
+        assert os.path.exists(os.path.join(out_dir, 'cfg.pdf'))
+
+
+def test_zip_decks_grouped_produces_single_pdf():
+    """--group merges all decks into one group.pdf."""
+    fronts = sorted(glob(os.path.join(IMAGES_DIR, '*')))[:3]
+    with tempfile.TemporaryDirectory() as zips_dir, \
+         tempfile.TemporaryDirectory() as out_dir:
+        _make_deck_zip(os.path.join(zips_dir, 'deckA.zip'), fronts)
+        _make_deck_zip(os.path.join(zips_dir, 'deckB.zip'), fronts)
+        process_zip_decks(zip_decks_dir=zips_dir, output_dir=out_dir, group=True, **_ZIP_PDF_KWARGS)
+        assert os.path.exists(os.path.join(out_dir, 'group.pdf'))

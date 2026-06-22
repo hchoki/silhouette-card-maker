@@ -5,6 +5,9 @@ import math
 import filetype
 import os
 import re
+import shutil
+import tempfile
+import zipfile
 from glob import glob
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -1490,3 +1493,368 @@ def calculate_max_print_bleed(x_pos: List[int], y_pos: List[int], width: int, he
         y_border_max = max(0, math.ceil((y_pos_1 - y_pos_0 - height) / 2))
 
     return (x_border_max, y_border_max)
+
+
+# --- Zip-deck batch workflow ---------------------------------------------------
+# Process zip files (each containing front/, back/, and/or double_sided/ folders),
+# optionally with a config.json describing per-card crop/extend_corners groups.
+
+
+def _parse_zip_config(config_path: str) -> tuple[list[dict] | None, list[dict] | None]:
+    """Parse a config.json from a zip deck. Returns (front groups, back groups) or (None, None)."""
+    if not os.path.exists(config_path):
+        return None, None
+    with open(config_path, "r") as f:
+        data = json.load(f)
+    groups = data.get("groups", []) or None
+    back_groups = data.get("backGroups", []) or None
+    if not groups and not back_groups:
+        return None, None
+    return groups, back_groups
+
+
+def _build_card_overrides(groups: list[dict]) -> Dict[str, dict]:
+    """Build a stem->{crop, extend_corners} mapping from config groups.
+    Uses filename stems (without extension) as keys for robust matching,
+    since front and double_sided files may have different extensions."""
+    overrides = {}
+    for group in groups:
+        settings = {}
+        if "crop" in group:
+            settings["crop"] = group["crop"]
+        if "extend_corners" in group:
+            settings["extend_corners"] = group["extend_corners"]
+        if settings:
+            for filename in group.get("files", []):
+                overrides[Path(filename).stem] = settings
+    return overrides
+
+
+def _extract_zip_root(tmp_dir: str) -> Path:
+    """Extract the root path of a zip, handling zips with a single root folder."""
+    tmp_path = Path(tmp_dir)
+    entries = [e for e in tmp_path.iterdir() if not e.name.startswith(".")]
+    if len(entries) == 1 and entries[0].is_dir():
+        return entries[0]
+    return tmp_path
+
+
+def process_zip_decks(
+    zip_decks_dir: str,
+    output_dir: str,
+    output_images: bool,
+    card_size: str,
+    paper_size: str,
+    registration: str,
+    mirror_registration: bool,
+    only_fronts: bool,
+    fit: str,
+    crop_string: str | None,
+    crop_backs_string: str | None,
+    extend_edges: str | None,
+    extend_corners: str | None,
+    ppi: int,
+    quality: int,
+    skip_indices: List[int],
+    load_offset: bool,
+    label: str,
+    show_outline: bool = False,
+    specialty: Optional[str] = None,
+    group: bool = False,
+    borderless: bool = False,
+    front_dir_path: Optional[str] = None,
+    back_dir_path: Optional[str] = None,
+    double_sided_dir_path: Optional[str] = None,
+):
+    zip_dir = Path(zip_decks_dir)
+    if not zip_dir.exists() or not zip_dir.is_dir():
+        raise Exception(f'Zip decks directory "{zip_dir}" does not exist.')
+
+    zip_files = sorted(zip_dir.glob("*.zip"))
+    if not zip_files:
+        print("No zip files found in", zip_decks_dir)
+        return
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    pdf_kwargs = dict(
+        output_images=output_images,
+        card_size=card_size,
+        paper_size=paper_size,
+        registration=registration,
+        mirror_registration=mirror_registration,
+        only_fronts=only_fronts,
+        fit=fit,
+        crop_string=crop_string,
+        crop_backs_string=crop_backs_string,
+        extend_edges=extend_edges,
+        extend_corners=extend_corners,
+        ppi=ppi,
+        quality=quality,
+        skip_indices=skip_indices,
+        load_offset=load_offset,
+        label=label,
+        show_outline=show_outline,
+        specialty=specialty,
+        borderless=borderless,
+    )
+
+    regular_dirs = None
+    if front_dir_path and Path(front_dir_path).exists():
+        regular_dirs = {
+            "front": front_dir_path,
+            "back": back_dir_path,
+            "double_sided": double_sided_dir_path,
+        }
+
+    if group:
+        _process_zip_decks_grouped(
+            zip_files, out_dir, pdf_kwargs, regular_dirs=regular_dirs
+        )
+    else:
+        _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs)
+
+
+def _process_zip_decks_individual(zip_files, out_dir, pdf_kwargs):
+    processed = []
+    skipped = []
+
+    for zip_path in zip_files:
+        zip_name = zip_path.stem
+        print(f"\n--- Processing: {zip_name} ---")
+
+        tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
+        try:
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                zf.extractall(tmp_dir)
+
+            tmp_path = _extract_zip_root(tmp_dir)
+
+            front_dir = tmp_path / "front"
+            back_dir = tmp_path / "back"
+            ds_dir = tmp_path / "double_sided"
+
+            if not front_dir.exists() or not front_dir.is_dir():
+                print(f"  Skipping {zip_name}: no 'front' folder found in zip.")
+                skipped.append(zip_name)
+                continue
+
+            back_dir.mkdir(exist_ok=True)
+            ds_dir.mkdir(exist_ok=True)
+
+            output_path = str(out_dir / f"{zip_name}.pdf")
+
+            # Check for config.json with per-card settings
+            config_path = str(tmp_path / "config.json")
+            groups, back_groups = _parse_zip_config(config_path)
+            overrides = _build_card_overrides(groups) if groups else None
+            back_overrides = _build_card_overrides(back_groups) if back_groups else None
+
+            if groups or back_groups:
+                group_count = (len(groups) if groups else 0) + (
+                    len(back_groups) if back_groups else 0
+                )
+                print(f"  Found config.json with {group_count} group(s)")
+
+            generate_pdf(
+                front_dir_path=str(front_dir),
+                back_dir_path=str(back_dir),
+                ds_dir_path=str(ds_dir),
+                output_path=output_path,
+                card_overrides=overrides,
+                back_card_overrides=back_overrides,
+                **pdf_kwargs,
+            )
+
+            processed.append(zip_name)
+            print(f"  Output: {output_path}")
+        except Exception as e:
+            print(f"  Error processing {zip_name}: {e}")
+            skipped.append(zip_name)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+        try:
+            zip_path.unlink()
+            print(f"  Deleted: {zip_path.name}")
+        except Exception as e:
+            print(f"  Warning: could not delete {zip_path.name}: {e}")
+
+    print(f"\n--- Summary ---")
+    print(f"Processed: {len(processed)} deck(s)")
+    if skipped:
+        print(f"Skipped: {len(skipped)} - {', '.join(skipped)}")
+
+
+def _merge_deck_into(front_dir, back_dir, ds_dir, prefix, merged_front, merged_ds):
+    """Merge a deck's front/back/double_sided images into the grouped merge directory.
+    Returns the set of prefixed filenames that are true DFC (double-faced) cards."""
+    back_image_path = None
+    if back_dir and Path(back_dir).exists():
+        back_image_path = get_back_card_image_path(str(back_dir))
+
+    ds_images_by_name = {}
+    ds_images_by_stem = {}
+    ds_path = Path(ds_dir) if ds_dir else None
+    if ds_path and ds_path.exists():
+        for f in ds_path.iterdir():
+            if f.is_file() and filetype.guess_mime(str(f)) in valid_mimetypes:
+                ds_images_by_name[f.name] = f
+                ds_images_by_stem.setdefault(f.stem, []).append(f)
+
+    true_dfc = set()
+    front_path = Path(front_dir)
+    for f in front_path.iterdir():
+        if not f.is_file() or filetype.guess_mime(str(f)) not in valid_mimetypes:
+            continue
+        prefixed_name = prefix + f.name
+        shutil.copy2(f, merged_front / prefixed_name)
+
+        ds_image_path = ds_images_by_name.get(f.name)
+        if ds_image_path is None:
+            stem_matches = ds_images_by_stem.get(f.stem, [])
+            if len(stem_matches) > 1:
+                raise ValueError(f"Ambiguous double-sided image match: {stem_matches}")
+            if stem_matches:
+                ds_image_path = stem_matches[0]
+
+        if ds_image_path is not None:
+            shutil.copy2(ds_image_path, merged_ds / prefixed_name)
+            true_dfc.add(prefixed_name)
+        elif back_image_path is not None:
+            # Use the front image's extension so ds_set lookup matches by exact filename
+            front_ext = Path(prefixed_name).suffix
+            front_stem = Path(prefixed_name).stem
+            shutil.copy2(back_image_path, merged_ds / f"{front_stem}{front_ext}")
+
+    return true_dfc
+
+
+def _process_zip_decks_grouped(zip_files, out_dir, pdf_kwargs, regular_dirs=None):
+    merged_dir = tempfile.mkdtemp(prefix="zip_deck_grouped_")
+    merged_front = Path(merged_dir) / "front"
+    merged_back = Path(merged_dir) / "back"
+    merged_ds = Path(merged_dir) / "double_sided"
+    merged_front.mkdir()
+    merged_back.mkdir()
+    merged_ds.mkdir()
+
+    processed = []
+    skipped = []
+    # Accumulated card_overrides across all zips (keyed by prefixed filename)
+    all_card_overrides = {}
+    all_back_card_overrides = {}
+    all_dfc_filenames = set()
+
+    # Include regular game folders as a deck source
+    if regular_dirs:
+        front_dir = regular_dirs["front"]
+        front_images = get_image_file_paths(front_dir)
+        if front_images:
+            print("\n--- Including regular folders ---")
+            dfc = _merge_deck_into(
+                front_dir=front_dir,
+                back_dir=regular_dirs.get("back"),
+                ds_dir=regular_dirs.get("double_sided"),
+                prefix="game_",
+                merged_front=merged_front,
+                merged_ds=merged_ds,
+            )
+            all_dfc_filenames.update(dfc)
+            processed.append("game")
+
+    for zip_path in zip_files:
+        zip_name = zip_path.stem
+        prefix = f"{zip_name}_"
+        print(f"\n--- Extracting: {zip_name} ---")
+
+        tmp_dir = tempfile.mkdtemp(prefix=f"zip_deck_{zip_name}_")
+        try:
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                zf.extractall(tmp_dir)
+
+            tmp_path = _extract_zip_root(tmp_dir)
+
+            front_dir = tmp_path / "front"
+            if not front_dir.exists() or not front_dir.is_dir():
+                print(f"  Skipping {zip_name}: no 'front' folder found in zip.")
+                skipped.append(zip_name)
+                continue
+
+            back_dir = tmp_path / "back"
+            ds_dir = tmp_path / "double_sided"
+
+            # Check for config.json and build per-card overrides with prefixed names
+            config_path = str(tmp_path / "config.json")
+            groups, back_groups = _parse_zip_config(config_path)
+            if groups or back_groups:
+                group_count = (len(groups) if groups else 0) + (
+                    len(back_groups) if back_groups else 0
+                )
+                print(f"  Found config.json with {group_count} group(s)")
+                if groups:
+                    overrides = _build_card_overrides(groups)
+                    for filename, settings in overrides.items():
+                        all_card_overrides[prefix + filename] = settings
+                if back_groups:
+                    back_overrides = _build_card_overrides(back_groups)
+                    for filename, settings in back_overrides.items():
+                        all_back_card_overrides[prefix + filename] = settings
+
+            # Merge into grouped directory (same for config and non-config zips)
+            dfc = _merge_deck_into(
+                front_dir=str(front_dir),
+                back_dir=str(back_dir) if back_dir.exists() else None,
+                ds_dir=str(ds_dir) if ds_dir.exists() else None,
+                prefix=prefix,
+                merged_front=merged_front,
+                merged_ds=merged_ds,
+            )
+            all_dfc_filenames.update(dfc)
+
+            processed.append(zip_name)
+        except Exception as e:
+            print(f"  Error extracting {zip_name}: {e}")
+            skipped.append(zip_name)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    if not processed:
+        print("\nNo decks were successfully extracted.")
+        shutil.rmtree(merged_dir, ignore_errors=True)
+        return
+
+    # Generate a single grouped PDF with per-card overrides
+    output_path = str(out_dir / "group.pdf")
+    print(f"\n--- Generating grouped PDF ---")
+    try:
+        generate_pdf(
+            front_dir_path=str(merged_front),
+            back_dir_path=str(merged_back),
+            ds_dir_path=str(merged_ds),
+            output_path=output_path,
+            card_overrides=all_card_overrides if all_card_overrides else None,
+            back_card_overrides=all_back_card_overrides
+            if all_back_card_overrides
+            else None,
+            dfc_filenames=all_dfc_filenames if all_dfc_filenames else None,
+            **pdf_kwargs,
+        )
+        print(f"  Output: {output_path}")
+    finally:
+        shutil.rmtree(merged_dir, ignore_errors=True)
+
+    # Delete all processed zips
+    for zip_path in zip_files:
+        if zip_path.stem in processed:
+            try:
+                zip_path.unlink()
+                print(f"  Deleted: {zip_path.name}")
+            except Exception as e:
+                print(f"  Warning: could not delete {zip_path.name}: {e}")
+
+    print(f"\n--- Summary ---")
+    print(f"Processed: {len(processed)} deck(s) into group.pdf")
+    if skipped:
+        print(f"Skipped: {len(skipped)} - {', '.join(skipped)}")
