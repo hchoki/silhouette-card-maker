@@ -640,14 +640,15 @@ def draw_card_layout(
     extend_corners_radius: int,
     flip: bool,
     fit: FitMode,
-    orientation: Orientation
+    orientation: Orientation,
+    per_card_crops: Optional[List[tuple[float, float] | None]] = None,
+    per_card_extend_corners: Optional[List[int | None]] = None,
 ):
     num_cards = num_rows * num_cols
     crop_percent_x, crop_percent_y = crop
     crop_backs_percent_x, crop_backs_percent_y = crop_backs
 
     extend_edges_thickness = math.floor(extend_edges * ppi_ratio)
-    extend_corners_thickness = math.floor(extend_corners_radius * ppi_ratio)
 
     # Calculate the size of the card after scaling: "scaled size"
     scaled_width = math.floor(width * ppi_ratio)
@@ -679,8 +680,11 @@ def draw_card_layout(
         bleed_offset_y = 0
         synthetic_bleed = (scaled_bleed_width, scaled_bleed_height)
 
-        # Determine which crop percentages to use
-        if card_image is single_back_image:
+        # Determine which crop percentages to use.
+        # A per-card override (from config.json groups) takes priority.
+        if per_card_crops and i < len(per_card_crops) and per_card_crops[i] is not None:
+            active_crop_x, active_crop_y = per_card_crops[i]
+        elif card_image is single_back_image:
             active_crop_x, active_crop_y = crop_backs_percent_x, crop_backs_percent_y
         else:
             active_crop_x, active_crop_y = crop_percent_x, crop_percent_y
@@ -711,9 +715,18 @@ def draw_card_layout(
             ))
 
         # If extend_corners is specified, fill the corner regions FIRST
-        # This modifies the card image so the bleed will be generated from the filled corners
-        if extend_corners_thickness > 0:
-            card_image = fill_rounded_corners(card_image, extend_corners_thickness)
+        # This modifies the card image so the bleed will be generated from the filled corners.
+        # A per-card override (from config.json groups) takes priority over the global value.
+        card_extend_corners = extend_corners_radius
+        if (
+            per_card_extend_corners
+            and i < len(per_card_extend_corners)
+            and per_card_extend_corners[i] is not None
+        ):
+            card_extend_corners = per_card_extend_corners[i]
+        card_extend_corners_thickness = math.floor(card_extend_corners * ppi_ratio)
+        if card_extend_corners_thickness > 0:
+            card_image = fill_rounded_corners(card_image, card_extend_corners_thickness)
 
         if flip and orientation == Orientation.LANDSCAPE:
             card_image = card_image.rotate(180)
@@ -925,6 +938,9 @@ def generate_pdf(
     show_outline: bool = False,
     specialty: Optional[str] = None,
     borderless: bool = False,
+    card_overrides: Optional[Dict[str, dict]] = None,
+    back_card_overrides: Optional[Dict[str, dict]] = None,
+    dfc_filenames: Optional[set[str]] = None,
 ):
     # Sanity checks for the different directories
     f_path = Path(front_dir_path)
@@ -954,9 +970,11 @@ def generate_pdf(
 
     # Get the back image, if it exists
     back_card_image_path = None
+    back_card_image_name = None
     use_default_back_page = True
     if not only_fronts:
         back_card_image_path = get_back_card_image_path(back_dir_path)
+        back_card_image_name = Path(back_card_image_path).name if back_card_image_path else None
         use_default_back_page = back_card_image_path is None
         if use_default_back_page:
             print(f'No back image provided in back image directory \"{back_dir_path}\". Using default instead.')
@@ -1161,8 +1179,11 @@ def generate_pdf(
 
         # Create card layout
         num_image = 1
-        # First iterate on single-sided cards, then iterate on double-sided cards
-        it = iter(natsorted(list(check_paths_subset(front_set, ds_set))) + natsorted(list(ds_set)))
+        # First iterate on single-sided cards, then iterate on double-sided cards (DFC).
+        # dfc_filenames explicitly marks true DFC cards (grouped zip mode converts shared
+        # backs into double-sided entries); without it, all double-sided files are DFC.
+        ordering_dfc_set = dfc_filenames if dfc_filenames is not None else ds_set
+        it = iter(natsorted(list(check_paths_subset(front_set, ordering_dfc_set))) + natsorted(list(ordering_dfc_set)))
         while True:
             file_group = list(itertools.islice(it, num_cards - len(clean_skip_indices)))
             if not file_group:
@@ -1172,11 +1193,19 @@ def generate_pdf(
             # Batch size is based on cards per page
             front_card_images = []
             back_card_images = []
+            front_crop_overrides = []
+            front_extend_overrides = []
+            back_crop_overrides = []
+            back_extend_overrides = []
             file_group_iterator = iter(file_group)
             for i in range(num_cards):
                 if i in clean_skip_indices:
                     front_card_images.append(None)
                     back_card_images.append(None)
+                    front_crop_overrides.append(None)
+                    front_extend_overrides.append(None)
+                    back_crop_overrides.append(None)
+                    back_extend_overrides.append(None)
                     continue
 
                 try:
@@ -1186,6 +1215,26 @@ def generate_pdf(
 
                 print(f'Image {num_image}: {file}')
                 num_image += 1
+
+                # Per-card overrides from config.json groups (matched by filename stem).
+                # When a card is listed in a group, that group is authoritative: a missing
+                # key means "do not apply", not "fall back to CLI --crop/--extend_corners".
+                card_crop_override = None
+                card_extend_override = None
+                if card_overrides:
+                    override = card_overrides.get(Path(file).stem)
+                    if override is not None:
+                        if "crop" in override:
+                            card_crop_override = parse_crop_string(
+                                str(override["crop"]), card_width_px, card_height_px
+                            )
+                        else:
+                            card_crop_override = (0.0, 0.0)
+                        card_extend_override = parse_dimension_string(
+                            str(override.get("extend_corners", 0)), layout_config.ppi
+                        )
+                front_crop_overrides.append(card_crop_override)
+                front_extend_overrides.append(card_extend_override)
 
                 front_card_image_path = os.path.join(front_dir_path, file)
                 # Allow differing extensions for double-sided images
@@ -1200,6 +1249,8 @@ def generate_pdf(
 
                 if only_fronts:
                     back_card_images.append(None)
+                    back_crop_overrides.append(None)
+                    back_extend_overrides.append(None)
                     continue
 
                 # Add double-sided back image
@@ -1214,9 +1265,50 @@ def generate_pdf(
                     except OSError as e:
                         raise OSError(f'Failed to load double-sided image "{ds_card_image_path}": {e}') from e
                     back_card_images.append(ds_card_image)
+                    # Back groups are authoritative when the card is listed there; otherwise
+                    # fall back to the front override (a card in `groups` is still "in config",
+                    # so the CLI --crop_backs must not apply to it).
+                    back_crop_override = None
+                    back_extend_override = None
+                    matched_back = False
+                    if back_card_overrides:
+                        back_override = back_card_overrides.get(Path(file).stem)
+                        if back_override is not None:
+                            matched_back = True
+                            if "crop" in back_override:
+                                back_crop_override = parse_crop_string(
+                                    str(back_override["crop"]), card_width_px, card_height_px
+                                )
+                            else:
+                                back_crop_override = (0.0, 0.0)
+                            back_extend_override = parse_dimension_string(
+                                str(back_override.get("extend_corners", 0)), layout_config.ppi
+                            )
+                    if not matched_back:
+                        back_crop_override = card_crop_override
+                        back_extend_override = card_extend_override
+                    back_crop_overrides.append(back_crop_override)
+                    back_extend_overrides.append(back_extend_override)
                     continue
 
                 back_card_images.append(single_back_image)
+                # Shared back image: when listed in backGroups, that config is authoritative.
+                back_crop_override = None
+                back_extend_override = None
+                if back_card_overrides and back_card_image_name:
+                    back_override = back_card_overrides.get(Path(back_card_image_name).stem)
+                    if back_override is not None:
+                        if "crop" in back_override:
+                            back_crop_override = parse_crop_string(
+                                str(back_override["crop"]), card_width_px, card_height_px
+                            )
+                        else:
+                            back_crop_override = (0.0, 0.0)
+                        back_extend_override = parse_dimension_string(
+                            str(back_override.get("extend_corners", 0)), layout_config.ppi
+                        )
+                back_crop_overrides.append(back_crop_override)
+                back_extend_overrides.append(back_extend_override)
 
             front_page = reg_im.copy()
             back_page = reg_im.copy()
@@ -1248,6 +1340,8 @@ def generate_pdf(
                 flip=False,
                 fit=fit,
                 orientation=orientation,
+                per_card_crops=front_crop_overrides if card_overrides else None,
+                per_card_extend_corners=front_extend_overrides if card_overrides else None,
             )
 
             # Create back layout
@@ -1270,6 +1364,8 @@ def generate_pdf(
                 flip=True, # Flip the back sides
                 fit=fit,
                 orientation=orientation,
+                per_card_crops=back_crop_overrides if (back_card_overrides or card_overrides) else None,
+                per_card_extend_corners=back_extend_overrides if (back_card_overrides or card_overrides) else None,
             )
 
             # Draw cutting path outlines on top of the card images

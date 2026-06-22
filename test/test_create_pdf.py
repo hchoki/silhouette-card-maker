@@ -11,7 +11,9 @@ import pytest
 from click.testing import CliRunner
 import numpy as np
 from PIL import Image, ImageChops
+from pathlib import Path
 from create_pdf import cli
+from utilities import generate_pdf, Registration, FitMode
 from pdf_cases import IMAGES_DIR, BACK_DIR, DS_DIR, EXPECTED_DIR, TEST_CASES
 
 
@@ -209,4 +211,57 @@ def test_mirror_registration_flips_back_page_only():
         # Back page's registration marks are mirrored/flipped -> it must change.
         assert _pages_differ(base_dir, mirror_dir, back_page), (
             "back page did not change under --mirror_registration"
+        )
+
+
+# --- Per-card config.json override layer ---
+
+def _generate_basic(output_dir, card_overrides=None):
+    """Render the rounded-corner card fixtures to PNG pages via generate_pdf,
+    optionally with per-card overrides. Uses IMAGES_DIR so corner-fill is visible."""
+    generate_pdf(
+        front_dir_path=IMAGES_DIR,
+        back_dir_path=BACK_DIR,
+        ds_dir_path=DS_DIR,
+        output_path=os.path.join(output_dir, 'out.pdf'),
+        output_images=True,
+        card_size='standard',
+        paper_size='letter',
+        registration=Registration.THREE.value,
+        mirror_registration=False,
+        only_fronts=False,
+        fit=FitMode.STRETCH.value,
+        crop_string=None,
+        crop_backs_string=None,
+        extend_edges=None,
+        extend_corners=None,
+        ppi=300,
+        quality=100,
+        skip_indices=[],
+        load_offset=False,
+        label=None,
+        card_overrides=card_overrides,
+    )
+    return sorted(f for f in os.listdir(output_dir) if f.endswith('.png'))
+
+
+def test_per_card_extend_corners_override_changes_front():
+    """A per-card extend_corners override (config.json group) must alter the front page
+    while a None override map leaves output identical to a plain render."""
+    front_stems = [
+        Path(f).stem for f in os.listdir(IMAGES_DIR)
+        if not f.startswith('.')
+    ]
+    overrides = {stem: {"extend_corners": "5mm"} for stem in front_stems}
+
+    with tempfile.TemporaryDirectory() as base_dir, \
+         tempfile.TemporaryDirectory() as ovr_dir:
+        base_pages = _generate_basic(base_dir)
+        ovr_pages = _generate_basic(ovr_dir, card_overrides=overrides)
+
+        assert base_pages == ovr_pages
+        assert base_pages, "no pages rendered"
+        # Corner-fill applied to every front -> front page must differ.
+        assert _pages_differ(base_dir, ovr_dir, base_pages[0]), (
+            "per-card extend_corners override did not change the front page"
         )
