@@ -910,6 +910,7 @@ def generate_pdf(
     card_size: str,
     paper_size: str,
     registration: Registration,
+    mirror_registration: bool,
     only_fronts: bool,
     fit: FitMode,
     crop_string: str | None,
@@ -1219,6 +1220,13 @@ def generate_pdf(
 
             front_page = reg_im.copy()
             back_page = reg_im.copy()
+            if mirror_registration:
+                # Mirror registration marks according to long-side flip direction.
+                # Landscape pages flip top/bottom; portrait pages flip left/right.
+                if orientation == Orientation.PORTRAIT:
+                    back_page = ImageOps.mirror(reg_im.copy())
+                else:
+                    back_page = ImageOps.flip(reg_im.copy())
 
             # Create front layout
             draw_card_layout(

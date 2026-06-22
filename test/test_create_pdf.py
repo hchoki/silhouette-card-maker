@@ -161,3 +161,52 @@ def test_borderless_with_specialty_errors():
             '--specialty', 'letter-commander',
         ])
         assert result.exit_code != 0
+
+
+# --- Mirror Registration Test ---
+
+def _render_basic_pages(output_dir, extra_args=None):
+    """Render test/basic to PNG pages in output_dir and return the page filenames."""
+    runner = CliRunner()
+    args = [
+        '--front_dir_path', 'test/basic/front',
+        '--back_dir_path', 'test/basic/back',
+        '--double_sided_dir_path', 'test/basic/double_sided',
+        '--output_path', os.path.join(output_dir, 'output.pdf'),
+        '--output_images',
+    ]
+    if extra_args:
+        args += extra_args
+    result = runner.invoke(cli, args)
+    assert result.exit_code == 0, f"CLI failed: {result.output}\n{result.exception}"
+    return sorted(f for f in os.listdir(output_dir) if f.endswith('.png'))
+
+
+def _pages_differ(dir_a, dir_b, filename):
+    """True if the named PNG differs between two output directories."""
+    with Image.open(os.path.join(dir_a, filename)) as a, \
+         Image.open(os.path.join(dir_b, filename)) as b:
+        return ImageChops.difference(a.convert('RGB'), b.convert('RGB')).getbbox() is not None
+
+
+def test_mirror_registration_flips_back_page_only():
+    """--mirror_registration must mirror the back page's registration marks while
+    leaving the front page byte-for-byte identical to a non-mirrored render."""
+    with tempfile.TemporaryDirectory() as base_dir, \
+         tempfile.TemporaryDirectory() as mirror_dir:
+        base_pages = _render_basic_pages(base_dir)
+        mirror_pages = _render_basic_pages(mirror_dir, ['--mirror_registration'])
+
+        assert base_pages == mirror_pages
+        assert len(base_pages) >= 2, f"expected front + back pages, got {base_pages}"
+
+        front_page, back_page = base_pages[0], base_pages[-1]
+
+        # Front page is unaffected by mirroring the registration marks.
+        assert not _pages_differ(base_dir, mirror_dir, front_page), (
+            "front page changed under --mirror_registration but must not"
+        )
+        # Back page's registration marks are mirrored/flipped -> it must change.
+        assert _pages_differ(base_dir, mirror_dir, back_page), (
+            "back page did not change under --mirror_registration"
+        )
